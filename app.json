@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "london-mobile-v2",
-    "slug": "london-mobile-v2",
+    "name": "MyCorner",
+    "slug": "mycorner",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#10b981"
     },
     "ios": {
       "supportsTablet": true
@@ -25,6 +25,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
