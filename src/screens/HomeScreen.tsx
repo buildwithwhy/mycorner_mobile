@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { neighborhoods } from '../data/neighborhoods';
 import { useApp } from '../contexts/AppContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import NeighborhoodCard from '../components/NeighborhoodCard';
 
 type SortOption = 'name' | 'affordability' | 'safety' | 'transit';
 
@@ -93,87 +94,15 @@ export default function HomeScreen() {
             {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
           </Text>
           {filteredNeighborhoods.map((neighborhood) => (
-            <View key={neighborhood.id} style={styles.card}>
-              <TouchableOpacity
-                style={styles.cardContent}
-                onPress={() => navigation.navigate('Detail', { neighborhood })}
-                activeOpacity={0.7}
-              >
-                <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>{neighborhood.name}</Text>
-                  <Text style={styles.cardBorough}>{neighborhood.borough}</Text>
-                </View>
-
-                <Text style={styles.description} numberOfLines={2}>
-                  {neighborhood.description}
-                </Text>
-
-                <View style={styles.highlights}>
-                  {neighborhood.highlights.slice(0, 3).map((highlight, index) => (
-                    <View key={index} style={styles.highlightTag}>
-                      <Text style={styles.highlightText}>{highlight}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                <View style={styles.stats}>
-                  <View style={styles.stat}>
-                    <Ionicons name="cash-outline" size={16} color="#6b7280" />
-                    <View style={styles.affordabilityBadge}>
-                      {[...Array(5)].map((_, i) => (
-                        <Text
-                          key={i}
-                          style={[
-                            styles.affordabilitySymbol,
-                            i < (6 - neighborhood.affordability) && styles.affordabilitySymbolActive,
-                          ]}
-                        >
-                          £
-                        </Text>
-                      ))}
-                    </View>
-                  </View>
-
-                  <View style={styles.stat}>
-                    <Ionicons name="shield-checkmark" size={16} color="#6b7280" />
-                    <Text style={styles.statText}>{neighborhood.safety}/5</Text>
-                  </View>
-
-                  <View style={styles.stat}>
-                    <Ionicons name="bus" size={16} color="#6b7280" />
-                    <Text style={styles.statText}>{neighborhood.transit}/5</Text>
-                  </View>
-
-                  <View style={styles.stat}>
-                    <Ionicons name="leaf" size={16} color="#6b7280" />
-                    <Text style={styles.statText}>{neighborhood.greenSpace}/5</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              <View style={styles.cardActions}>
-                <TouchableOpacity
-                  style={[styles.cardActionButton, favorites.includes(neighborhood.id) && styles.cardActionButtonFavorite]}
-                  onPress={() => toggleFavorite(neighborhood.id)}
-                >
-                  <Ionicons
-                    name={favorites.includes(neighborhood.id) ? 'heart' : 'heart-outline'}
-                    size={18}
-                    color={favorites.includes(neighborhood.id) ? '#ef4444' : '#6b7280'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.cardActionButton, comparison.includes(neighborhood.id) && styles.cardActionButtonCompare]}
-                  onPress={() => toggleComparison(neighborhood.id)}
-                >
-                  <Ionicons
-                    name={comparison.includes(neighborhood.id) ? 'git-compare' : 'git-compare-outline'}
-                    size={18}
-                    color={comparison.includes(neighborhood.id) ? '#6366f1' : '#6b7280'}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <NeighborhoodCard
+              key={neighborhood.id}
+              neighborhood={neighborhood}
+              onPress={() => navigation.navigate('Detail', { neighborhood })}
+              isFavorite={favorites.includes(neighborhood.id)}
+              isInComparison={comparison.includes(neighborhood.id)}
+              onToggleFavorite={() => toggleFavorite(neighborhood.id)}
+              onToggleComparison={() => toggleComparison(neighborhood.id)}
+            />
           ))}
         </View>
       </ScrollView>
@@ -424,106 +353,6 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
     marginBottom: SPACING.md,
     textAlign: 'center',
-  },
-  card: {
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.lg,
-    marginBottom: SPACING.lg,
-    ...SHADOWS.medium,
-    borderWidth: 1,
-    borderColor: COLORS.gray100,
-  },
-  cardContent: {
-    padding: SPACING.lg,
-  },
-  cardHeader: {
-    marginBottom: 8,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  cardBorough: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  description: {
-    fontSize: 14,
-    color: '#6b7280',
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  highlights: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginBottom: 12,
-  },
-  highlightTag: {
-    backgroundColor: COLORS.accentLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: BORDER_RADIUS.md,
-  },
-  highlightText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: '600',
-    color: COLORS.accentDark,
-  },
-  stats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.gray200,
-  },
-  stat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  statText: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  affordabilityBadge: {
-    flexDirection: 'row',
-    gap: 1,
-  },
-  affordabilitySymbol: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: 'bold',
-    color: COLORS.gray300,
-  },
-  affordabilitySymbolActive: {
-    color: COLORS.primary,
-  },
-  cardActions: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.md,
-  },
-  cardActionButton: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: BORDER_RADIUS.sm,
-    backgroundColor: COLORS.gray50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.gray200,
-  },
-  cardActionButtonFavorite: {
-    backgroundColor: COLORS.favoriteLight,
-    borderColor: COLORS.favoriteBorder,
-  },
-  cardActionButtonCompare: {
-    backgroundColor: COLORS.primaryLight,
-    borderColor: COLORS.primaryBorder,
   },
   modalOverlay: {
     flex: 1,

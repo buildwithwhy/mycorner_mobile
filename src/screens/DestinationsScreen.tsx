@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useApp } from '../contexts/AppContext';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 export default function DestinationsScreen() {
   const navigation = useNavigation();
@@ -59,7 +60,7 @@ export default function DestinationsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={24} color={COLORS.white} />
         </TouchableOpacity>
         <Text style={styles.title}>My Destinations</Text>
         <View style={styles.placeholder} />
@@ -76,7 +77,7 @@ export default function DestinationsScreen() {
               {destinations.map((destination) => (
                 <View key={destination.id} style={styles.destinationCard}>
                   <View style={styles.destinationIcon}>
-                    <Ionicons name="location" size={24} color="#6366f1" />
+                    <Ionicons name="location" size={24} color={COLORS.primary} />
                   </View>
                   <View style={styles.destinationInfo}>
                     <Text style={styles.destinationLabel}>{destination.label}</Text>
@@ -95,14 +96,14 @@ export default function DestinationsScreen() {
                       );
                     }}
                   >
-                    <Ionicons name="trash" size={20} color="#ef4444" />
+                    <Ionicons name="trash" size={20} color={COLORS.error} />
                   </TouchableOpacity>
                 </View>
               ))}
             </>
           ) : (
             <View style={styles.emptyState}>
-              <Ionicons name="map-outline" size={64} color="#d1d5db" />
+              <Ionicons name="map-outline" size={64} color={COLORS.gray300} />
               <Text style={styles.emptyTitle}>No destinations yet</Text>
               <Text style={styles.emptyText}>
                 Add your work, school, or other regular destinations to compare commute times
@@ -114,7 +115,7 @@ export default function DestinationsScreen() {
 
       <View style={styles.footer}>
         <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
-          <Ionicons name="add-circle" size={24} color="white" />
+          <Ionicons name="add-circle" size={24} color={COLORS.white} />
           <Text style={styles.addButtonText}>Add Destination</Text>
         </TouchableOpacity>
       </View>
@@ -131,7 +132,7 @@ export default function DestinationsScreen() {
                   <View style={styles.modalHeader}>
                     <Text style={styles.modalTitle}>New Destination</Text>
                     <TouchableOpacity onPress={handleCloseModal}>
-                      <Ionicons name="close" size={24} color="#6b7280" />
+                      <Ionicons name="close" size={24} color={COLORS.gray500} />
                     </TouchableOpacity>
                   </View>
 
@@ -146,14 +147,14 @@ export default function DestinationsScreen() {
                       placeholder="e.g., My Office, Partner's Work, School"
                       value={newLabel}
                       onChangeText={setNewLabel}
-                      placeholderTextColor="#9ca3af"
+                      placeholderTextColor={COLORS.gray400}
                       returnKeyType="next"
                     />
 
                     <Text style={styles.inputLabel}>Address</Text>
                     {GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY' ? (
                       <View style={styles.apiKeyWarning}>
-                        <Ionicons name="information-circle" size={24} color="#f59e0b" />
+                        <Ionicons name="information-circle" size={24} color={COLORS.warning} />
                         <View style={styles.apiKeyWarningContent}>
                           <Text style={styles.apiKeyWarningTitle}>API Key Required</Text>
                           <Text style={styles.apiKeyWarningText}>
@@ -188,24 +189,24 @@ export default function DestinationsScreen() {
                             flex: 0,
                           },
                           textInputContainer: {
-                            backgroundColor: '#f9fafb',
+                            backgroundColor: COLORS.gray50,
                             borderWidth: 1,
-                            borderColor: '#e5e7eb',
-                            borderRadius: 8,
+                            borderColor: COLORS.gray200,
+                            borderRadius: BORDER_RADIUS.sm,
                             paddingHorizontal: 4,
                           },
                           textInput: {
                             height: 44,
-                            fontSize: 15,
-                            color: '#111827',
-                            backgroundColor: 'transparent',
+                            fontSize: FONT_SIZES.base + 1,
+                            color: COLORS.gray900,
+                            backgroundColor: COLORS.transparent,
                           },
                           listView: {
-                            backgroundColor: 'white',
-                            borderRadius: 8,
+                            backgroundColor: COLORS.white,
+                            borderRadius: BORDER_RADIUS.sm,
                             marginTop: 4,
                             elevation: 3,
-                            shadowColor: '#000',
+                            shadowColor: COLORS.black,
                             shadowOffset: { width: 0, height: 2 },
                             shadowOpacity: 0.1,
                             shadowRadius: 4,
@@ -215,8 +216,8 @@ export default function DestinationsScreen() {
                             minHeight: 44,
                           },
                           description: {
-                            fontSize: 14,
-                            color: '#111827',
+                            fontSize: FONT_SIZES.base,
+                            color: COLORS.gray900,
                           },
                           poweredContainer: {
                             display: 'none',
@@ -235,7 +236,7 @@ export default function DestinationsScreen() {
 
                     {newAddress ? (
                       <View style={styles.selectedAddressContainer}>
-                        <Ionicons name="checkmark-circle" size={20} color="#6366f1" />
+                        <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />
                         <Text style={styles.selectedAddressText}>{newAddress}</Text>
                       </View>
                     ) : null}
@@ -276,16 +277,16 @@ export default function DestinationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: COLORS.gray50,
   },
   header: {
-    backgroundColor: '#6366f1',
+    backgroundColor: COLORS.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingBottom: SPACING.xl,
+    paddingHorizontal: SPACING.xl,
   },
   backButton: {
     width: 40,
@@ -294,9 +295,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: FONT_SIZES.xxl,
     fontWeight: 'bold',
-    color: 'white',
+    color: COLORS.white,
     flex: 1,
     textAlign: 'center',
   },
@@ -307,53 +308,49 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 16,
+    padding: SPACING.lg,
   },
   description: {
-    fontSize: 14,
-    color: '#6b7280',
+    fontSize: FONT_SIZES.base,
+    color: COLORS.gray500,
     lineHeight: 20,
-    marginBottom: 20,
+    marginBottom: SPACING.xl,
     textAlign: 'center',
   },
   destinationCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.md,
+    ...SHADOWS.small,
   },
   destinationIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#eef2ff',
+    backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: SPACING.md,
   },
   destinationInfo: {
     flex: 1,
   },
   destinationLabel: {
-    fontSize: 16,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '600',
-    color: '#111827',
+    color: COLORS.gray900,
     marginBottom: 4,
   },
   destinationAddress: {
-    fontSize: 13,
-    color: '#6b7280',
+    fontSize: FONT_SIZES.md,
+    color: COLORS.gray500,
     lineHeight: 18,
   },
   removeButton: {
-    padding: 8,
+    padding: SPACING.sm,
   },
   emptyState: {
     alignItems: 'center',
@@ -362,37 +359,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   emptyTitle: {
-    fontSize: 20,
+    fontSize: FONT_SIZES.xxl,
     fontWeight: '600',
-    color: '#111827',
-    marginTop: 16,
-    marginBottom: 8,
+    color: COLORS.gray900,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.sm,
   },
   emptyText: {
-    fontSize: 14,
-    color: '#6b7280',
+    fontSize: FONT_SIZES.base,
+    color: COLORS.gray500,
     textAlign: 'center',
     lineHeight: 20,
   },
   footer: {
-    padding: 16,
-    backgroundColor: 'white',
+    padding: SPACING.lg,
+    backgroundColor: COLORS.white,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: COLORS.gray200,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#6366f1',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: BORDER_RADIUS.sm,
   },
   addButtonText: {
-    fontSize: 16,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '600',
-    color: 'white',
+    color: COLORS.white,
   },
   modalOverlay: {
     flex: 1,
@@ -400,43 +397,43 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
     maxHeight: '90%',
   },
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: SPACING.xl,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: COLORS.gray200,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: FONT_SIZES.xxl,
     fontWeight: '600',
-    color: '#111827',
+    color: COLORS.gray900,
   },
   modalBody: {
-    padding: 20,
+    padding: SPACING.xl,
     maxHeight: 400,
   },
   inputLabel: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.base,
     fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
+    color: COLORS.gray900,
+    marginBottom: SPACING.sm,
   },
   input: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: COLORS.gray50,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 15,
-    color: '#111827',
-    marginBottom: 16,
+    borderColor: COLORS.gray200,
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.md,
+    fontSize: FONT_SIZES.base + 1,
+    color: COLORS.gray900,
+    marginBottom: SPACING.lg,
   },
   addressInput: {
     height: 80,
@@ -450,81 +447,81 @@ const styles = StyleSheet.create({
   selectedAddressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#eef2ff',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 8,
-    marginBottom: 12,
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.sm,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   selectedAddressText: {
     flex: 1,
-    fontSize: 13,
-    color: '#6366f1',
+    fontSize: FONT_SIZES.md,
+    color: COLORS.primary,
     fontWeight: '500',
   },
   helperText: {
-    fontSize: 13,
-    color: '#6b7280',
+    fontSize: FONT_SIZES.md,
+    color: COLORS.gray500,
     lineHeight: 18,
   },
   apiKeyWarning: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: SPACING.md,
     backgroundColor: '#fffbeb',
-    padding: 16,
-    borderRadius: 8,
+    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
     borderColor: '#fbbf24',
-    marginBottom: 12,
+    marginBottom: SPACING.md,
   },
   apiKeyWarningContent: {
     flex: 1,
   },
   apiKeyWarningTitle: {
-    fontSize: 14,
+    fontSize: FONT_SIZES.base,
     fontWeight: '600',
     color: '#92400e',
     marginBottom: 4,
   },
   apiKeyWarningText: {
-    fontSize: 13,
+    fontSize: FONT_SIZES.md,
     color: '#78350f',
     lineHeight: 18,
   },
   modalActions: {
     flexDirection: 'row',
-    gap: 12,
-    padding: 20,
+    gap: SPACING.md,
+    padding: SPACING.xl,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: COLORS.gray200,
   },
   modalCancelButton: {
     flex: 1,
     paddingVertical: 14,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 8,
+    backgroundColor: COLORS.gray100,
+    borderRadius: BORDER_RADIUS.sm,
     alignItems: 'center',
   },
   modalCancelButtonText: {
-    fontSize: 16,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '600',
-    color: '#6b7280',
+    color: COLORS.gray500,
   },
   modalAddButton: {
     flex: 2,
     paddingVertical: 14,
-    backgroundColor: '#6366f1',
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.sm,
     alignItems: 'center',
   },
   modalAddButtonDisabled: {
     opacity: 0.5,
   },
   modalAddButtonText: {
-    fontSize: 16,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '600',
-    color: 'white',
+    color: COLORS.white,
   },
 });
