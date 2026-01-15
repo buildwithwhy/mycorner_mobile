@@ -40,21 +40,12 @@ export default function LoginScreen() {
   };
 
   const handleGoogleLogin = async () => {
-    console.log('Google login button pressed');
     setLoading(true);
-    try {
-      const { error } = await signInWithGoogle();
-      console.log('Google login result:', { error });
-      setLoading(false);
+    const { error } = await signInWithGoogle();
+    setLoading(false);
 
-      if (error) {
-        console.error('Google login error:', error);
-        Alert.alert('Google Login Failed', error.message || JSON.stringify(error));
-      }
-    } catch (err) {
-      console.error('Google login exception:', err);
-      setLoading(false);
-      Alert.alert('Google Login Failed', err.toString());
+    if (error) {
+      Alert.alert('Google Login Failed', error.message || 'An error occurred');
     }
   };
 

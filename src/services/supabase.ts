@@ -7,13 +7,6 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../config';
 
-console.log('Supabase service loading...', {
-  hasUrl: !!SUPABASE_URL,
-  hasKey: !!SUPABASE_ANON_KEY,
-  url: SUPABASE_URL,
-  keyPrefix: SUPABASE_ANON_KEY?.substring(0, 20) + '...'
-});
-
 WebBrowser.maybeCompleteAuthSession();
 
 // Initialize Supabase client with AsyncStorage for session persistence
@@ -25,8 +18,6 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     detectSessionInUrl: false,
   },
 });
-
-console.log('Supabase client initialized');
 
 /**
  * Authentication Services
@@ -58,14 +49,10 @@ export const signInWithEmail = async (email: string, password: string) => {
 // Sign in with Google OAuth
 export const signInWithGoogle = async () => {
   try {
-    console.log('signInWithGoogle: Starting OAuth flow');
-
     // Create redirect URI using the custom scheme
     const redirectUrl = Linking.createURL('auth/callback');
-    console.log('signInWithGoogle: Redirect URL:', redirectUrl);
 
     // Get the OAuth URL from Supabase
-    console.log('signInWithGoogle: Requesting OAuth URL from Supabase');
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -74,19 +61,13 @@ export const signInWithGoogle = async () => {
       },
     });
 
-    console.log('signInWithGoogle: Supabase response:', { data, error });
-
     if (error) {
-      console.error('signInWithGoogle: Supabase error:', error);
       return { data: null, error };
     }
 
     if (!data?.url) {
-      console.error('signInWithGoogle: No OAuth URL received from Supabase');
       return { data: null, error: { message: 'No OAuth URL received from Supabase' } };
     }
-
-    console.log('signInWithGoogle: Opening browser with URL:', data.url);
 
     // Open the OAuth URL in the browser
     const result = await WebBrowser.openAuthSessionAsync(
@@ -94,22 +75,14 @@ export const signInWithGoogle = async () => {
       redirectUrl
     );
 
-    console.log('signInWithGoogle: Browser result:', result);
-
     if (result.type === 'success') {
       // Extract the URL from the result
       const url = result.url;
-      console.log('signInWithGoogle: Success URL:', url);
 
       // Parse the URL to get the tokens
       const params = new URL(url).searchParams;
       const access_token = params.get('access_token');
       const refresh_token = params.get('refresh_token');
-
-      console.log('signInWithGoogle: Tokens found:', {
-        hasAccessToken: !!access_token,
-        hasRefreshToken: !!refresh_token
-      });
 
       if (access_token && refresh_token) {
         // Set the session using the tokens
@@ -118,15 +91,12 @@ export const signInWithGoogle = async () => {
           refresh_token,
         });
 
-        console.log('signInWithGoogle: Session set result:', { sessionData, sessionError });
         return { data: sessionData, error: sessionError };
       }
     }
 
-    console.log('signInWithGoogle: OAuth flow cancelled or failed');
     return { data: null, error: { message: 'OAuth flow was cancelled or failed' } };
   } catch (err) {
-    console.error('signInWithGoogle: Exception caught:', err);
     return { data: null, error: err };
   }
 };
@@ -192,6 +162,16 @@ export const syncComparison = async (userId: string, comparison: string[]) => {
   const { data, error } = await supabase
     .from('user_comparison')
     .upsert({ user_id: userId, neighborhood_ids: comparison }, { onConflict: 'user_id' });
+  return { data, error };
+};
+
+// Get user comparison list
+export const getComparison = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('user_comparison')
+    .select('neighborhood_ids')
+    .eq('user_id', userId)
+    .single();
   return { data, error };
 };
 
@@ -265,6 +245,47 @@ export const syncDestinations = async (userId: string, destinations: any[]) => {
 export const getUserDestinations = async (userId: string) => {
   const { data, error } = await supabase
     .from('user_destinations')
+    .select('*')
+    .eq('user_id', userId);
+  return { data, error };
+};
+
+// Sync user rating for a neighborhood
+export const syncNeighborhoodRating = async (
+  userId: string,
+  neighborhoodId: string,
+  ratings: {
+    affordability?: number;
+    safety?: number;
+    transit?: number;
+    greenSpace?: number;
+    nightlife?: number;
+    familyFriendly?: number;
+  }
+) => {
+  // Convert camelCase to snake_case for database
+  const dbRatings: any = {
+    user_id: userId,
+    neighborhood_id: neighborhoodId,
+  };
+
+  if (ratings.affordability !== undefined) dbRatings.affordability = ratings.affordability;
+  if (ratings.safety !== undefined) dbRatings.safety = ratings.safety;
+  if (ratings.transit !== undefined) dbRatings.transit = ratings.transit;
+  if (ratings.greenSpace !== undefined) dbRatings.green_space = ratings.greenSpace;
+  if (ratings.nightlife !== undefined) dbRatings.nightlife = ratings.nightlife;
+  if (ratings.familyFriendly !== undefined) dbRatings.family_friendly = ratings.familyFriendly;
+
+  const { data, error } = await supabase
+    .from('user_neighborhood_ratings')
+    .upsert(dbRatings, { onConflict: 'user_id,neighborhood_id' });
+  return { data, error };
+};
+
+// Get all user neighborhood ratings
+export const getUserNeighborhoodRatings = async (userId: string) => {
+  const { data, error } = await supabase
+    .from('user_neighborhood_ratings')
     .select('*')
     .eq('user_id', userId);
   return { data, error };

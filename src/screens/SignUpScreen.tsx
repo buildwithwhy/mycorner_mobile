@@ -52,21 +52,12 @@ export default function SignUpScreen() {
   };
 
   const handleGoogleSignUp = async () => {
-    console.log('Google sign up button pressed');
     setLoading(true);
-    try {
-      const { error } = await signInWithGoogle();
-      console.log('Google sign up result:', { error });
-      setLoading(false);
+    const { error } = await signInWithGoogle();
+    setLoading(false);
 
-      if (error) {
-        console.error('Google sign up error:', error);
-        Alert.alert('Google Sign Up Failed', error.message || JSON.stringify(error));
-      }
-    } catch (err) {
-      console.error('Google sign up exception:', err);
-      setLoading(false);
-      Alert.alert('Google Sign Up Failed', err.toString());
+    if (error) {
+      Alert.alert('Google Sign Up Failed', error.message || 'An error occurred');
     }
   };
 

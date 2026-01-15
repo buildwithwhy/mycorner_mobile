@@ -16,9 +16,14 @@ This guide will help you complete the Supabase backend setup for MyCorner.
 4. Copy the entire contents of `supabase-schema.sql` from this project
 5. Paste it into the SQL editor
 6. Click **Run** to execute the script
+7. **NEW**: Run the user ratings migration:
+   - Click **New Query** again
+   - Copy the entire contents of `supabase-user-ratings-migration.sql`
+   - Paste it into the SQL editor
+   - Click **Run** to execute
 
 This will create:
-- 5 database tables (user_favorites, user_comparison, user_neighborhood_status, user_neighborhood_notes, user_destinations)
+- 6 database tables (user_favorites, user_comparison, user_neighborhood_status, user_neighborhood_notes, user_destinations, user_neighborhood_ratings)
 - Row Level Security (RLS) policies to ensure users can only access their own data
 - Indexes for query performance
 - Triggers to auto-update timestamps
