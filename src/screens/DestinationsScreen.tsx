@@ -1,11 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, LogBox } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useApp } from '../contexts/AppContext';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+
+// Suppress VirtualizedLists warning for GooglePlacesAutocomplete
+// This is safe because the autocomplete dropdown only shows a small number of items
+LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 
 export default function DestinationsScreen() {
   const navigation = useNavigation();
@@ -121,38 +125,38 @@ export default function DestinationsScreen() {
       </View>
 
       <Modal visible={showAddModal} animationType="slide" transparent={true}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.modalOverlay}
-        >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View style={styles.modalContent}>
-                  <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>New Destination</Text>
-                    <TouchableOpacity onPress={handleCloseModal}>
-                      <Ionicons name="close" size={24} color={COLORS.gray500} />
-                    </TouchableOpacity>
-                  </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.modalContent}
+              >
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>New Destination</Text>
+                  <TouchableOpacity onPress={handleCloseModal}>
+                    <Ionicons name="close" size={24} color={COLORS.gray500} />
+                  </TouchableOpacity>
+                </View>
 
-                  <ScrollView
-                    style={styles.modalBody}
-                    keyboardShouldPersistTaps="handled"
-                    nestedScrollEnabled={true}
-                  >
-                    <Text style={styles.inputLabel}>Label</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="e.g., My Office, Partner's Work, School"
-                      value={newLabel}
-                      onChangeText={setNewLabel}
-                      placeholderTextColor={COLORS.gray400}
-                      returnKeyType="next"
-                    />
+                <ScrollView
+                  style={styles.modalBody}
+                  contentContainerStyle={styles.modalBodyContent}
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                >
+                  <Text style={styles.inputLabel}>Label</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="e.g., My Office, Partner's Work, School"
+                    value={newLabel}
+                    onChangeText={setNewLabel}
+                    placeholderTextColor={COLORS.gray400}
+                    returnKeyType="next"
+                  />
 
-                    <Text style={styles.inputLabel}>Address</Text>
-                    {GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY' ? (
+                  <Text style={styles.inputLabel}>Address</Text>
+                  {GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY' ? (
                       <View style={styles.apiKeyWarning}>
                         <Ionicons name="information-circle" size={24} color={COLORS.warning} />
                         <View style={styles.apiKeyWarningContent}>
@@ -187,6 +191,7 @@ export default function DestinationsScreen() {
                         styles={{
                           container: {
                             flex: 0,
+                            zIndex: 1,
                           },
                           textInputContainer: {
                             backgroundColor: COLORS.gray50,
@@ -205,11 +210,14 @@ export default function DestinationsScreen() {
                             backgroundColor: COLORS.white,
                             borderRadius: BORDER_RADIUS.sm,
                             marginTop: 4,
-                            elevation: 3,
+                            elevation: 5,
                             shadowColor: COLORS.black,
                             shadowOffset: { width: 0, height: 2 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 4,
+                            shadowOpacity: 0.25,
+                            shadowRadius: 8,
+                            position: 'absolute',
+                            top: 50,
+                            width: '100%',
                           },
                           row: {
                             padding: 13,
@@ -230,6 +238,7 @@ export default function DestinationsScreen() {
                         GooglePlacesSearchQuery={{
                           rankby: 'distance',
                         }}
+                        listViewDisplayed="auto"
                       />
                       </View>
                     )}
@@ -241,34 +250,33 @@ export default function DestinationsScreen() {
                       </View>
                     ) : null}
 
-                    <Text style={styles.helperText}>
-                      💡 Start typing and select from suggestions for accurate coordinates
-                    </Text>
-                  </ScrollView>
+                  <Text style={styles.helperText}>
+                    💡 Start typing and select from suggestions for accurate coordinates
+                  </Text>
+                </ScrollView>
 
-                  <View style={styles.modalActions}>
-                    <TouchableOpacity
-                      style={styles.modalCancelButton}
-                      onPress={handleCloseModal}
-                    >
-                      <Text style={styles.modalCancelButtonText}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.modalAddButton,
-                        (!newLabel.trim() || !selectedCoords) && styles.modalAddButtonDisabled,
-                      ]}
-                      onPress={handleAddDestination}
-                      disabled={!newLabel.trim() || !selectedCoords}
-                    >
-                      <Text style={styles.modalAddButtonText}>Add Destination</Text>
-                    </TouchableOpacity>
-                  </View>
+                <View style={styles.modalActions}>
+                  <TouchableOpacity
+                    style={styles.modalCancelButton}
+                    onPress={handleCloseModal}
+                  >
+                    <Text style={styles.modalCancelButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalAddButton,
+                      (!newLabel.trim() || !selectedCoords) && styles.modalAddButtonDisabled,
+                    ]}
+                    onPress={handleAddDestination}
+                    disabled={!newLabel.trim() || !selectedCoords}
+                  >
+                    <Text style={styles.modalAddButtonText}>Add Destination</Text>
+                  </TouchableOpacity>
                 </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+              </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );
@@ -416,8 +424,10 @@ const styles = StyleSheet.create({
     color: COLORS.gray900,
   },
   modalBody: {
+    maxHeight: 450,
+  },
+  modalBodyContent: {
     padding: SPACING.xl,
-    maxHeight: 400,
   },
   inputLabel: {
     fontSize: FONT_SIZES.base,
