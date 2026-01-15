@@ -1,20 +1,39 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { neighborhoods } from '../data/neighborhoods';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const { favorites, toggleFavorite, comparison, toggleComparison, status, getNeighborhoodsByStatus, destinations } = useApp();
+  const { user, signOut } = useAuth();
 
   const shortlist = getNeighborhoodsByStatus('shortlist');
   const wantToVisit = getNeighborhoodsByStatus('want_to_visit');
   const visited = getNeighborhoodsByStatus('visited');
   const livingHere = getNeighborhoodsByStatus('living_here');
   const ruledOut = getNeighborhoodsByStatus('ruled_out');
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            await signOut();
+          },
+        },
+      ]
+    );
+  };
 
   const renderStatusList = (
     title: string,
@@ -63,6 +82,26 @@ export default function ProfileScreen() {
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
+          {user && (
+            <View style={styles.userCard}>
+              <View style={styles.userInfo}>
+                <View style={styles.userAvatar}>
+                  <Ionicons name="person" size={32} color={COLORS.white} />
+                </View>
+                <View style={styles.userDetails}>
+                  <Text style={styles.userName}>
+                    {user.user_metadata?.full_name || 'User'}
+                  </Text>
+                  <Text style={styles.userEmail}>{user.email}</Text>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+                <Ionicons name="log-out-outline" size={20} color={COLORS.error} />
+                <Text style={styles.signOutText}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           <TouchableOpacity
             style={styles.destinationsCard}
             onPress={() => navigation.navigate('Destinations')}
@@ -154,6 +193,54 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: SPACING.lg,
+  },
+  userCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.small,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
+  userAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  userDetails: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: FONT_SIZES.xl,
+    fontWeight: '600',
+    color: COLORS.gray900,
+    marginBottom: 4,
+  },
+  userEmail: {
+    fontSize: FONT_SIZES.base,
+    color: COLORS.gray500,
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.errorLight,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.md,
+    gap: SPACING.xs,
+  },
+  signOutText: {
+    fontSize: FONT_SIZES.base,
+    fontWeight: '600',
+    color: COLORS.error,
   },
   destinationsCard: {
     backgroundColor: COLORS.white,

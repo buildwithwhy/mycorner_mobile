@@ -11,9 +11,9 @@ import Constants from 'expo-constants';
 
 export const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey || 'YOUR_GOOGLE_MAPS_API_KEY';
 
-// Future: Supabase configuration
-// export const SUPABASE_URL = Constants.expoConfig?.extra?.supabaseUrl || '';
-// export const SUPABASE_ANON_KEY = Constants.expoConfig?.extra?.supabaseAnonKey || '';
+// Supabase configuration
+export const SUPABASE_URL = Constants.expoConfig?.extra?.supabaseUrl || '';
+export const SUPABASE_ANON_KEY = Constants.expoConfig?.extra?.supabaseAnonKey || '';
 
 // Note: After changing .env, you must restart the Expo dev server
 // Development: npx expo start --clear

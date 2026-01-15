@@ -10,15 +10,18 @@ module.exports = {
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
     newArchEnabled: true,
+    scheme: "mycorner",
     splash: {
       image: "./assets/splash-icon.png",
       resizeMode: "contain",
       backgroundColor: "#10b981"
     },
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      bundleIdentifier: "com.mycorner.app"
     },
     android: {
+      package: "com.mycorner.app",
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
@@ -35,9 +38,9 @@ module.exports = {
     extra: {
       // Environment variables exposed to the app via expo-constants
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY',
-      // Future: Supabase config
-      // supabaseUrl: process.env.SUPABASE_URL,
-      // supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+      // Supabase configuration
+      supabaseUrl: process.env.SUPABASE_URL || '',
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
     }
   }
 };
