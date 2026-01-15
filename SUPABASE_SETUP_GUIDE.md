@@ -69,11 +69,20 @@ Before creating OAuth credentials, configure the consent screen to show your app
 3. Click **Create Credentials** → **OAuth client ID**
 4. Select **Application type**: Choose **Web application**
 5. **Name**: `MyCorner Web Client` (or any name you prefer)
-6. Add authorized redirect URIs:
+6. Add authorized redirect URIs (add ALL of these):
    ```
    https://rmwmzfdkkqykyhjazmjj.supabase.co/auth/v1/callback
+   mycorner://auth/callback
    ```
-   Note: Only add the Supabase callback URL. The `mycorner://` scheme is handled by the app, not Google.
+
+   **For Expo Go development**, you also need to add the Expo redirect URL. To get this URL:
+   - Run your app: `npm start`
+   - Look at the console output for the redirect URL (it will be logged)
+   - It will look something like: `exp://192.168.x.x:8081/--/auth/callback` or similar
+   - Add this URL to the authorized redirect URIs in Google Cloud Console
+
+   Note: The Expo Go URL changes based on your network, so you may need to update it if your IP changes.
+
 7. Click **Create** and save your:
    - **Client ID**
    - **Client Secret**

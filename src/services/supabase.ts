@@ -4,7 +4,7 @@
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
+import * as AuthSession from 'expo-auth-session';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../config';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -49,8 +49,14 @@ export const signInWithEmail = async (email: string, password: string) => {
 // Sign in with Google OAuth
 export const signInWithGoogle = async () => {
   try {
-    // Create redirect URI using the custom scheme
-    const redirectUrl = Linking.createURL('auth/callback');
+    // Create proper redirect URI for Expo
+    // This handles both Expo Go (development) and production builds
+    const redirectUrl = AuthSession.makeRedirectUri({
+      scheme: 'mycorner',
+      path: 'auth/callback',
+    });
+
+    console.log('OAuth redirect URL:', redirectUrl);
 
     // Get the OAuth URL from Supabase
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -62,12 +68,16 @@ export const signInWithGoogle = async () => {
     });
 
     if (error) {
+      console.error('Supabase OAuth error:', error);
       return { data: null, error };
     }
 
     if (!data?.url) {
+      console.error('No OAuth URL received');
       return { data: null, error: { message: 'No OAuth URL received from Supabase' } };
     }
+
+    console.log('Opening browser for OAuth...');
 
     // Open the OAuth URL in the browser
     const result = await WebBrowser.openAuthSessionAsync(
@@ -75,28 +85,60 @@ export const signInWithGoogle = async () => {
       redirectUrl
     );
 
+    console.log('Browser result:', result);
+
     if (result.type === 'success') {
       // Extract the URL from the result
       const url = result.url;
+      console.log('Success redirect URL:', url);
 
       // Parse the URL to get the tokens
-      const params = new URL(url).searchParams;
-      const access_token = params.get('access_token');
-      const refresh_token = params.get('refresh_token');
+      // Handle both ?param=value and #param=value (hash fragments)
+      let access_token: string | null = null;
+      let refresh_token: string | null = null;
+
+      // Try query parameters first
+      const urlObj = new URL(url);
+      access_token = urlObj.searchParams.get('access_token');
+      refresh_token = urlObj.searchParams.get('refresh_token');
+
+      // If not in query params, try hash fragment
+      if (!access_token && urlObj.hash) {
+        const hashParams = new URLSearchParams(urlObj.hash.substring(1));
+        access_token = hashParams.get('access_token');
+        refresh_token = hashParams.get('refresh_token');
+      }
+
+      console.log('Tokens found:', {
+        hasAccessToken: !!access_token,
+        hasRefreshToken: !!refresh_token
+      });
 
       if (access_token && refresh_token) {
+        console.log('Setting session with tokens...');
         // Set the session using the tokens
         const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
           access_token,
           refresh_token,
         });
 
+        if (sessionError) {
+          console.error('Error setting session:', sessionError);
+        } else {
+          console.log('Session set successfully');
+        }
+
         return { data: sessionData, error: sessionError };
+      } else {
+        console.error('No tokens in redirect URL');
       }
+    } else {
+      console.log('OAuth not successful, result type:', result.type);
     }
 
     return { data: null, error: { message: 'OAuth flow was cancelled or failed' } };
   } catch (err) {
+    console.error('OAuth exception:', err);
     return { data: null, error: err };
   }
 };
