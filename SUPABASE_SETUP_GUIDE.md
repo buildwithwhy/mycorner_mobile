@@ -50,7 +50,7 @@ Before creating OAuth credentials, configure the consent screen to show your app
    - **User support email**: Your email
    - **App logo**: (Optional) Upload your app icon
    - **Application home page**: (Optional) Your website or leave blank
-   - **Authorized domains**: Add `supabase.co`
+   - **Authorized domains**: Add `supabase.com` (NOT supabase.co)
    - **Developer contact information**: Your email
 6. Click **Save and Continue**
 7. On the **Scopes** page, click **Save and Continue** (default scopes are fine)
