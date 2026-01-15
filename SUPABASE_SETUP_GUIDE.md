@@ -37,19 +37,38 @@ Email/password authentication is enabled by default, but you can customize the s
 
 To enable Google sign-in:
 
-### Get Google OAuth Credentials
+### Configure OAuth Consent Screen (Important for Branding)
+
+Before creating OAuth credentials, configure the consent screen to show your app name:
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Navigate to **APIs & Services** → **Credentials**
-4. Click **Create Credentials** → **OAuth client ID**
-5. Select **Application type**: Choose **Web application**
-6. Add authorized redirect URIs (add BOTH):
+2. Navigate to **APIs & Services** → **OAuth consent screen**
+3. Select **External** user type (unless you have a Google Workspace)
+4. Click **Create**
+5. Fill in the required fields:
+   - **App name**: `MyCorner` (this is what users will see)
+   - **User support email**: Your email
+   - **App logo**: (Optional) Upload your app icon
+   - **Application home page**: (Optional) Your website or leave blank
+   - **Authorized domains**: Add `supabase.co`
+   - **Developer contact information**: Your email
+6. Click **Save and Continue**
+7. On the **Scopes** page, click **Save and Continue** (default scopes are fine)
+8. On the **Test users** page, click **Save and Continue**
+9. Review and click **Back to Dashboard**
+
+### Get Google OAuth Credentials
+
+1. Still in [Google Cloud Console](https://console.cloud.google.com/)
+2. Navigate to **APIs & Services** → **Credentials**
+3. Click **Create Credentials** → **OAuth client ID**
+4. Select **Application type**: Choose **Web application**
+5. **Name**: `MyCorner Web Client` (or any name you prefer)
+6. Add authorized redirect URIs:
    ```
    https://rmwmzfdkkqykyhjazmjj.supabase.co/auth/v1/callback
-   mycorner://auth/callback
    ```
-   Note: The first URL is for Supabase, the second is your app's deep link
+   Note: Only add the Supabase callback URL. The `mycorner://` scheme is handled by the app, not Google.
 7. Click **Create** and save your:
    - **Client ID**
    - **Client Secret**
