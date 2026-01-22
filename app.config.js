@@ -41,6 +41,11 @@ module.exports = {
       // Supabase configuration
       supabaseUrl: process.env.SUPABASE_URL || '',
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+      // App metadata
+      privacyPolicyUrl: 'https://kallidao.com/productlab/mycorner/privacy',
+      eas: {
+        projectId: process.env.EAS_PROJECT_ID || '',
+      },
     }
   }
 };

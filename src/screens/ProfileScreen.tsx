@@ -1,11 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { neighborhoods } from '../data/neighborhoods';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+
+const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || 'https://kallidao.com/productlab/mycorner/privacy';
+const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -160,6 +164,17 @@ export default function ProfileScreen() {
               </Text>
             </View>
           )}
+
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.footerLink}
+              onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+            >
+              <Ionicons name="shield-checkmark-outline" size={16} color={COLORS.gray400} />
+              <Text style={styles.footerLinkText}>Privacy Policy</Text>
+            </TouchableOpacity>
+            <Text style={styles.footerVersion}>Version {APP_VERSION}</Text>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -232,7 +247,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.errorLight,
+    backgroundColor: '#fef2f2',
     borderRadius: BORDER_RADIUS.md,
     paddingVertical: SPACING.md,
     gap: SPACING.xs,
@@ -370,5 +385,25 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  footer: {
+    alignItems: 'center',
+    paddingVertical: SPACING.xxl,
+    marginTop: SPACING.xl,
+  },
+  footerLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    paddingVertical: SPACING.sm,
+  },
+  footerLinkText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray400,
+  },
+  footerVersion: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray300,
+    marginTop: SPACING.xs,
   },
 });
