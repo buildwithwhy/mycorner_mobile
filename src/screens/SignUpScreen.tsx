@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,13 +12,28 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 export default function SignUpScreen() {
   const navigation = useNavigation();
-  const { signUp, signInWithGoogle } = useAuth();
+  const route = useRoute();
+  const { signUp, signInWithGoogle, session } = useAuth();
+
+  // When session becomes valid, navigate back (user signed up successfully)
+  useEffect(() => {
+    if (session && route.name === 'SignUp') {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' as never }],
+        });
+      }
+    }
+  }, [session, navigation, route.name]);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

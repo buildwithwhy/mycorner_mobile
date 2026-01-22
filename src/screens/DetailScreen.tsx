@@ -5,14 +5,17 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
 import { useApp, type NeighborhoodStatus } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import SignInPromptModal from '../components/SignInPromptModal';
 
 export default function DetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const neighborhood = route.params?.neighborhood as Neighborhood;
+  const { session } = useAuth();
   const {
     isFavorite,
     toggleFavorite,
@@ -34,6 +37,17 @@ export default function DetailScreen() {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteText, setNoteText] = useState(notes[neighborhood?.id] || '');
   const [isEditingRatings, setIsEditingRatings] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [signInFeature, setSignInFeature] = useState('this feature');
+
+  const requireAuth = (featureName: string, action: () => void) => {
+    if (!session) {
+      setSignInFeature(featureName);
+      setShowSignInModal(true);
+      return;
+    }
+    action();
+  };
 
   const currentStatus = status[neighborhood?.id] || null;
   const currentPhotos = photos[neighborhood?.id] || [];
@@ -156,7 +170,7 @@ export default function DetailScreen() {
           <View style={styles.section}>
             <View style={styles.noteSectionHeader}>
               <Text style={styles.sectionTitle}>Ratings</Text>
-              <TouchableOpacity onPress={() => setIsEditingRatings(!isEditingRatings)}>
+              <TouchableOpacity onPress={() => requireAuth('ratings', () => setIsEditingRatings(!isEditingRatings))}>
                 <Ionicons
                   name={isEditingRatings ? 'checkmark-circle' : 'pencil'}
                   size={20}
@@ -430,11 +444,11 @@ export default function DetailScreen() {
                 </ScrollView>
               )}
               <View style={styles.photoActions}>
-                <TouchableOpacity style={styles.photoActionButton} onPress={takePhoto}>
+                <TouchableOpacity style={styles.photoActionButton} onPress={() => requireAuth('photos', takePhoto)}>
                   <Ionicons name="camera" size={24} color="#6366f1" />
                   <Text style={styles.photoActionText}>Take Photo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.photoActionButton} onPress={pickImage}>
+                <TouchableOpacity style={styles.photoActionButton} onPress={() => requireAuth('photos', pickImage)}>
                   <Ionicons name="images" size={24} color="#6366f1" />
                   <Text style={styles.photoActionText}>Choose from Library</Text>
                 </TouchableOpacity>
@@ -446,7 +460,7 @@ export default function DetailScreen() {
             <View style={styles.noteSectionHeader}>
               <Text style={styles.sectionTitle}>My Notes</Text>
               {!isEditingNote && (
-                <TouchableOpacity onPress={() => setIsEditingNote(true)}>
+                <TouchableOpacity onPress={() => requireAuth('notes', () => setIsEditingNote(true))}>
                   <Ionicons name="pencil" size={20} color="#6366f1" />
                 </TouchableOpacity>
               )}
@@ -483,7 +497,7 @@ export default function DetailScreen() {
                   {notes[neighborhood.id] ? (
                     <Text style={styles.noteText}>{notes[neighborhood.id]}</Text>
                   ) : (
-                    <TouchableOpacity style={styles.addNoteButton} onPress={() => setIsEditingNote(true)}>
+                    <TouchableOpacity style={styles.addNoteButton} onPress={() => requireAuth('notes', () => setIsEditingNote(true))}>
                       <Ionicons name="add-circle-outline" size={24} color="#6366f1" />
                       <Text style={styles.addNoteText}>Add a note</Text>
                     </TouchableOpacity>
@@ -567,7 +581,7 @@ export default function DetailScreen() {
         <View style={styles.actionButtons}>
           <TouchableOpacity
             style={[styles.actionButton, isFavorite(neighborhood.id) && styles.actionButtonActive]}
-            onPress={() => toggleFavorite(neighborhood.id)}
+            onPress={() => requireAuth('favorites', () => toggleFavorite(neighborhood.id))}
           >
             <Ionicons
               name={isFavorite(neighborhood.id) ? 'heart' : 'heart-outline'}
@@ -602,7 +616,7 @@ export default function DetailScreen() {
 
         <TouchableOpacity
           style={styles.statusButton}
-          onPress={() => setShowStatusMenu(!showStatusMenu)}
+          onPress={() => requireAuth('status', () => setShowStatusMenu(!showStatusMenu))}
         >
           <Ionicons name="checkbox-outline" size={20} color="white" />
           <Text style={styles.statusButtonText}>
@@ -675,6 +689,12 @@ export default function DetailScreen() {
           </View>
         )}
       </View>
+
+      <SignInPromptModal
+        visible={showSignInModal}
+        onClose={() => setShowSignInModal(false)}
+        featureName={signInFeature}
+      />
     </View>
   );
 }

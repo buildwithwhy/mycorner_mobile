@@ -20,6 +20,11 @@ import { COLORS } from '../constants/theme';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+function ProfileTabScreen() {
+  const { session } = useAuth();
+  return session ? <ProfileScreen /> : <LoginScreen />;
+}
+
 function TabNavigator() {
   return (
     <Tab.Navigator
@@ -50,13 +55,13 @@ function TabNavigator() {
       <Tab.Screen name="Map" component={MapScreen} />
       <Tab.Screen name="Favorites" component={FavoritesScreen} />
       <Tab.Screen name="Compare" component={CompareScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile" component={ProfileTabScreen} />
     </Tab.Navigator>
   );
 }
 
 export default function AppNavigator() {
-  const { session, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -69,21 +74,11 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {session ? (
-          // Authenticated screens
-          <>
-            <Stack.Screen name="Main" component={TabNavigator} />
-            <Stack.Screen name="Detail" component={DetailScreen} />
-            <Stack.Screen name="Destinations" component={DestinationsScreen} />
-          </>
-        ) : (
-          // Auth screens
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Main" component={TabNavigator} />
-          </>
-        )}
+        <Stack.Screen name="Main" component={TabNavigator} />
+        <Stack.Screen name="Detail" component={DetailScreen} />
+        <Stack.Screen name="Destinations" component={DestinationsScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

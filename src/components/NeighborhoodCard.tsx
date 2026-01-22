@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { useAuth } from '../contexts/AuthContext';
+import SignInPromptModal from './SignInPromptModal';
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;
@@ -27,6 +29,16 @@ export default function NeighborhoodCard({
   onToggleComparison,
   statusInfo,
 }: NeighborhoodCardProps) {
+  const { session } = useAuth();
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const handleToggleFavorite = () => {
+    if (!session) {
+      setShowSignInModal(true);
+      return;
+    }
+    onToggleFavorite();
+  };
   return (
     <View style={styles.card}>
       <TouchableOpacity
@@ -96,7 +108,7 @@ export default function NeighborhoodCard({
       <View style={styles.cardActions}>
         <TouchableOpacity
           style={[styles.cardActionButton, isFavorite && styles.cardActionButtonFavorite]}
-          onPress={onToggleFavorite}
+          onPress={handleToggleFavorite}
         >
           <Ionicons
             name={isFavorite ? 'heart' : 'heart-outline'}
@@ -115,6 +127,12 @@ export default function NeighborhoodCard({
           />
         </TouchableOpacity>
       </View>
+
+      <SignInPromptModal
+        visible={showSignInModal}
+        onClose={() => setShowSignInModal(false)}
+        featureName="favorites"
+      />
     </View>
   );
 }

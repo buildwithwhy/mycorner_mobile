@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,13 +12,31 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const { signIn, signInWithGoogle } = useAuth();
+  const route = useRoute();
+  const { signIn, signInWithGoogle, session } = useAuth();
+
+  // When session becomes valid, navigate back (user logged in successfully)
+  // Only do this if we're on the Login screen in the stack (not rendered inline by Profile tab)
+  useEffect(() => {
+    if (session && route.name === 'Login') {
+      // If we can go back, go back to where user came from
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        // Otherwise go to main screen
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' as never }],
+        });
+      }
+    }
+  }, [session, navigation, route.name]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,11 +59,20 @@ export default function LoginScreen() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    const { error } = await signInWithGoogle();
+    const { data, error } = await signInWithGoogle();
     setLoading(false);
 
     if (error) {
-      Alert.alert('Google Login Failed', error.message || 'An error occurred');
+      // More descriptive error messages
+      let errorMessage = error.message || 'An error occurred';
+      if (errorMessage.includes('cancelled')) {
+        // Don't show alert for user-initiated cancellation
+        return;
+      }
+      Alert.alert('Google Login Failed', errorMessage);
+    } else if (data?.session) {
+      // Successfully signed in - navigation will happen automatically via AuthContext
+      console.log('Google sign in successful!');
     }
   };
 

@@ -50,13 +50,15 @@ export const signInWithEmail = async (email: string, password: string) => {
 export const signInWithGoogle = async () => {
   try {
     // Create proper redirect URI for Expo
-    // This handles both Expo Go (development) and production builds
+    // For Expo Go, this will return something like exp://192.168.x.x:8081/--/auth/callback
+    // For standalone builds, it will use the scheme: mycorner://auth/callback
     const redirectUrl = AuthSession.makeRedirectUri({
       scheme: 'mycorner',
       path: 'auth/callback',
     });
 
-    console.log('OAuth redirect URL:', redirectUrl);
+    console.log('=== OAuth Debug ===');
+    console.log('Redirect URL:', redirectUrl);
 
     // Get the OAuth URL from Supabase
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -77,7 +79,7 @@ export const signInWithGoogle = async () => {
       return { data: null, error: { message: 'No OAuth URL received from Supabase' } };
     }
 
-    console.log('Opening browser for OAuth...');
+    console.log('OAuth URL received, opening browser...');
 
     // Open the OAuth URL in the browser
     const result = await WebBrowser.openAuthSessionAsync(
@@ -85,12 +87,11 @@ export const signInWithGoogle = async () => {
       redirectUrl
     );
 
-    console.log('Browser result:', result);
+    console.log('Browser result type:', result.type);
 
     if (result.type === 'success') {
-      // Extract the URL from the result
       const url = result.url;
-      console.log('Success redirect URL:', url);
+      console.log('Success! Redirect URL:', url);
 
       // Parse the URL to get the tokens
       // Handle both ?param=value and #param=value (hash fragments)
@@ -116,7 +117,6 @@ export const signInWithGoogle = async () => {
 
       if (access_token && refresh_token) {
         console.log('Setting session with tokens...');
-        // Set the session using the tokens
         const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
           access_token,
           refresh_token,
@@ -125,18 +125,21 @@ export const signInWithGoogle = async () => {
         if (sessionError) {
           console.error('Error setting session:', sessionError);
         } else {
-          console.log('Session set successfully');
+          console.log('Session set successfully!');
         }
 
         return { data: sessionData, error: sessionError };
       } else {
-        console.error('No tokens in redirect URL');
+        console.error('No tokens found in redirect URL. Full URL:', url);
+        return { data: null, error: { message: 'Authentication succeeded but no tokens received. Please check Supabase redirect URL configuration.' } };
       }
+    } else if (result.type === 'dismiss') {
+      console.log('User dismissed the OAuth browser');
+      return { data: null, error: { message: 'Sign in was cancelled' } };
     } else {
-      console.log('OAuth not successful, result type:', result.type);
+      console.log('OAuth result type:', result.type);
+      return { data: null, error: { message: `OAuth flow ended with status: ${result.type}` } };
     }
-
-    return { data: null, error: { message: 'OAuth flow was cancelled or failed' } };
   } catch (err) {
     console.error('OAuth exception:', err);
     return { data: null, error: err };

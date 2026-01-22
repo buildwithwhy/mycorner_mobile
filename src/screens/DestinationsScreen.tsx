@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
@@ -13,6 +14,7 @@ LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 
 export default function DestinationsScreen() {
   const navigation = useNavigation();
+  const { session } = useAuth();
   const { destinations, addDestination, removeDestination } = useApp();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newLabel, setNewLabel] = useState('');
@@ -59,6 +61,36 @@ export default function DestinationsScreen() {
     Keyboard.dismiss();
     setShowAddModal(false);
   };
+
+  if (!session) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color={COLORS.white} />
+          </TouchableOpacity>
+          <Text style={styles.title}>My Destinations</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        <View style={styles.signInPrompt}>
+          <View style={styles.signInIconContainer}>
+            <Ionicons name="location" size={48} color={COLORS.primary} />
+          </View>
+          <Text style={styles.signInTitle}>Sign in to add destinations</Text>
+          <Text style={styles.signInText}>
+            Create a free account to save your work, school, and other destinations to compare commute times.
+          </Text>
+          <TouchableOpacity
+            style={styles.signInButton}
+            onPress={() => navigation.navigate('Login' as never)}
+          >
+            <Text style={styles.signInButtonText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -533,5 +565,46 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.lg,
     fontWeight: '600',
     color: COLORS.white,
+  },
+  signInPrompt: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+  },
+  signInIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.xl,
+  },
+  signInTitle: {
+    fontSize: FONT_SIZES.xxl,
+    fontWeight: '600',
+    color: COLORS.gray900,
+    marginBottom: SPACING.md,
+    textAlign: 'center',
+  },
+  signInText: {
+    fontSize: FONT_SIZES.base,
+    color: COLORS.gray500,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: SPACING.xl,
+  },
+  signInButton: {
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xxxl,
+    alignItems: 'center',
+  },
+  signInButtonText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '600',
   },
 });
