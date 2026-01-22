@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { neighborhoods } from '../data/neighborhoods';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard from '../components/NeighborhoodCard';
+import EmptyState from '../components/EmptyState';
 
 export default function FavoritesScreen() {
   const navigation = useNavigation();
@@ -79,13 +80,11 @@ export default function FavoritesScreen() {
             })}
           </View>
         ) : (
-          <View style={styles.emptyState}>
-            <Ionicons name="heart-outline" size={64} color="#d1d5db" />
-            <Text style={styles.emptyTitle}>No favorites yet</Text>
-            <Text style={styles.emptyText}>
-              Tap the heart icon on neighborhoods to save them here
-            </Text>
-          </View>
+          <EmptyState
+            icon="heart-outline"
+            title="No favorites yet"
+            message="Tap the heart icon on neighborhoods to save them here"
+          />
         )}
       </ScrollView>
     </View>
@@ -119,25 +118,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: SPACING.lg,
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 100,
-    paddingHorizontal: 40,
-  },
-  emptyTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.sm,
-  },
-  emptyText: {
-    fontSize: FONT_SIZES.base,
-    color: COLORS.gray500,
-    textAlign: 'center',
-    lineHeight: 20,
   },
   signInPrompt: {
     flex: 1,

@@ -14,6 +14,7 @@ import {
   syncNeighborhoodRating,
   getUserNeighborhoodRatings,
 } from '../services/supabase';
+import logger from '../utils/logger';
 
 export type NeighborhoodStatus = 'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out' | null;
 
@@ -102,7 +103,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       // User logged in, load their data
       isSyncingRef.current = true;
-      console.log('Loading user data from Supabase...');
+      logger.log('Loading user data from Supabase...');
 
       try {
         // Load favorites
@@ -175,9 +176,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
 
         setDataLoaded(true);
-        console.log('User data loaded successfully');
+        logger.log('User data loaded successfully');
       } catch (error) {
-        console.error('Error loading user data:', error);
+        logger.error('Error loading user data:', error);
       } finally {
         isSyncingRef.current = false;
       }
@@ -191,10 +192,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id || !dataLoaded || isSyncingRef.current) return;
 
     const syncTimer = setTimeout(async () => {
-      console.log('Syncing favorites to Supabase...');
+      logger.log('Syncing favorites to Supabase...');
       const { error } = await syncFavorites(user.id, favorites);
       if (error) {
-        console.error('Error syncing favorites:', error);
+        logger.error('Error syncing favorites:', error);
       }
     }, 500); // Debounce for 500ms
 
@@ -206,10 +207,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id || !dataLoaded || isSyncingRef.current) return;
 
     const syncTimer = setTimeout(async () => {
-      console.log('Syncing comparison list to Supabase...');
+      logger.log('Syncing comparison list to Supabase...');
       const { error } = await syncComparison(user.id, comparison);
       if (error) {
-        console.error('Error syncing comparison:', error);
+        logger.error('Error syncing comparison:', error);
       }
     }, 500);
 
@@ -221,13 +222,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id || !dataLoaded || isSyncingRef.current) return;
 
     const syncTimer = setTimeout(async () => {
-      console.log('Syncing neighborhood statuses to Supabase...');
+      logger.log('Syncing neighborhood statuses to Supabase...');
       // Sync each status entry
       for (const [neighborhoodId, statusValue] of Object.entries(status)) {
         if (statusValue) {
           const { error } = await syncNeighborhoodStatus(user.id, neighborhoodId, statusValue);
           if (error) {
-            console.error(`Error syncing status for ${neighborhoodId}:`, error);
+            logger.error(`Error syncing status for ${neighborhoodId}:`, error);
           }
         }
       }
@@ -241,13 +242,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id || !dataLoaded || isSyncingRef.current) return;
 
     const syncTimer = setTimeout(async () => {
-      console.log('Syncing neighborhood notes to Supabase...');
+      logger.log('Syncing neighborhood notes to Supabase...');
       // Sync each note entry
       for (const [neighborhoodId, note] of Object.entries(notes)) {
         if (note) {
           const { error } = await syncNeighborhoodNote(user.id, neighborhoodId, note);
           if (error) {
-            console.error(`Error syncing note for ${neighborhoodId}:`, error);
+            logger.error(`Error syncing note for ${neighborhoodId}:`, error);
           }
         }
       }
@@ -261,10 +262,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id || !dataLoaded || isSyncingRef.current) return;
 
     const syncTimer = setTimeout(async () => {
-      console.log('Syncing destinations to Supabase...');
+      logger.log('Syncing destinations to Supabase...');
       const { error } = await syncDestinations(user.id, destinations);
       if (error) {
-        console.error('Error syncing destinations:', error);
+        logger.error('Error syncing destinations:', error);
       }
     }, 500);
 
@@ -276,13 +277,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user?.id || !dataLoaded || isSyncingRef.current) return;
 
     const syncTimer = setTimeout(async () => {
-      console.log('Syncing user ratings to Supabase...');
+      logger.log('Syncing user ratings to Supabase...');
       // Sync each rating entry
       for (const [neighborhoodId, ratings] of Object.entries(userRatings)) {
         if (ratings && Object.keys(ratings).length > 0) {
           const { error } = await syncNeighborhoodRating(user.id, neighborhoodId, ratings);
           if (error) {
-            console.error(`Error syncing ratings for ${neighborhoodId}:`, error);
+            logger.error(`Error syncing ratings for ${neighborhoodId}:`, error);
           }
         }
       }

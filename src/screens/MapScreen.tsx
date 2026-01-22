@@ -8,6 +8,7 @@ import { useApp } from '../contexts/AppContext';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import AffordabilityBadge from '../components/AffordabilityBadge';
 
 // London center coordinates
 const LONDON_REGION = {
@@ -111,19 +112,7 @@ export default function MapScreen() {
                 <View style={styles.infoStats}>
                   <View style={styles.infoStat}>
                     <Ionicons name="cash-outline" size={16} color="#6b7280" />
-                    <View style={styles.affordabilityBadge}>
-                      {[...Array(5)].map((_, i) => (
-                        <Text
-                          key={i}
-                          style={[
-                            styles.affordabilitySymbol,
-                            i < (6 - neighborhood.affordability) && styles.affordabilitySymbolActive,
-                          ]}
-                        >
-                          £
-                        </Text>
-                      ))}
-                    </View>
+                    <AffordabilityBadge value={neighborhood.affordability} />
                   </View>
                   <View style={styles.infoStat}>
                     <Ionicons name="shield-checkmark" size={16} color="#6b7280" />
@@ -310,18 +299,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-  },
-  affordabilityBadge: {
-    flexDirection: 'row',
-    gap: 1,
-  },
-  affordabilitySymbol: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#d1d5db',
-  },
-  affordabilitySymbolActive: {
-    color: COLORS.primary,
   },
   infoStatText: {
     fontSize: FONT_SIZES.md,

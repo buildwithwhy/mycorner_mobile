@@ -10,6 +10,8 @@ import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import SignInPromptModal from '../components/SignInPromptModal';
+import AffordabilityBadge from '../components/AffordabilityBadge';
+import RatingCard from '../components/RatingCard';
 
 export default function DetailScreen() {
   const route = useRoute();
@@ -133,17 +135,7 @@ export default function DetailScreen() {
             <View style={styles.priceCard}>
               <Text style={styles.priceLabel}>Cost of Living</Text>
               <View style={styles.affordabilityDisplay}>
-                {[...Array(5)].map((_, i) => (
-                  <Text
-                    key={i}
-                    style={[
-                      styles.affordabilitySymbolLarge,
-                      i < (6 - neighborhood.affordability) && styles.affordabilitySymbolLargeActive,
-                    ]}
-                  >
-                    £
-                  </Text>
-                ))}
+                <AffordabilityBadge value={neighborhood.affordability} size="large" />
               </View>
               <Text style={styles.priceNote}>
                 {neighborhood.affordability === 5 && 'Very Affordable'}
@@ -179,250 +171,23 @@ export default function DetailScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.ratingCard}>
-              <View style={styles.ratingHeader}>
-                <Ionicons name="shield-checkmark" size={24} color="#6366f1" />
-                <Text style={styles.ratingLabel}>Safety</Text>
-              </View>
-              {isEditingRatings ? (
-                <View style={styles.editRatingContainer}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[
-                        styles.ratingButton,
-                        getEffectiveRating('safety') === value && styles.ratingButtonActive,
-                      ]}
-                      onPress={() => setUserRating(neighborhood.id, 'safety', value)}
-                    >
-                      <Text
-                        style={[
-                          styles.ratingButtonText,
-                          getEffectiveRating('safety') === value && styles.ratingButtonTextActive,
-                        ]}
-                      >
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ) : (
-                <>
-                  <View style={styles.stars}>
-                    {[...Array(5)].map((_, i) => (
-                      <Ionicons
-                        key={i}
-                        name={i < getEffectiveRating('safety') ? 'star' : 'star-outline'}
-                        size={20}
-                        color="#6366f1"
-                      />
-                    ))}
-                  </View>
-                  <Text style={styles.ratingScore}>
-                    {getEffectiveRating('safety')}/5
-                    {currentUserRatings.safety && (
-                      <Text style={styles.customBadge}> (Custom)</Text>
-                    )}
-                  </Text>
-                </>
-              )}
-            </View>
-
-            <View style={styles.ratingCard}>
-              <View style={styles.ratingHeader}>
-                <Ionicons name="bus" size={24} color="#6366f1" />
-                <Text style={styles.ratingLabel}>Public Transit</Text>
-              </View>
-              {isEditingRatings ? (
-                <View style={styles.editRatingContainer}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[
-                        styles.ratingButton,
-                        getEffectiveRating('transit') === value && styles.ratingButtonActive,
-                      ]}
-                      onPress={() => setUserRating(neighborhood.id, 'transit', value)}
-                    >
-                      <Text
-                        style={[
-                          styles.ratingButtonText,
-                          getEffectiveRating('transit') === value && styles.ratingButtonTextActive,
-                        ]}
-                      >
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ) : (
-                <>
-                  <View style={styles.stars}>
-                    {[...Array(5)].map((_, i) => (
-                      <Ionicons
-                        key={i}
-                        name={i < getEffectiveRating('transit') ? 'star' : 'star-outline'}
-                        size={20}
-                        color="#6366f1"
-                      />
-                    ))}
-                  </View>
-                  <Text style={styles.ratingScore}>
-                    {getEffectiveRating('transit')}/5
-                    {currentUserRatings.transit && (
-                      <Text style={styles.customBadge}> (Custom)</Text>
-                    )}
-                  </Text>
-                </>
-              )}
-            </View>
-
-            <View style={styles.ratingCard}>
-              <View style={styles.ratingHeader}>
-                <Ionicons name="leaf" size={24} color="#6366f1" />
-                <Text style={styles.ratingLabel}>Green Spaces</Text>
-              </View>
-              {isEditingRatings ? (
-                <View style={styles.editRatingContainer}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[
-                        styles.ratingButton,
-                        getEffectiveRating('greenSpace') === value && styles.ratingButtonActive,
-                      ]}
-                      onPress={() => setUserRating(neighborhood.id, 'greenSpace', value)}
-                    >
-                      <Text
-                        style={[
-                          styles.ratingButtonText,
-                          getEffectiveRating('greenSpace') === value && styles.ratingButtonTextActive,
-                        ]}
-                      >
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ) : (
-                <>
-                  <View style={styles.stars}>
-                    {[...Array(5)].map((_, i) => (
-                      <Ionicons
-                        key={i}
-                        name={i < getEffectiveRating('greenSpace') ? 'star' : 'star-outline'}
-                        size={20}
-                        color="#6366f1"
-                      />
-                    ))}
-                  </View>
-                  <Text style={styles.ratingScore}>
-                    {getEffectiveRating('greenSpace')}/5
-                    {currentUserRatings.greenSpace && (
-                      <Text style={styles.customBadge}> (Custom)</Text>
-                    )}
-                  </Text>
-                </>
-              )}
-            </View>
-
-            <View style={styles.ratingCard}>
-              <View style={styles.ratingHeader}>
-                <Ionicons name="moon" size={24} color="#6366f1" />
-                <Text style={styles.ratingLabel}>Nightlife</Text>
-              </View>
-              {isEditingRatings ? (
-                <View style={styles.editRatingContainer}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[
-                        styles.ratingButton,
-                        getEffectiveRating('nightlife') === value && styles.ratingButtonActive,
-                      ]}
-                      onPress={() => setUserRating(neighborhood.id, 'nightlife', value)}
-                    >
-                      <Text
-                        style={[
-                          styles.ratingButtonText,
-                          getEffectiveRating('nightlife') === value && styles.ratingButtonTextActive,
-                        ]}
-                      >
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ) : (
-                <>
-                  <View style={styles.stars}>
-                    {[...Array(5)].map((_, i) => (
-                      <Ionicons
-                        key={i}
-                        name={i < getEffectiveRating('nightlife') ? 'star' : 'star-outline'}
-                        size={20}
-                        color="#6366f1"
-                      />
-                    ))}
-                  </View>
-                  <Text style={styles.ratingScore}>
-                    {getEffectiveRating('nightlife')}/5
-                    {currentUserRatings.nightlife && (
-                      <Text style={styles.customBadge}> (Custom)</Text>
-                    )}
-                  </Text>
-                </>
-              )}
-            </View>
-
-            <View style={styles.ratingCard}>
-              <View style={styles.ratingHeader}>
-                <Ionicons name="people" size={24} color="#6366f1" />
-                <Text style={styles.ratingLabel}>Family Friendly</Text>
-              </View>
-              {isEditingRatings ? (
-                <View style={styles.editRatingContainer}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[
-                        styles.ratingButton,
-                        getEffectiveRating('familyFriendly') === value && styles.ratingButtonActive,
-                      ]}
-                      onPress={() => setUserRating(neighborhood.id, 'familyFriendly', value)}
-                    >
-                      <Text
-                        style={[
-                          styles.ratingButtonText,
-                          getEffectiveRating('familyFriendly') === value && styles.ratingButtonTextActive,
-                        ]}
-                      >
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ) : (
-                <>
-                  <View style={styles.stars}>
-                    {[...Array(5)].map((_, i) => (
-                      <Ionicons
-                        key={i}
-                        name={i < getEffectiveRating('familyFriendly') ? 'star' : 'star-outline'}
-                        size={20}
-                        color="#6366f1"
-                      />
-                    ))}
-                  </View>
-                  <Text style={styles.ratingScore}>
-                    {getEffectiveRating('familyFriendly')}/5
-                    {currentUserRatings.familyFriendly && (
-                      <Text style={styles.customBadge}> (Custom)</Text>
-                    )}
-                  </Text>
-                </>
-              )}
-            </View>
+            {[
+              { key: 'safety', icon: 'shield-checkmark', label: 'Safety' },
+              { key: 'transit', icon: 'bus', label: 'Public Transit' },
+              { key: 'greenSpace', icon: 'leaf', label: 'Green Spaces' },
+              { key: 'nightlife', icon: 'moon', label: 'Nightlife' },
+              { key: 'familyFriendly', icon: 'people', label: 'Family Friendly' },
+            ].map((rating) => (
+              <RatingCard
+                key={rating.key}
+                icon={rating.icon as keyof typeof Ionicons.glyphMap}
+                label={rating.label}
+                value={getEffectiveRating(rating.key as keyof typeof neighborhood) as number}
+                isEditing={isEditingRatings}
+                isCustom={!!currentUserRatings[rating.key as keyof typeof currentUserRatings]}
+                onRatingChange={(value) => setUserRating(neighborhood.id, rating.key, value)}
+              />
+            ))}
           </View>
 
           <View style={styles.section}>
@@ -767,17 +532,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   affordabilityDisplay: {
-    flexDirection: 'row',
-    gap: 4,
     marginBottom: SPACING.md,
-  },
-  affordabilitySymbolLarge: {
-    fontSize: FONT_SIZES.huge,
-    fontWeight: 'bold',
-    color: COLORS.gray300,
-  },
-  affordabilitySymbolLargeActive: {
-    color: COLORS.primary,
   },
   priceNote: {
     fontSize: FONT_SIZES.lg,
@@ -802,65 +557,6 @@ const styles = StyleSheet.create({
     color: COLORS.gray900,
     marginLeft: SPACING.md,
     flex: 1,
-  },
-  ratingCard: {
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.lg,
-    marginBottom: SPACING.md,
-    ...SHADOWS.small,
-  },
-  ratingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  ratingLabel: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginLeft: SPACING.md,
-  },
-  stars: {
-    flexDirection: 'row',
-    marginBottom: SPACING.sm,
-  },
-  ratingScore: {
-    fontSize: FONT_SIZES.base,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  customBadge: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
-    color: COLORS.info,
-  },
-  editRatingContainer: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-    marginVertical: SPACING.sm,
-  },
-  ratingButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: SPACING.lg,
-    backgroundColor: COLORS.gray100,
-    borderRadius: BORDER_RADIUS.sm,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.transparent,
-  },
-  ratingButtonActive: {
-    backgroundColor: COLORS.primaryLight,
-    borderColor: COLORS.primary,
-  },
-  ratingButtonText: {
-    fontSize: FONT_SIZES.base,
-    fontWeight: '600',
-    color: COLORS.gray500,
-  },
-  ratingButtonTextActive: {
-    color: COLORS.primary,
   },
   factsList: {
     backgroundColor: COLORS.white,

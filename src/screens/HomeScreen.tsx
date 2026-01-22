@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -20,29 +20,33 @@ export default function HomeScreen() {
   const [minSafety, setMinSafety] = useState(1);
   const [minTransit, setMinTransit] = useState(1);
 
-  // Filter neighborhoods
-  let filteredNeighborhoods = neighborhoods.filter((n) => {
-    const matchesSearch =
-      searchQuery === '' ||
-      n.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      n.borough.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      n.description.toLowerCase().includes(searchQuery.toLowerCase());
+  // Memoized filter and sort for better performance
+  const filteredNeighborhoods = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase();
 
-    const matchesAffordability = n.affordability >= minAffordability;
-    const matchesSafety = n.safety >= minSafety;
-    const matchesTransit = n.transit >= minTransit;
+    const filtered = neighborhoods.filter((n) => {
+      const matchesSearch =
+        searchQuery === '' ||
+        n.name.toLowerCase().includes(searchLower) ||
+        n.borough.toLowerCase().includes(searchLower) ||
+        n.description.toLowerCase().includes(searchLower);
 
-    return matchesSearch && matchesAffordability && matchesSafety && matchesTransit;
-  });
+      const matchesAffordability = n.affordability >= minAffordability;
+      const matchesSafety = n.safety >= minSafety;
+      const matchesTransit = n.transit >= minTransit;
 
-  // Sort neighborhoods
-  filteredNeighborhoods = [...filteredNeighborhoods].sort((a, b) => {
-    if (sortBy === 'name') return a.name.localeCompare(b.name);
-    if (sortBy === 'affordability') return b.affordability - a.affordability;
-    if (sortBy === 'safety') return b.safety - a.safety;
-    if (sortBy === 'transit') return b.transit - a.transit;
-    return 0;
-  });
+      return matchesSearch && matchesAffordability && matchesSafety && matchesTransit;
+    });
+
+    // Sort filtered results
+    return filtered.sort((a, b) => {
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'affordability') return b.affordability - a.affordability;
+      if (sortBy === 'safety') return b.safety - a.safety;
+      if (sortBy === 'transit') return b.transit - a.transit;
+      return 0;
+    });
+  }, [searchQuery, sortBy, minAffordability, minSafety, minTransit]);
 
   const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
 

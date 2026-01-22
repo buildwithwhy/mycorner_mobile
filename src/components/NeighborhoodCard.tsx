@@ -5,6 +5,7 @@ import { Neighborhood } from '../data/neighborhoods';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import SignInPromptModal from './SignInPromptModal';
+import AffordabilityBadge from './AffordabilityBadge';
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;
@@ -73,19 +74,7 @@ export default function NeighborhoodCard({
         <View style={styles.stats}>
           <View style={styles.stat}>
             <Ionicons name="cash-outline" size={16} color={COLORS.gray500} />
-            <View style={styles.affordabilityBadge}>
-              {[...Array(5)].map((_, i) => (
-                <Text
-                  key={i}
-                  style={[
-                    styles.affordabilitySymbol,
-                    i < (6 - neighborhood.affordability) && styles.affordabilitySymbolActive,
-                  ]}
-                >
-                  £
-                </Text>
-              ))}
-            </View>
+            <AffordabilityBadge value={neighborhood.affordability} />
           </View>
 
           <View style={styles.stat}>
@@ -213,18 +202,6 @@ const styles = StyleSheet.create({
   statText: {
     fontSize: FONT_SIZES.md,
     fontWeight: '600',
-    color: COLORS.primary,
-  },
-  affordabilityBadge: {
-    flexDirection: 'row',
-    gap: 1,
-  },
-  affordabilitySymbol: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: 'bold',
-    color: COLORS.gray300,
-  },
-  affordabilitySymbolActive: {
     color: COLORS.primary,
   },
   cardActions: {

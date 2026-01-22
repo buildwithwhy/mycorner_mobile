@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
+import logger from '../utils/logger';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -72,7 +73,7 @@ export default function LoginScreen() {
       Alert.alert('Google Login Failed', errorMessage);
     } else if (data?.session) {
       // Successfully signed in - navigation will happen automatically via AuthContext
-      console.log('Google sign in successful!');
+      logger.log('Google sign in successful!');
     }
   };
 

@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../config';
+import logger from '../utils/logger';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -57,8 +58,8 @@ export const signInWithGoogle = async () => {
       path: 'auth/callback',
     });
 
-    console.log('=== OAuth Debug ===');
-    console.log('Redirect URL:', redirectUrl);
+    logger.log('=== OAuth Debug ===');
+    logger.log('Redirect URL:', redirectUrl);
 
     // Get the OAuth URL from Supabase
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -70,16 +71,16 @@ export const signInWithGoogle = async () => {
     });
 
     if (error) {
-      console.error('Supabase OAuth error:', error);
+      logger.error('Supabase OAuth error:', error);
       return { data: null, error };
     }
 
     if (!data?.url) {
-      console.error('No OAuth URL received');
+      logger.error('No OAuth URL received');
       return { data: null, error: { message: 'No OAuth URL received from Supabase' } };
     }
 
-    console.log('OAuth URL received, opening browser...');
+    logger.log('OAuth URL received, opening browser...');
 
     // Open the OAuth URL in the browser
     const result = await WebBrowser.openAuthSessionAsync(
@@ -87,11 +88,11 @@ export const signInWithGoogle = async () => {
       redirectUrl
     );
 
-    console.log('Browser result type:', result.type);
+    logger.log('Browser result type:', result.type);
 
     if (result.type === 'success') {
       const url = result.url;
-      console.log('Success! Redirect URL:', url);
+      logger.log('Success! Redirect URL:', url);
 
       // Parse the URL to get the tokens
       // Handle both ?param=value and #param=value (hash fragments)
@@ -110,38 +111,38 @@ export const signInWithGoogle = async () => {
         refresh_token = hashParams.get('refresh_token');
       }
 
-      console.log('Tokens found:', {
+      logger.log('Tokens found:', {
         hasAccessToken: !!access_token,
         hasRefreshToken: !!refresh_token
       });
 
       if (access_token && refresh_token) {
-        console.log('Setting session with tokens...');
+        logger.log('Setting session with tokens...');
         const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
           access_token,
           refresh_token,
         });
 
         if (sessionError) {
-          console.error('Error setting session:', sessionError);
+          logger.error('Error setting session:', sessionError);
         } else {
-          console.log('Session set successfully!');
+          logger.log('Session set successfully!');
         }
 
         return { data: sessionData, error: sessionError };
       } else {
-        console.error('No tokens found in redirect URL. Full URL:', url);
+        logger.error('No tokens found in redirect URL. Full URL:', url);
         return { data: null, error: { message: 'Authentication succeeded but no tokens received. Please check Supabase redirect URL configuration.' } };
       }
     } else if (result.type === 'dismiss') {
-      console.log('User dismissed the OAuth browser');
+      logger.log('User dismissed the OAuth browser');
       return { data: null, error: { message: 'Sign in was cancelled' } };
     } else {
-      console.log('OAuth result type:', result.type);
+      logger.log('OAuth result type:', result.type);
       return { data: null, error: { message: `OAuth flow ended with status: ${result.type}` } };
     }
   } catch (err) {
-    console.error('OAuth exception:', err);
+    logger.error('OAuth exception:', err);
     return { data: null, error: err };
   }
 };

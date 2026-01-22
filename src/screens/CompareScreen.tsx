@@ -6,6 +6,8 @@ import { neighborhoods } from '../data/neighborhoods';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import EmptyState from '../components/EmptyState';
+import AffordabilityBadge from '../components/AffordabilityBadge';
 
 export default function CompareScreen() {
   const { comparison, toggleComparison, clearComparison, notes, destinations } = useApp();
@@ -18,13 +20,11 @@ export default function CompareScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Compare</Text>
         </View>
-        <View style={styles.emptyState}>
-          <Ionicons name="git-compare-outline" size={64} color="#d1d5db" />
-          <Text style={styles.emptyTitle}>No neighborhoods to compare</Text>
-          <Text style={styles.emptyText}>
-            Tap the compare button on neighborhood details to add them here (max 3)
-          </Text>
-        </View>
+        <EmptyState
+          icon="git-compare-outline"
+          title="No neighborhoods to compare"
+          message="Tap the compare button on neighborhood details to add them here (max 3)"
+        />
       </View>
     );
   }
@@ -103,17 +103,7 @@ export default function CompareScreen() {
                       <View style={styles.valueContainer}>
                         {metric.key === 'affordability' ? (
                           <View style={styles.affordabilityBadge}>
-                            {[...Array(5)].map((_, i) => (
-                              <Text
-                                key={i}
-                                style={[
-                                  styles.affordabilitySymbol,
-                                  i < (6 - value) && styles.affordabilitySymbolActive,
-                                ]}
-                              >
-                                £
-                              </Text>
-                            ))}
+                            <AffordabilityBadge value={value} />
                           </View>
                         ) : (
                           <View style={styles.rating}>
@@ -289,17 +279,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   affordabilityBadge: {
-    flexDirection: 'row',
-    gap: 2,
     marginBottom: 4,
-  },
-  affordabilitySymbol: {
-    fontSize: FONT_SIZES.base,
-    fontWeight: 'bold',
-    color: COLORS.gray300,
-  },
-  affordabilitySymbolActive: {
-    color: COLORS.primary,
   },
   rating: {
     flexDirection: 'row',
@@ -344,24 +324,5 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     color: COLORS.gray400,
     marginTop: 2,
-  },
-  emptyState: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 40,
-  },
-  emptyTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.sm,
-  },
-  emptyText: {
-    fontSize: FONT_SIZES.base,
-    color: COLORS.gray500,
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });

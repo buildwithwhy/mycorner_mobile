@@ -2,6 +2,7 @@
 // Centralized service for all Google Maps Platform API calls
 
 import { GOOGLE_MAPS_API_KEY } from '../../config';
+import logger from '../utils/logger';
 
 /**
  * Geocoding Service - Convert addresses to coordinates
@@ -27,10 +28,10 @@ export const geocodeAddress = async (address: string): Promise<{
       };
     }
 
-    console.error('Geocoding failed:', data.status);
+    logger.error('Geocoding failed:', data.status);
     return null;
   } catch (error) {
-    console.error('Error geocoding address:', error);
+    logger.error('Error geocoding address:', error);
     return null;
   }
 };
@@ -52,10 +53,10 @@ export const reverseGeocode = async (
       return data.results[0].formatted_address;
     }
 
-    console.error('Reverse geocoding failed:', data.status);
+    logger.error('Reverse geocoding failed:', data.status);
     return null;
   } catch (error) {
-    console.error('Error reverse geocoding:', error);
+    logger.error('Error reverse geocoding:', error);
     return null;
   }
 };
@@ -97,10 +98,10 @@ export const getPlacePredictions = async (
       return data.predictions;
     }
 
-    console.error('Places autocomplete failed:', data.status);
+    logger.error('Places autocomplete failed:', data.status);
     return [];
   } catch (error) {
-    console.error('Error fetching place predictions:', error);
+    logger.error('Error fetching place predictions:', error);
     return [];
   }
 };
@@ -130,10 +131,10 @@ export const getPlaceDetails = async (placeId: string): Promise<{
       };
     }
 
-    console.error('Place details fetch failed:', data.status);
+    logger.error('Place details fetch failed:', data.status);
     return null;
   } catch (error) {
-    console.error('Error fetching place details:', error);
+    logger.error('Error fetching place details:', error);
     return null;
   }
 };
@@ -199,10 +200,10 @@ export const getDirections = async (
       };
     }
 
-    console.error('Directions fetch failed:', data.status);
+    logger.error('Directions fetch failed:', data.status);
     return null;
   } catch (error) {
-    console.error('Error fetching directions:', error);
+    logger.error('Error fetching directions:', error);
     return null;
   }
 };
