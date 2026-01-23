@@ -33,7 +33,8 @@ module.exports = {
       favicon: "./assets/favicon.png"
     },
     plugins: [
-      "expo-font"
+      "expo-font",
+      "expo-splash-screen"
     ],
     extra: {
       // Environment variables exposed to the app via expo-constants
@@ -44,7 +45,7 @@ module.exports = {
       // App metadata
       privacyPolicyUrl: 'https://kallidao.com/productlab/mycorner/privacy',
       eas: {
-        projectId: process.env.EAS_PROJECT_ID || '',
+        projectId: '92398f32-690b-423e-84d2-adf0cfbaf860',
       },
     }
   }
