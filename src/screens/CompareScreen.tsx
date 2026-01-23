@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { neighborhoods } from '../data/neighborhoods';
-import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
+import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import EmptyState from '../components/EmptyState';
@@ -12,7 +12,35 @@ import AffordabilityBadge from '../components/AffordabilityBadge';
 export default function CompareScreen() {
   const { comparison, toggleComparison, clearComparison, notes, destinations } = useApp();
 
-  const compareNeighborhoods = neighborhoods.filter((n) => comparison.includes(n.id));
+  const compareNeighborhoods = useMemo(
+    () => neighborhoods.filter((n) => comparison.includes(n.id)),
+    [comparison]
+  );
+
+  // Pre-compute all commute data to avoid recalculating on every render
+  const commuteData = useMemo(() => {
+    const data: Record<string, Record<string, { distance: number; time: string }>> = {};
+
+    compareNeighborhoods.forEach((n) => {
+      data[n.id] = {};
+      const neighborhoodCoords = getNeighborhoodCoordinates(n.id);
+
+      destinations.forEach((destination) => {
+        const distance = calculateDistance(
+          neighborhoodCoords.latitude,
+          neighborhoodCoords.longitude,
+          destination.latitude,
+          destination.longitude
+        );
+        const transportMode = destination.transportMode || 'transit';
+        const time = estimateCommuteTime(distance, transportMode);
+
+        data[n.id][destination.id] = { distance, time };
+      });
+    });
+
+    return data;
+  }, [compareNeighborhoods, destinations]);
 
   if (compareNeighborhoods.length === 0) {
     return (
@@ -135,19 +163,11 @@ export default function CompareScreen() {
                   <>
                     <View style={styles.commuteSectionHeaderPlaceholder} />
                     {destinations.map((destination) => {
-                      const neighborhoodCoords = getNeighborhoodCoordinates(n.id);
-                      const distance = calculateDistance(
-                        neighborhoodCoords.latitude,
-                        neighborhoodCoords.longitude,
-                        destination.latitude,
-                        destination.longitude
-                      );
-                      const transportMode = destination.transportMode || 'transit';
-                      const time = estimateCommuteTime(distance, transportMode);
+                      const commute = commuteData[n.id]?.[destination.id];
                       return (
                         <View key={destination.id} style={styles.metricValueCell}>
-                          <Text style={styles.valueText}>{time}</Text>
-                          <Text style={styles.distanceText}>{distance.toFixed(1)} km</Text>
+                          <Text style={styles.valueText}>{commute?.time ?? '-'}</Text>
+                          <Text style={styles.distanceText}>{commute?.distance.toFixed(1) ?? '-'} km</Text>
                         </View>
                       );
                     })}

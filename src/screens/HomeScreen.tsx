@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { neighborhoods } from '../data/neighborhoods';
+import { neighborhoods, Neighborhood } from '../data/neighborhoods';
 import { useApp } from '../contexts/AppContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard from '../components/NeighborhoodCard';
@@ -50,6 +50,26 @@ export default function HomeScreen() {
 
   const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
 
+  // Memoized render function for FlatList
+  const renderNeighborhoodCard = useCallback(({ item: neighborhood }: { item: Neighborhood }) => (
+    <NeighborhoodCard
+      neighborhood={neighborhood}
+      onPress={() => navigation.navigate('Detail', { neighborhood })}
+      currentStatus={status[neighborhood.id] || null}
+      isInComparison={comparison.includes(neighborhood.id)}
+      onSetStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
+      onToggleComparison={() => toggleComparison(neighborhood.id)}
+    />
+  ), [navigation, status, comparison, setNeighborhoodStatus, toggleComparison]);
+
+  const keyExtractor = useCallback((item: Neighborhood) => item.id, []);
+
+  const ListHeader = useMemo(() => (
+    <Text style={styles.resultCount}>
+      {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
+    </Text>
+  ), [filteredNeighborhoods.length]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -92,24 +112,18 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
-          <Text style={styles.resultCount}>
-            {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
-          </Text>
-          {filteredNeighborhoods.map((neighborhood) => (
-            <NeighborhoodCard
-              key={neighborhood.id}
-              neighborhood={neighborhood}
-              onPress={() => navigation.navigate('Detail', { neighborhood })}
-              currentStatus={status[neighborhood.id] || null}
-              isInComparison={comparison.includes(neighborhood.id)}
-              onSetStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
-              onToggleComparison={() => toggleComparison(neighborhood.id)}
-            />
-          ))}
-        </View>
-      </ScrollView>
+      <FlatList
+        data={filteredNeighborhoods}
+        renderItem={renderNeighborhoodCard}
+        keyExtractor={keyExtractor}
+        ListHeaderComponent={ListHeader}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        windowSize={10}
+      />
 
       <Modal visible={showFilters} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>

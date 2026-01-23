@@ -115,15 +115,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Load user data from Supabase when user logs in
   useEffect(() => {
+    let isMounted = true;
+
     const loadUserData = async () => {
       if (!user?.id) {
         // User logged out, reset to empty state
-        setDataLoaded(false);
-        setStatus({});
-        setComparison([]);
-        setNotes({});
-        setDestinations([]);
-        setUserRatings({});
+        if (isMounted) {
+          setDataLoaded(false);
+          setStatus({});
+          setComparison([]);
+          setNotes({});
+          setDestinations([]);
+          setUserRatings({});
+        }
         return;
       }
 
@@ -134,12 +138,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       try {
         // Load comparison list
         const { data: compData, error: compError } = await getComparison(user.id);
+        if (!isMounted) return;
         if (!compError && compData?.neighborhood_ids) {
           setComparison(compData.neighborhood_ids);
         }
 
         // Load neighborhood statuses
         const { data: statusData, error: statusError } = await getUserNeighborhoodStatuses(user.id);
+        if (!isMounted) return;
         if (!statusError && statusData) {
           const statusMap: Record<string, NeighborhoodStatus> = {};
           (statusData as NeighborhoodStatusRow[]).forEach((item) => {
@@ -150,6 +156,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         // Load notes
         const { data: notesData, error: notesError } = await getUserNotes(user.id);
+        if (!isMounted) return;
         if (!notesError && notesData) {
           const notesMap: Record<string, string> = {};
           (notesData as NeighborhoodNoteRow[]).forEach((item) => {
@@ -160,6 +167,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         // Load destinations
         const { data: destData, error: destError } = await getUserDestinations(user.id);
+        if (!isMounted) return;
         if (!destError && destData) {
           const dests: Destination[] = (destData as DestinationRow[]).map((d) => ({
             id: d.id,
@@ -174,6 +182,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         // Load user ratings
         const { data: ratingsData, error: ratingsError } = await getUserNeighborhoodRatings(user.id);
+        if (!isMounted) return;
         if (!ratingsError && ratingsData) {
           const ratingsMap: Record<string, Partial<{
             affordability: number;
@@ -196,8 +205,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setUserRatings(ratingsMap);
         }
 
-        setDataLoaded(true);
-        logger.log('User data loaded successfully');
+        if (isMounted) {
+          setDataLoaded(true);
+          logger.log('User data loaded successfully');
+        }
       } catch (error) {
         logger.error('Error loading user data:', error);
       } finally {
@@ -206,6 +217,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadUserData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user?.id]);
 
   // Sync options shared by all sync hooks
