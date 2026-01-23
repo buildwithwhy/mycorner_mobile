@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   Modal,
@@ -70,6 +70,7 @@ interface StatusPickerModalProps {
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 50;
+const MODAL_HEIGHT = 500; // Approximate height for animation
 
 export default function StatusPickerModal({
   visible,
@@ -78,7 +79,44 @@ export default function StatusPickerModal({
   onSelectStatus,
   neighborhoodName,
 }: StatusPickerModalProps) {
-  const translateY = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(MODAL_HEIGHT)).current;
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+  // Animate in when visible changes
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.timing(overlayOpacity, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.spring(translateY, {
+          toValue: 0,
+          useNativeDriver: true,
+          bounciness: 4,
+          speed: 14,
+        }),
+      ]).start();
+    }
+  }, [visible]);
+
+  const animateClose = (callback?: () => void) => {
+    Animated.parallel([
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: MODAL_HEIGHT,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      callback?.();
+    });
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -94,14 +132,7 @@ export default function StatusPickerModal({
       onPanResponderRelease: (_, gestureState) => {
         if (gestureState.dy > SWIPE_THRESHOLD || gestureState.vy > 0.5) {
           // Dismiss the modal
-          Animated.timing(translateY, {
-            toValue: SCREEN_HEIGHT,
-            duration: 200,
-            useNativeDriver: true,
-          }).start(() => {
-            onClose();
-            translateY.setValue(0);
-          });
+          animateClose(onClose);
         } else {
           // Snap back
           Animated.spring(translateY, {
@@ -116,24 +147,22 @@ export default function StatusPickerModal({
 
   const handleSelectStatus = (status: NeighborhoodStatus) => {
     onSelectStatus(status);
-    onClose();
-    translateY.setValue(0);
+    animateClose(onClose);
   };
 
   const handleClose = () => {
-    onClose();
-    translateY.setValue(0);
+    animateClose(onClose);
   };
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="none"
       onRequestClose={handleClose}
     >
       <TouchableWithoutFeedback onPress={handleClose}>
-        <View style={styles.overlay}>
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
           <TouchableWithoutFeedback>
             <Animated.View
               style={[styles.modal, { transform: [{ translateY }] }]}
@@ -195,7 +224,7 @@ export default function StatusPickerModal({
               </TouchableOpacity>
             </Animated.View>
           </TouchableWithoutFeedback>
-        </View>
+        </Animated.View>
       </TouchableWithoutFeedback>
     </Modal>
   );
