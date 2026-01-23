@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, LogBox } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -10,10 +10,6 @@ import { GOOGLE_MAPS_API_KEY } from '../../config';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 const TRANSPORT_MODES: TransportMode[] = ['transit', 'walking', 'cycling', 'driving'];
-
-// Suppress VirtualizedLists warning for GooglePlacesAutocomplete
-// This is safe because the autocomplete dropdown only shows a small number of items
-LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 
 export default function DestinationsScreen() {
   const navigation = useNavigation();
