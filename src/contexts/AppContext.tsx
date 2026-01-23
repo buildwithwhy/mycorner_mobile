@@ -14,6 +14,10 @@ import {
   Destination,
   TransportMode,
 } from './DestinationsContext';
+import {
+  CityProvider,
+  useCity,
+} from './CityContext';
 
 // Re-export types for backward compatibility
 export type { NeighborhoodStatus } from './StatusComparisonContext';
@@ -25,13 +29,15 @@ export type { Destination, TransportMode } from './DestinationsContext';
  */
 export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
-    <StatusComparisonProvider>
-      <NotesRatingsProvider>
-        <DestinationsProvider>
-          {children}
-        </DestinationsProvider>
-      </NotesRatingsProvider>
-    </StatusComparisonProvider>
+    <CityProvider>
+      <StatusComparisonProvider>
+        <NotesRatingsProvider>
+          <DestinationsProvider>
+            {children}
+          </DestinationsProvider>
+        </NotesRatingsProvider>
+      </StatusComparisonProvider>
+    </CityProvider>
   );
 }
 
@@ -68,8 +74,8 @@ export function useApp() {
     userRatings: notesRatings.userRatings,
     setUserRating: notesRatings.setUserRating,
 
-    // Destinations
-    destinations: destinations.destinations,
+    // Destinations (city-filtered)
+    destinations: destinations.cityDestinations,
     addDestination: destinations.addDestination,
     removeDestination: destinations.removeDestination,
     updateDestination: destinations.updateDestination,
@@ -80,3 +86,4 @@ export function useApp() {
 export { useStatusComparison } from './StatusComparisonContext';
 export { useNotesRatings } from './NotesRatingsContext';
 export { useDestinations } from './DestinationsContext';
+export { useCity } from './CityContext';

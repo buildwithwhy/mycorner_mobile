@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { neighborhoods } from '../data/neighborhoods';
-import { useApp } from '../contexts/AppContext';
+import { useApp, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
@@ -13,21 +12,23 @@ import AffordabilityBadge from '../components/AffordabilityBadge';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 
-// London center coordinates
-const LONDON_REGION = {
-  latitude: 51.5074,
-  longitude: -0.1278,
-  latitudeDelta: 0.3,
-  longitudeDelta: 0.3,
-};
-
 export default function MapScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
   const { destinations, status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
+  const { selectedCity, cityNeighborhoods } = useCity();
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showStatusPicker, setShowStatusPicker] = useState(false);
+  const mapRef = useRef<MapView>(null);
+
+  // Animate to new city region when city changes
+  useEffect(() => {
+    if (mapRef.current && selectedCity) {
+      mapRef.current.animateToRegion(selectedCity.region, 500);
+      setSelectedNeighborhood(null); // Clear selection when switching cities
+    }
+  }, [selectedCity.id]);
 
   const currentStatus = selectedNeighborhood ? status[selectedNeighborhood] || null : null;
 
@@ -52,13 +53,14 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <MapView
+        ref={mapRef}
         style={styles.map}
         provider={PROVIDER_GOOGLE}
-        initialRegion={LONDON_REGION}
+        initialRegion={selectedCity.region}
         showsUserLocation
         showsMyLocationButton
       >
-        {neighborhoods.map((neighborhood) => {
+        {cityNeighborhoods.map((neighborhood) => {
           const coords = getNeighborhoodCoordinates(neighborhood.id);
           const isSelected = selectedNeighborhood === neighborhood.id;
 
@@ -116,7 +118,7 @@ export default function MapScreen() {
       {selectedNeighborhood && (
         <View style={styles.infoCard}>
           {(() => {
-            const neighborhood = neighborhoods.find((n) => n.id === selectedNeighborhood);
+            const neighborhood = cityNeighborhoods.find((n) => n.id === selectedNeighborhood);
             if (!neighborhood) return null;
 
             return (
@@ -230,7 +232,7 @@ export default function MapScreen() {
           onClose={() => setShowStatusPicker(false)}
           currentStatus={currentStatus}
           onSelectStatus={(newStatus) => setNeighborhoodStatus(selectedNeighborhood, newStatus)}
-          neighborhoodName={neighborhoods.find(n => n.id === selectedNeighborhood)?.name}
+          neighborhoodName={cityNeighborhoods.find(n => n.id === selectedNeighborhood)?.name}
         />
       )}
     </View>

@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useApp } from '../contexts/AppContext';
-import { neighborhoods } from '../data/neighborhoods';
+import { useApp, useCity } from '../contexts/AppContext';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
@@ -11,10 +10,12 @@ import AffordabilityBadge from '../components/AffordabilityBadge';
 
 export default function CompareScreen() {
   const { comparison, toggleComparison, clearComparison, notes, destinations } = useApp();
+  const { cityNeighborhoods } = useCity();
 
+  // Filter comparison to only include neighborhoods from the current city
   const compareNeighborhoods = useMemo(
-    () => neighborhoods.filter((n) => comparison.includes(n.id)),
-    [comparison]
+    () => cityNeighborhoods.filter((n) => comparison.includes(n.id)),
+    [comparison, cityNeighborhoods]
   );
 
   // Pre-compute all commute data to avoid recalculating on every render

@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useApp, TransportMode } from '../contexts/AppContext';
+import { useApp, TransportMode, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getTransportModeInfo } from '../utils/commute';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
@@ -15,12 +15,30 @@ export default function DestinationsScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
   const { destinations, addDestination, removeDestination } = useApp();
+  const { selectedCity } = useCity();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newLabel, setNewLabel] = useState('');
   const [newAddress, setNewAddress] = useState('');
   const [selectedCoords, setSelectedCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedTransportMode, setSelectedTransportMode] = useState<TransportMode>('transit');
   const autocompleteRef = useRef<any>(null);
+
+  // Google Places query config based on selected city
+  const placesQueryConfig = useMemo(() => {
+    if (selectedCity.id === 'new-york') {
+      return {
+        components: 'country:us',
+        location: '40.7128,-74.0060',
+        radius: 50000,
+      };
+    }
+    // Default to London
+    return {
+      components: 'country:gb',
+      location: '51.5074,-0.1278',
+      radius: 30000,
+    };
+  }, [selectedCity.id]);
 
   const handleAddDestination = () => {
     Keyboard.dismiss();
@@ -108,7 +126,7 @@ export default function DestinationsScreen() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <Text style={styles.description}>
-            Add places you visit regularly (work, school, etc.) to see commute information from each neighborhood
+            Add places you visit regularly in {selectedCity.name} to see commute information from each neighborhood
           </Text>
 
           {destinations.length > 0 ? (
@@ -223,9 +241,7 @@ export default function DestinationsScreen() {
                         query={{
                           key: GOOGLE_MAPS_API_KEY,
                           language: 'en',
-                          components: 'country:gb', // Restrict to UK
-                          location: '51.5074,-0.1278', // London center
-                          radius: 30000, // 30km radius around London
+                          ...placesQueryConfig,
                         }}
                         styles={{
                           container: {

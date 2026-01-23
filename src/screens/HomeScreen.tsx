@@ -2,20 +2,23 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { neighborhoods, Neighborhood } from '../data/neighborhoods';
-import { useApp } from '../contexts/AppContext';
+import { Neighborhood } from '../data/neighborhoods';
+import { useApp, useCity } from '../contexts/AppContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard from '../components/NeighborhoodCard';
+import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
 
 type SortOption = 'name' | 'affordability' | 'safety' | 'transit';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const { status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
+  const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [showFilters, setShowFilters] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [showCitySelectorModal, setShowCitySelectorModal] = useState(false);
   const [minAffordability, setMinAffordability] = useState(1);
   const [minSafety, setMinSafety] = useState(1);
   const [minTransit, setMinTransit] = useState(1);
@@ -24,7 +27,7 @@ export default function HomeScreen() {
   const filteredNeighborhoods = useMemo(() => {
     const searchLower = searchQuery.toLowerCase();
 
-    const filtered = neighborhoods.filter((n) => {
+    const filtered = cityNeighborhoods.filter((n) => {
       const matchesSearch =
         searchQuery === '' ||
         n.name.toLowerCase().includes(searchLower) ||
@@ -46,7 +49,7 @@ export default function HomeScreen() {
       if (sortBy === 'transit') return b.transit - a.transit;
       return 0;
     });
-  }, [searchQuery, sortBy, minAffordability, minSafety, minTransit]);
+  }, [cityNeighborhoods, searchQuery, sortBy, minAffordability, minSafety, minTransit]);
 
   const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
 
@@ -73,7 +76,10 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>MyCorner</Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>MyCorner</Text>
+          <CityHeaderSelector onPress={() => setShowCitySelectorModal(true)} />
+        </View>
         <Text style={styles.subtitle}>Discover your perfect area</Text>
 
         <View style={styles.searchContainer}>
@@ -289,6 +295,13 @@ export default function HomeScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* City selector modal - handles both first-launch and regular switching */}
+      <CitySelectorModal
+        visible={showCitySelectorModal || (showCityPicker && !hasSelectedCity)}
+        onClose={() => setShowCitySelectorModal(false)}
+        isFirstLaunch={!hasSelectedCity}
+      />
     </View>
   );
 }
@@ -304,11 +317,16 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: SPACING.xl,
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
   title: {
     fontSize: FONT_SIZES.xxxl,
     fontWeight: 'bold',
     color: COLORS.white,
-    marginBottom: 4,
   },
   subtitle: {
     fontSize: FONT_SIZES.base,

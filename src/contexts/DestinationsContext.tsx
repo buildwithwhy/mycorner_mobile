@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
+import { useCity } from './CityContext';
 import { getUserDestinations, supabase } from '../services/supabase';
 import logger from '../utils/logger';
 
@@ -7,6 +8,7 @@ export type TransportMode = 'transit' | 'walking' | 'cycling' | 'driving';
 
 export interface Destination {
   id: string;
+  cityId: string;
   label: string;
   address: string;
   latitude: number;
@@ -16,6 +18,7 @@ export interface Destination {
 
 interface DestinationRow {
   id: string;
+  city_id?: string;
   label: string;
   address: string;
   latitude: number;
@@ -25,7 +28,8 @@ interface DestinationRow {
 
 interface DestinationsContextType {
   destinations: Destination[];
-  addDestination: (destination: Omit<Destination, 'id'>) => void;
+  cityDestinations: Destination[]; // Filtered by current city
+  addDestination: (destination: Omit<Destination, 'id' | 'cityId'>) => void; // cityId added automatically
   removeDestination: (id: string) => void;
   updateDestination: (id: string, destination: Partial<Omit<Destination, 'id'>>) => void;
 }
@@ -34,11 +38,18 @@ const DestinationsContext = createContext<DestinationsContextType | undefined>(u
 
 export function DestinationsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { selectedCityId } = useCity();
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const isSyncingRef = useRef(false);
   const pendingSyncRef = useRef<'add' | 'remove' | 'update' | null>(null);
   const pendingDataRef = useRef<Destination | string | null>(null);
+
+  // Filter destinations by current city
+  const cityDestinations = useMemo(
+    () => destinations.filter((d) => d.cityId === selectedCityId),
+    [destinations, selectedCityId]
+  );
 
   // Load data from Supabase when user logs in
   useEffect(() => {
@@ -62,6 +73,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
         if (!destError && destData) {
           const dests: Destination[] = (destData as DestinationRow[]).map((d) => ({
             id: d.id,
+            cityId: d.city_id || 'london', // Default to london for backwards compatibility
             label: d.label,
             address: d.address,
             latitude: d.latitude,
@@ -94,6 +106,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     const { error } = await supabase.from('user_destinations').insert({
       id: destination.id,
       user_id: user.id,
+      city_id: destination.cityId,
       label: destination.label,
       address: destination.address,
       latitude: destination.latitude,
@@ -126,6 +139,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
 
     logger.log('Updating destination in Supabase...');
     const dbUpdates: Record<string, unknown> = {};
+    if (updates.cityId !== undefined) dbUpdates.city_id = updates.cityId;
     if (updates.label !== undefined) dbUpdates.label = updates.label;
     if (updates.address !== undefined) dbUpdates.address = updates.address;
     if (updates.latitude !== undefined) dbUpdates.latitude = updates.latitude;
@@ -143,16 +157,17 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     }
   }, [user?.id, dataLoaded]);
 
-  const addDestination = useCallback((destination: Omit<Destination, 'id'>) => {
+  const addDestination = useCallback((destination: Omit<Destination, 'id' | 'cityId'>) => {
     const newDestination: Destination = {
       ...destination,
       id: Date.now().toString(),
+      cityId: selectedCityId, // Automatically assign to current city
     };
     setDestinations((prev) => [...prev, newDestination]);
 
     // Sync to Supabase
     syncAddDestination(newDestination);
-  }, [syncAddDestination]);
+  }, [syncAddDestination, selectedCityId]);
 
   const removeDestination = useCallback((id: string) => {
     setDestinations((prev) => prev.filter((d) => d.id !== id));
@@ -174,6 +189,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     <DestinationsContext.Provider
       value={{
         destinations,
+        cityDestinations,
         addDestination,
         removeDestination,
         updateDestination,

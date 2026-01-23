@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, SectionList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useApp, NeighborhoodStatus } from '../contexts/AppContext';
+import { useApp, NeighborhoodStatus, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
-import { neighborhoods, Neighborhood } from '../data/neighborhoods';
+import { Neighborhood } from '../data/neighborhoods';
 import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { Heading, Subheading, Body, Caption } from '../components/Typography';
 import { Button, EmptyState } from '../components';
@@ -30,8 +30,9 @@ export default function MyPlacesScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
   const { status, comparison, toggleComparison } = useApp();
+  const { cityNeighborhoods, selectedCity } = useCity();
 
-  // Group neighborhoods by status
+  // Group neighborhoods by status (filtered by current city)
   const sections = useMemo(() => {
     const result: StatusSection[] = [];
 
@@ -40,7 +41,8 @@ export default function MyPlacesScreen() {
         .filter(([_, s]) => s === statusValue)
         .map(([id]) => id);
 
-      const neighborhoodsInSection = neighborhoods.filter(n => neighborhoodIds.includes(n.id));
+      // Filter to only include neighborhoods from the current city
+      const neighborhoodsInSection = cityNeighborhoods.filter(n => neighborhoodIds.includes(n.id));
 
       if (neighborhoodsInSection.length > 0) {
         result.push({
@@ -54,7 +56,7 @@ export default function MyPlacesScreen() {
     });
 
     return result;
-  }, [status]);
+  }, [status, cityNeighborhoods]);
 
   const totalPlaces = sections.reduce((acc, section) => acc + section.data.length, 0);
 
@@ -89,7 +91,7 @@ export default function MyPlacesScreen() {
       <View style={styles.header}>
         <Heading style={styles.title} color={COLORS.white}>My Places</Heading>
         <Body color={COLORS.white} style={styles.subtitle}>
-          {totalPlaces} {totalPlaces === 1 ? 'neighborhood' : 'neighborhoods'} saved
+          {totalPlaces} {totalPlaces === 1 ? 'neighborhood' : 'neighborhoods'} saved in {selectedCity.name}
         </Body>
       </View>
 

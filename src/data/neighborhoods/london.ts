@@ -1,20 +1,9 @@
-export interface Neighborhood {
-  id: string;
-  name: string;
-  borough: string;
-  affordability: number; // 1-5 (1 = expensive, 5 = affordable)
-  safety: number; // 1-5
-  transit: number; // 1-5
-  greenSpace: number; // 1-5
-  nightlife: number; // 1-5
-  familyFriendly: number; // 1-5
-  description: string;
-  highlights: string[];
-}
+import { Neighborhood } from './index';
 
-export const neighborhoods: Neighborhood[] = [
+export const londonNeighborhoods: Neighborhood[] = [
   {
     id: '1',
+    cityId: 'london',
     name: 'Shoreditch',
     borough: 'Hackney',
     affordability: 2,
@@ -28,6 +17,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '2',
+    cityId: 'london',
     name: 'Clapham',
     borough: 'Lambeth',
     affordability: 3,
@@ -41,6 +31,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '3',
+    cityId: 'london',
     name: 'Brixton',
     borough: 'Lambeth',
     affordability: 4,
@@ -54,6 +45,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '4',
+    cityId: 'london',
     name: 'Camden',
     borough: 'Camden',
     affordability: 2,
@@ -67,6 +59,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '5',
+    cityId: 'london',
     name: 'Greenwich',
     borough: 'Greenwich',
     affordability: 4,
@@ -80,6 +73,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '6',
+    cityId: 'london',
     name: 'Notting Hill',
     borough: 'Kensington & Chelsea',
     affordability: 1,
@@ -93,6 +87,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '7',
+    cityId: 'london',
     name: 'Hackney Wick',
     borough: 'Hackney',
     affordability: 3,
@@ -106,6 +101,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '8',
+    cityId: 'london',
     name: 'Richmond',
     borough: 'Richmond upon Thames',
     affordability: 2,
@@ -119,6 +115,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '9',
+    cityId: 'london',
     name: 'Peckham',
     borough: 'Southwark',
     affordability: 4,
@@ -132,6 +129,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '10',
+    cityId: 'london',
     name: 'Wimbledon',
     borough: 'Merton',
     affordability: 2,
@@ -145,6 +143,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '11',
+    cityId: 'london',
     name: 'Dalston',
     borough: 'Hackney',
     affordability: 3,
@@ -158,6 +157,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '12',
+    cityId: 'london',
     name: 'Canary Wharf',
     borough: 'Tower Hamlets',
     affordability: 1,
@@ -171,6 +171,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '13',
+    cityId: 'london',
     name: 'Dulwich',
     borough: 'Southwark',
     affordability: 2,
@@ -184,6 +185,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '14',
+    cityId: 'london',
     name: 'Stratford',
     borough: 'Newham',
     affordability: 4,
@@ -197,6 +199,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '15',
+    cityId: 'london',
     name: 'Islington',
     borough: 'Islington',
     affordability: 2,
@@ -210,6 +213,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '16',
+    cityId: 'london',
     name: 'Wandsworth',
     borough: 'Wandsworth',
     affordability: 3,
@@ -223,6 +227,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '17',
+    cityId: 'london',
     name: 'Hampstead',
     borough: 'Camden',
     affordability: 1,
@@ -236,6 +241,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '18',
+    cityId: 'london',
     name: 'Bethnal Green',
     borough: 'Tower Hamlets',
     affordability: 3,
@@ -249,6 +255,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '19',
+    cityId: 'london',
     name: 'Battersea',
     borough: 'Wandsworth',
     affordability: 2,
@@ -262,6 +269,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '20',
+    cityId: 'london',
     name: 'Crouch End',
     borough: 'Haringey',
     affordability: 3,
@@ -275,6 +283,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '21',
+    cityId: 'london',
     name: 'Bermondsey',
     borough: 'Southwark',
     affordability: 3,
@@ -288,6 +297,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '22',
+    cityId: 'london',
     name: 'Ealing',
     borough: 'Ealing',
     affordability: 3,
@@ -301,6 +311,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '23',
+    cityId: 'london',
     name: 'Putney',
     borough: 'Wandsworth',
     affordability: 2,
@@ -314,6 +325,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '24',
+    cityId: 'london',
     name: 'Kentish Town',
     borough: 'Camden',
     affordability: 3,
@@ -327,6 +339,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '25',
+    cityId: 'london',
     name: 'Balham',
     borough: 'Wandsworth',
     affordability: 3,
@@ -340,6 +353,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '26',
+    cityId: 'london',
     name: 'Hackney Central',
     borough: 'Hackney',
     affordability: 3,
@@ -353,6 +367,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '27',
+    cityId: 'london',
     name: 'Fulham',
     borough: 'Hammersmith & Fulham',
     affordability: 2,
@@ -366,6 +381,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '28',
+    cityId: 'london',
     name: 'Walthamstow',
     borough: 'Waltham Forest',
     affordability: 4,
@@ -374,11 +390,12 @@ export const neighborhoods: Neighborhood[] = [
     greenSpace: 4,
     nightlife: 3,
     familyFriendly: 4,
-    description: 'Up-and-coming area with Europe\'s longest street market and wetlands',
+    description: "Up-and-coming area with Europe's longest street market and wetlands",
     highlights: ['Walthamstow Market', 'Wetlands', 'Affordable', 'William Morris Gallery'],
   },
   {
     id: '29',
+    cityId: 'london',
     name: 'Kensington',
     borough: 'Kensington & Chelsea',
     affordability: 1,
@@ -392,6 +409,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '30',
+    cityId: 'london',
     name: 'Tooting',
     borough: 'Wandsworth',
     affordability: 4,
@@ -405,6 +423,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '31',
+    cityId: 'london',
     name: 'Angel',
     borough: 'Islington',
     affordability: 2,
@@ -413,11 +432,12 @@ export const neighborhoods: Neighborhood[] = [
     greenSpace: 2,
     nightlife: 4,
     familyFriendly: 3,
-    description: 'Bustling area with shops, restaurants, and proximity to King\'s Cross',
+    description: "Bustling area with shops, restaurants, and proximity to King's Cross",
     highlights: ['Upper Street', 'Restaurants', 'Shopping', 'Transport hub'],
   },
   {
     id: '32',
+    cityId: 'london',
     name: 'Chiswick',
     borough: 'Hounslow',
     affordability: 2,
@@ -431,6 +451,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '33',
+    cityId: 'london',
     name: 'Deptford',
     borough: 'Lewisham',
     affordability: 4,
@@ -444,7 +465,8 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '34',
-    name: 'St John\'s Wood',
+    cityId: 'london',
+    name: "St John's Wood",
     borough: 'Westminster',
     affordability: 1,
     safety: 5,
@@ -457,6 +479,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '35',
+    cityId: 'london',
     name: 'Stoke Newington',
     borough: 'Hackney',
     affordability: 3,
@@ -470,6 +493,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '36',
+    cityId: 'london',
     name: 'Forest Hill',
     borough: 'Lewisham',
     affordability: 4,
@@ -483,6 +507,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '37',
+    cityId: 'london',
     name: 'Clapham North',
     borough: 'Lambeth',
     affordability: 3,
@@ -496,6 +521,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '38',
+    cityId: 'london',
     name: 'Elephant & Castle',
     borough: 'Southwark',
     affordability: 4,
@@ -509,6 +535,7 @@ export const neighborhoods: Neighborhood[] = [
   },
   {
     id: '39',
+    cityId: 'london',
     name: 'Marylebone',
     borough: 'Westminster',
     affordability: 1,
@@ -517,11 +544,12 @@ export const neighborhoods: Neighborhood[] = [
     greenSpace: 3,
     nightlife: 3,
     familyFriendly: 4,
-    description: 'Upscale central area with high street, village atmosphere, and Regent\'s Park',
+    description: "Upscale central area with high street, village atmosphere, and Regent's Park",
     highlights: ['Marylebone High Street', 'Central', "Regent's Park nearby", 'Upscale'],
   },
   {
     id: '40',
+    cityId: 'london',
     name: 'Crystal Palace',
     borough: 'Bromley',
     affordability: 4,
