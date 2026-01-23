@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Modal,
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Animated,
+  PanResponder,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NeighborhoodStatus } from '../contexts/AppContext';
@@ -65,6 +68,9 @@ interface StatusPickerModalProps {
   neighborhoodName?: string;
 }
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SWIPE_THRESHOLD = 50;
+
 export default function StatusPickerModal({
   visible,
   onClose,
@@ -72,22 +78,73 @@ export default function StatusPickerModal({
   onSelectStatus,
   neighborhoodName,
 }: StatusPickerModalProps) {
+  const translateY = useRef(new Animated.Value(0)).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Only respond to vertical gestures
+        return Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && gestureState.dy > 0;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        // Only allow dragging down (positive dy)
+        if (gestureState.dy > 0) {
+          translateY.setValue(gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (gestureState.dy > SWIPE_THRESHOLD || gestureState.vy > 0.5) {
+          // Dismiss the modal
+          Animated.timing(translateY, {
+            toValue: SCREEN_HEIGHT,
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => {
+            onClose();
+            translateY.setValue(0);
+          });
+        } else {
+          // Snap back
+          Animated.spring(translateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            bounciness: 8,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
   const handleSelectStatus = (status: NeighborhoodStatus) => {
     onSelectStatus(status);
     onClose();
+    translateY.setValue(0);
+  };
+
+  const handleClose = () => {
+    onClose();
+    translateY.setValue(0);
   };
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
-      onRequestClose={onClose}
+      animationType="slide"
+      onRequestClose={handleClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={handleClose}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <View style={styles.modal}>
+            <Animated.View
+              style={[styles.modal, { transform: [{ translateY }] }]}
+              {...panResponder.panHandlers}
+            >
+              <View style={styles.handle}>
+                <View style={styles.handleBar} />
+              </View>
+
               <View style={styles.header}>
                 <Subheading>Add to My Places</Subheading>
                 {neighborhoodName && (
@@ -133,10 +190,10 @@ export default function StatusPickerModal({
                 </TouchableOpacity>
               )}
 
-              <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+              <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
                 <Body color={COLORS.gray500}>Cancel</Body>
               </TouchableOpacity>
-            </View>
+            </Animated.View>
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
@@ -154,9 +211,19 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderTopLeftRadius: BORDER_RADIUS.xl,
     borderTopRightRadius: BORDER_RADIUS.xl,
-    paddingTop: SPACING.xl,
+    paddingTop: SPACING.sm,
     paddingBottom: SPACING.xxxl,
     maxHeight: '80%',
+  },
+  handle: {
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+  },
+  handleBar: {
+    width: 40,
+    height: 4,
+    backgroundColor: COLORS.gray300,
+    borderRadius: 2,
   },
   header: {
     alignItems: 'center',
