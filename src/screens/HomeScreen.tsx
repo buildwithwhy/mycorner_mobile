@@ -77,7 +77,7 @@ export default function HomeScreen() {
             style={[styles.controlButton, hasActiveFilters && styles.controlButtonActive]}
             onPress={() => setShowFilters(true)}
           >
-            <Ionicons name="filter" size={18} color={hasActiveFilters ? '#6366f1' : '#6b7280'} />
+            <Ionicons name="filter" size={18} color={hasActiveFilters ? COLORS.primary : COLORS.gray500} />
             <Text style={[styles.controlButtonText, hasActiveFilters && styles.controlButtonTextActive]}>
               Filters {hasActiveFilters && '•'}
             </Text>
@@ -211,14 +211,14 @@ export default function HomeScreen() {
                   setShowSortModal(false);
                 }}
               >
-                <Ionicons name="text" size={24} color={sortBy === 'name' ? '#6366f1' : '#6b7280'} />
+                <Ionicons name="text" size={24} color={sortBy === 'name' ? COLORS.primary : COLORS.gray500} />
                 <View style={styles.sortOptionText}>
                   <Text style={[styles.sortOptionTitle, sortBy === 'name' && styles.sortOptionTitleActive]}>
                     Name
                   </Text>
                   <Text style={styles.sortOptionDescription}>Alphabetical order</Text>
                 </View>
-                {sortBy === 'name' && <Ionicons name="checkmark-circle" size={24} color="#6366f1" />}
+                {sortBy === 'name' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -228,14 +228,14 @@ export default function HomeScreen() {
                   setShowSortModal(false);
                 }}
               >
-                <Ionicons name="cash-outline" size={24} color={sortBy === 'affordability' ? '#6366f1' : '#6b7280'} />
+                <Ionicons name="cash-outline" size={24} color={sortBy === 'affordability' ? COLORS.primary : COLORS.gray500} />
                 <View style={styles.sortOptionText}>
                   <Text style={[styles.sortOptionTitle, sortBy === 'affordability' && styles.sortOptionTitleActive]}>
                     Affordability
                   </Text>
                   <Text style={styles.sortOptionDescription}>Most affordable first</Text>
                 </View>
-                {sortBy === 'affordability' && <Ionicons name="checkmark-circle" size={24} color="#6366f1" />}
+                {sortBy === 'affordability' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -245,14 +245,14 @@ export default function HomeScreen() {
                   setShowSortModal(false);
                 }}
               >
-                <Ionicons name="shield-checkmark" size={24} color={sortBy === 'safety' ? '#6366f1' : '#6b7280'} />
+                <Ionicons name="shield-checkmark" size={24} color={sortBy === 'safety' ? COLORS.primary : COLORS.gray500} />
                 <View style={styles.sortOptionText}>
                   <Text style={[styles.sortOptionTitle, sortBy === 'safety' && styles.sortOptionTitleActive]}>
                     Safety
                   </Text>
                   <Text style={styles.sortOptionDescription}>Safest areas first</Text>
                 </View>
-                {sortBy === 'safety' && <Ionicons name="checkmark-circle" size={24} color="#6366f1" />}
+                {sortBy === 'safety' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -262,14 +262,14 @@ export default function HomeScreen() {
                   setShowSortModal(false);
                 }}
               >
-                <Ionicons name="bus" size={24} color={sortBy === 'transit' ? '#6366f1' : '#6b7280'} />
+                <Ionicons name="bus" size={24} color={sortBy === 'transit' ? COLORS.primary : COLORS.gray500} />
                 <View style={styles.sortOptionText}>
                   <Text style={[styles.sortOptionTitle, sortBy === 'transit' && styles.sortOptionTitleActive]}>
                     Transit
                   </Text>
                   <Text style={styles.sortOptionDescription}>Best transit first</Text>
                 </View>
-                {sortBy === 'transit' && <Ionicons name="checkmark-circle" size={24} color="#6366f1" />}
+                {sortBy === 'transit' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
               </TouchableOpacity>
             </View>
           </View>
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#111827',
+    color: COLORS.gray900,
   },
   controls: {
     flexDirection: 'row',
@@ -335,12 +335,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   controlButtonActive: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.white,
   },
   controlButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'white',
+    color: COLORS.white,
   },
   controlButtonTextActive: {
     color: COLORS.primary,
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: '80%',
@@ -375,12 +375,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: COLORS.gray200,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#111827',
+    color: COLORS.gray900,
   },
   modalScroll: {
     padding: 20,
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   filterLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: COLORS.gray900,
     marginBottom: 12,
   },
   filterOptions: {
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.gray100,
     borderRadius: 8,
     alignItems: 'center',
   },
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   sortModalContent: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.white,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: '60%',
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: COLORS.gray50,
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 2,

@@ -1,56 +1,68 @@
 // Theme constants for MyCorner app
-// Centralized color palette and design tokens
+// Visual style: calm, welcoming, quietly optimistic — like finding a familiar corner at golden hour
+// Muted blue-green primary, warm amber accent used sparingly, minimalist with generous whitespace
 
 export const COLORS = {
-  // Primary Brand Colors
-  primary: '#6366f1',           // Indigo - main brand color
-  primaryLight: '#eef2ff',      // Light indigo background
-  primaryBorder: '#c7d2fe',     // Light indigo border
+  // Primary Brand Colors - Muted blue-green (soft, slightly warm, never saturated)
+  primary: '#5D8A8A',             // Muted teal - trust, belonging, urban calm
+  primaryLight: '#EDF4F4',        // Very light teal background
+  primaryMuted: '#7BA3A3',        // Softer variant for secondary elements
+  primaryBorder: '#B8D4D4',       // Soft teal border
+  primaryDark: '#4A7070',         // Darker teal for pressed states
 
-  // Accent Colors
-  accent: '#f59e0b',            // Amber - accent color
-  accentLight: '#fef3c7',       // Light amber background
-  accentDark: '#d97706',        // Dark amber text
+  // Accent Colors - Sunset orange/soft amber (used sparingly, as light)
+  accent: '#D4956A',              // Soft amber - warmth, guidance
+  accentLight: '#FDF6F0',         // Very light amber background
+  accentMuted: '#E8B896',         // Softer amber
+  accentDark: '#B8784D',          // Darker amber for text
 
-  // Status Colors
-  success: '#10b981',           // Green - success, living here
-  error: '#ef4444',             // Red - error, ruled out
-  warning: '#f59e0b',           // Amber - warning
-  info: '#3b82f6',              // Blue - info, want to visit
+  // Status Colors - Softened for calm aesthetic
+  success: '#6AAB8E',             // Muted green - living here
+  successLight: '#EDF5F1',
+  error: '#C97B7B',               // Muted coral - ruled out (not harsh red)
+  errorLight: '#FBF2F2',
+  warning: '#D4956A',             // Same as accent - warning
+  warningLight: '#FDF6F0',
+  info: '#7BA3B8',                // Muted blue - want to visit
+  infoLight: '#EDF3F6',
 
   // Semantic Colors
-  favorite: '#ef4444',          // Red heart
-  favoriteLight: '#fef2f2',     // Light red background
-  favoriteBorder: '#fecaca',    // Light red border
+  favorite: '#C97B7B',            // Muted coral heart
+  favoriteLight: '#FBF2F2',       // Light coral background
+  favoriteBorder: '#E8C4C4',      // Soft coral border
 
-  // Destination Colors (for map markers)
-  destination1: '#3b82f6',      // Blue
-  destination2: '#8b5cf6',      // Purple
-  destination3: '#ec4899',      // Pink
-  destination4: '#f59e0b',      // Orange
-  destination5: '#14b8a6',      // Teal
+  // Destination Colors (softer palette for map markers)
+  destination1: '#7BA3B8',        // Muted blue
+  destination2: '#9B8ABD',        // Muted purple
+  destination3: '#BD8A9B',        // Muted rose
+  destination4: '#D4956A',        // Soft amber
+  destination5: '#6AAB8E',        // Muted teal-green
 
-  // Grayscale
-  gray50: '#f9fafb',            // Lightest gray - backgrounds
-  gray100: '#f3f4f6',           // Very light gray - disabled states
-  gray200: '#e5e7eb',           // Light gray - borders
-  gray300: '#d1d5db',           // Medium-light gray - inactive icons
-  gray400: '#9ca3af',           // Medium gray - placeholders
-  gray500: '#6b7280',           // Medium-dark gray - secondary text
-  gray600: '#4b5563',           // Dark gray
-  gray700: '#374151',           // Darker gray
-  gray800: '#1f2937',           // Very dark gray
-  gray900: '#111827',           // Darkest gray - primary text
+  // Grayscale - Slightly warm-tinted for lived-in feel
+  gray50: '#FAFAF9',              // Warmest light - backgrounds
+  gray100: '#F5F5F4',             // Very light warm gray
+  gray200: '#E7E5E4',             // Light warm gray - borders
+  gray300: '#D6D3D1',             // Medium-light - inactive icons
+  gray400: '#A8A29E',             // Medium warm gray - placeholders
+  gray500: '#78716C',             // Medium-dark - secondary text
+  gray600: '#57534E',             // Dark warm gray
+  gray700: '#44403C',             // Darker warm gray
+  gray800: '#292524',             // Very dark warm gray
+  gray900: '#1C1917',             // Darkest - primary text
 
   // Base Colors
-  white: '#ffffff',
+  white: '#FFFFFF',
   black: '#000000',
   transparent: 'transparent',
 
-  // Shadows
-  shadowLight: 'rgba(99, 102, 241, 0.15)',    // Primary color shadow
-  shadowDark: 'rgba(0, 0, 0, 0.1)',           // Black shadow
-  shadowAmber: 'rgba(245, 158, 11, 0.12)',    // Amber shadow
+  // Soft backgrounds for cards and sections
+  warmWhite: '#FDFCFB',           // Slightly warm white for cards
+  coolMist: '#F7F9F9',            // Cool mist for contrast areas
+
+  // Shadows - Soft and subtle
+  shadowLight: 'rgba(93, 138, 138, 0.08)',   // Primary color shadow (very soft)
+  shadowDark: 'rgba(28, 25, 23, 0.06)',      // Warm black shadow (subtle)
+  shadowAmber: 'rgba(212, 149, 106, 0.10)',  // Amber glow shadow
 };
 
 export const SPACING = {
@@ -61,13 +73,15 @@ export const SPACING = {
   xl: 20,
   xxl: 24,
   xxxl: 32,
+  huge: 48,    // Added for generous whitespace
 };
 
 export const BORDER_RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
+  sm: 10,      // Slightly more rounded for human-friendly feel
+  md: 14,
+  lg: 18,
   xl: 24,
+  xxl: 32,     // Added for larger rounded elements
   round: 999,
 };
 
@@ -91,36 +105,54 @@ export const FONT_WEIGHTS = {
 };
 
 export const SHADOWS = {
+  // Softer, more subtle shadows for calm aesthetic
   small: {
-    shadowColor: COLORS.shadowDark,
+    shadowColor: COLORS.gray900,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   medium: {
-    shadowColor: COLORS.primary,
+    shadowColor: COLORS.gray900,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
   large: {
-    shadowColor: COLORS.shadowDark,
+    shadowColor: COLORS.gray900,
     shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 6,
+  },
+  // Warm glow for accent elements
+  glow: {
+    shadowColor: COLORS.accent,
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowRadius: 12,
+    elevation: 4,
   },
 };
 
-// Status color mapping
+// Status color mapping - using softer palette
 export const STATUS_COLORS = {
   shortlist: COLORS.accent,
   want_to_visit: COLORS.info,
   visited: COLORS.primary,
   living_here: COLORS.success,
   ruled_out: COLORS.error,
+};
+
+// Status light backgrounds
+export const STATUS_LIGHT_COLORS = {
+  shortlist: COLORS.accentLight,
+  want_to_visit: COLORS.infoLight,
+  visited: COLORS.primaryLight,
+  living_here: COLORS.successLight,
+  ruled_out: COLORS.errorLight,
 };
 
 // Destination marker colors array

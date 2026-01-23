@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import logger from '../utils/logger';
 
 export default function LoginScreen() {
@@ -151,7 +151,7 @@ export default function LoginScreen() {
             onPress={handleGoogleLogin}
             disabled={loading}
           >
-            <Ionicons name="logo-google" size={20} color={COLORS.error} />
+            <Ionicons name="logo-google" size={20} color="#DB4437" />
             <Text style={styles.googleButtonText}>Continue with Google</Text>
           </TouchableOpacity>
 
@@ -200,9 +200,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   form: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.warmWhite,
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.xxl,
+    ...SHADOWS.medium,
   },
   title: {
     fontSize: FONT_SIZES.xxxl,

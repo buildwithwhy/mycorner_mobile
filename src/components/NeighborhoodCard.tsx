@@ -102,7 +102,7 @@ export default function NeighborhoodCard({
           <Ionicons
             name={isFavorite ? 'heart' : 'heart-outline'}
             size={18}
-            color={isFavorite ? COLORS.error : COLORS.gray500}
+            color={isFavorite ? COLORS.favorite : COLORS.gray400}
           />
         </TouchableOpacity>
         <TouchableOpacity
