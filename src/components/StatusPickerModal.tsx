@@ -83,10 +83,8 @@ export default function StatusPickerModal({
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Only respond to vertical gestures
-        return Math.abs(gestureState.dy) > Math.abs(gestureState.dx) && gestureState.dy > 0;
-      },
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderTerminationRequest: () => false,
       onPanResponderMove: (_, gestureState) => {
         // Only allow dragging down (positive dy)
         if (gestureState.dy > 0) {
@@ -139,11 +137,13 @@ export default function StatusPickerModal({
           <TouchableWithoutFeedback>
             <Animated.View
               style={[styles.modal, { transform: [{ translateY }] }]}
-              {...panResponder.panHandlers}
             >
-              <View style={styles.handle}>
+              <Animated.View
+                style={styles.handle}
+                {...panResponder.panHandlers}
+              >
                 <View style={styles.handleBar} />
-              </View>
+              </Animated.View>
 
               <View style={styles.header}>
                 <Subheading>Add to My Places</Subheading>
@@ -217,7 +217,8 @@ const styles = StyleSheet.create({
   },
   handle: {
     alignItems: 'center',
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
+    paddingTop: SPACING.lg,
   },
   handleBar: {
     width: 40,
