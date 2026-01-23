@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import {
-  syncFavorites,
-  getFavorites,
   syncComparison,
   getComparison,
   syncNeighborhoodStatus,
@@ -57,10 +55,6 @@ interface NeighborhoodRatingRow {
 }
 
 interface AppContextType {
-  favorites: string[];
-  toggleFavorite: (id: string) => void;
-  isFavorite: (id: string) => boolean;
-
   status: Record<string, NeighborhoodStatus>;
   setNeighborhoodStatus: (id: string, status: NeighborhoodStatus) => void;
   getNeighborhoodsByStatus: (status: NeighborhoodStatus) => string[];
@@ -97,7 +91,6 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const [favorites, setFavorites] = useState<string[]>([]);
   const [status, setStatus] = useState<Record<string, NeighborhoodStatus>>({});
   const [comparison, setComparison] = useState<string[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -122,7 +115,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!user?.id) {
         // User logged out, reset to empty state
         setDataLoaded(false);
-        setFavorites([]);
         setStatus({});
         setComparison([]);
         setNotes({});
@@ -136,12 +128,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       logger.log('Loading user data from Supabase...');
 
       try {
-        // Load favorites
-        const { data: favData, error: favError } = await getFavorites(user.id);
-        if (!favError && favData?.neighborhood_ids) {
-          setFavorites(favData.neighborhood_ids);
-        }
-
         // Load comparison list
         const { data: compData, error: compError } = await getComparison(user.id);
         if (!compError && compData?.neighborhood_ids) {
@@ -224,14 +210,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSyncing: isSyncingRef,
   };
 
-  // Sync favorites to Supabase
-  useSyncToSupabase(
-    favorites,
-    useCallback(async () => syncFavorites(user?.id ?? '', favorites), [user?.id, favorites]),
-    'favorites',
-    syncOptions
-  );
-
   // Sync comparison to Supabase
   useSyncToSupabase(
     comparison,
@@ -284,16 +262,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     syncOptions
   );
 
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]
-    );
-  };
-
-  const isFavorite = (id: string) => favorites.includes(id);
-
   const setNeighborhoodStatus = (id: string, newStatus: NeighborhoodStatus) => {
-    setStatus((prev) => ({ ...prev, [id]: newStatus }));
+    setStatus((prev) => {
+      if (newStatus === null) {
+        // Remove the entry when status is cleared
+        const { [id]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [id]: newStatus };
+    });
   };
 
   const getNeighborhoodsByStatus = (filterStatus: NeighborhoodStatus) => {
@@ -367,9 +344,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider
       value={{
-        favorites,
-        toggleFavorite,
-        isFavorite,
         status,
         setNeighborhoodStatus,
         getNeighborhoodsByStatus,

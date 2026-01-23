@@ -5,10 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { neighborhoods } from '../data/neighborhoods';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
-import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, DESTINATION_COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import AffordabilityBadge from '../components/AffordabilityBadge';
+import SignInPromptModal from '../components/SignInPromptModal';
+import StatusPickerModal from '../components/StatusPickerModal';
 
 // London center coordinates
 const LONDON_REGION = {
@@ -20,8 +23,31 @@ const LONDON_REGION = {
 
 export default function MapScreen() {
   const navigation = useNavigation();
-  const { destinations, favorites, toggleFavorite, comparison, toggleComparison } = useApp();
+  const { session } = useAuth();
+  const { destinations, status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [showStatusPicker, setShowStatusPicker] = useState(false);
+
+  const currentStatus = selectedNeighborhood ? status[selectedNeighborhood] || null : null;
+
+  const getStatusInfo = (neighborhoodId: string) => {
+    const s = status[neighborhoodId];
+    if (s === 'shortlist') return { icon: 'star' as const, color: STATUS_COLORS.shortlist };
+    if (s === 'want_to_visit') return { icon: 'bookmark' as const, color: STATUS_COLORS.want_to_visit };
+    if (s === 'visited') return { icon: 'checkmark-circle' as const, color: STATUS_COLORS.visited };
+    if (s === 'living_here') return { icon: 'home' as const, color: STATUS_COLORS.living_here };
+    if (s === 'ruled_out') return { icon: 'close-circle' as const, color: STATUS_COLORS.ruled_out };
+    return null;
+  };
+
+  const handleSavePress = () => {
+    if (!session) {
+      setShowSignInModal(true);
+      return;
+    }
+    setShowStatusPicker(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -156,13 +182,13 @@ export default function MapScreen() {
 
                 <View style={styles.quickActions}>
                   <TouchableOpacity
-                    style={[styles.quickActionButton, favorites.includes(neighborhood.id) && styles.quickActionButtonActive]}
-                    onPress={() => toggleFavorite(neighborhood.id)}
+                    style={[styles.quickActionButton, currentStatus && styles.quickActionButtonActive]}
+                    onPress={handleSavePress}
                   >
                     <Ionicons
-                      name={favorites.includes(neighborhood.id) ? 'heart' : 'heart-outline'}
+                      name={currentStatus ? 'bookmark' : 'bookmark-outline'}
                       size={20}
-                      color={favorites.includes(neighborhood.id) ? '#ef4444' : '#6b7280'}
+                      color={currentStatus ? COLORS.primary : COLORS.gray500}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -188,6 +214,22 @@ export default function MapScreen() {
             );
           })()}
         </View>
+      )}
+
+      <SignInPromptModal
+        visible={showSignInModal}
+        onClose={() => setShowSignInModal(false)}
+        featureName="saving places"
+      />
+
+      {selectedNeighborhood && (
+        <StatusPickerModal
+          visible={showStatusPicker}
+          onClose={() => setShowStatusPicker(false)}
+          currentStatus={currentStatus}
+          onSelectStatus={(newStatus) => setNeighborhoodStatus(selectedNeighborhood, newStatus)}
+          neighborhoodName={neighborhoods.find(n => n.id === selectedNeighborhood)?.name}
+        />
       )}
     </View>
   );

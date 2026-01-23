@@ -7,6 +7,7 @@ export { default as AffordabilityBadge } from './AffordabilityBadge';
 export { default as EmptyState } from './EmptyState';
 export { default as RatingCard } from './RatingCard';
 export { default as SignInPromptModal } from './SignInPromptModal';
+export { default as StatusPickerModal } from './StatusPickerModal';
 export { default as NeighborhoodCard } from './NeighborhoodCard';
 
 // Typography

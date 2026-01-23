@@ -9,7 +9,7 @@ import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import DetailScreen from '../screens/DetailScreen';
-import FavoritesScreen from '../screens/FavoritesScreen';
+import MyPlacesScreen from '../screens/MyPlacesScreen';
 import CompareScreen from '../screens/CompareScreen';
 import DestinationsScreen from '../screens/DestinationsScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -36,8 +36,8 @@ function TabNavigator() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Map') {
             iconName = focused ? 'map' : 'map-outline';
-          } else if (route.name === 'Favorites') {
-            iconName = focused ? 'heart' : 'heart-outline';
+          } else if (route.name === 'MyPlaces') {
+            iconName = focused ? 'bookmark' : 'bookmark-outline';
           } else if (route.name === 'Compare') {
             iconName = focused ? 'git-compare' : 'git-compare-outline';
           } else {
@@ -53,7 +53,7 @@ function TabNavigator() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
-      <Tab.Screen name="Favorites" component={FavoritesScreen} />
+      <Tab.Screen name="MyPlaces" component={MyPlacesScreen} options={{ title: 'My Places' }} />
       <Tab.Screen name="Compare" component={CompareScreen} />
       <Tab.Screen name="Profile" component={ProfileTabScreen} />
     </Tab.Navigator>

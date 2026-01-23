@@ -13,7 +13,7 @@ const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const { favorites, toggleFavorite, comparison, toggleComparison, status, getNeighborhoodsByStatus, destinations } = useApp();
+  const { comparison, status, getNeighborhoodsByStatus, destinations } = useApp();
   const { user, signOut } = useAuth();
 
   const shortlist = getNeighborhoodsByStatus('shortlist');
@@ -128,12 +128,12 @@ export default function ProfileScreen() {
 
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <Ionicons name="heart" size={28} color={COLORS.error} />
-              <Text style={styles.statNumber}>{favorites.length}</Text>
-              <Text style={styles.statLabel}>Favorites</Text>
+              <Ionicons name="bookmark" size={28} color={COLORS.primary} />
+              <Text style={styles.statNumber}>{Object.keys(status).length}</Text>
+              <Text style={styles.statLabel}>Saved Places</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="git-compare" size={28} color={COLORS.primary} />
+              <Ionicons name="git-compare" size={28} color={COLORS.info} />
               <Text style={styles.statNumber}>{comparison.length}</Text>
               <Text style={styles.statLabel}>Comparing</Text>
             </View>
@@ -143,9 +143,9 @@ export default function ProfileScreen() {
               <Text style={styles.statLabel}>Shortlist</Text>
             </View>
             <View style={styles.statCard}>
-              <Ionicons name="bookmark" size={28} color={COLORS.info} />
-              <Text style={styles.statNumber}>{wantToVisit.length}</Text>
-              <Text style={styles.statLabel}>Want to Visit</Text>
+              <Ionicons name="checkmark-circle" size={28} color={COLORS.success} />
+              <Text style={styles.statNumber}>{visited.length}</Text>
+              <Text style={styles.statLabel}>Visited</Text>
             </View>
           </View>
 

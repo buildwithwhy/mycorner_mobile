@@ -11,7 +11,7 @@ type SortOption = 'name' | 'affordability' | 'safety' | 'transit';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const { favorites, toggleFavorite, comparison, toggleComparison } = useApp();
+  const { status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [showFilters, setShowFilters] = useState(false);
@@ -102,9 +102,9 @@ export default function HomeScreen() {
               key={neighborhood.id}
               neighborhood={neighborhood}
               onPress={() => navigation.navigate('Detail', { neighborhood })}
-              isFavorite={favorites.includes(neighborhood.id)}
+              currentStatus={status[neighborhood.id] || null}
               isInComparison={comparison.includes(neighborhood.id)}
-              onToggleFavorite={() => toggleFavorite(neighborhood.id)}
+              onSetStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
               onToggleComparison={() => toggleComparison(neighborhood.id)}
             />
           ))}

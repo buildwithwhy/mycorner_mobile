@@ -2,44 +2,53 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { NeighborhoodStatus } from '../contexts/AppContext';
+import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { useAuth } from '../contexts/AuthContext';
 import SignInPromptModal from './SignInPromptModal';
+import StatusPickerModal from './StatusPickerModal';
 import AffordabilityBadge from './AffordabilityBadge';
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;
   onPress: () => void;
-  isFavorite: boolean;
+  currentStatus: NeighborhoodStatus;
   isInComparison: boolean;
-  onToggleFavorite: () => void;
+  onSetStatus: (status: NeighborhoodStatus) => void;
   onToggleComparison: () => void;
-  statusInfo?: {
-    icon: keyof typeof Ionicons.glyphMap;
-    color: string;
-    label: string;
-  };
 }
+
+const getStatusInfo = (status: NeighborhoodStatus) => {
+  if (status === 'shortlist') return { icon: 'star' as const, color: STATUS_COLORS.shortlist, label: 'Shortlist' };
+  if (status === 'want_to_visit') return { icon: 'bookmark' as const, color: STATUS_COLORS.want_to_visit, label: 'Want to Visit' };
+  if (status === 'visited') return { icon: 'checkmark-circle' as const, color: STATUS_COLORS.visited, label: 'Visited' };
+  if (status === 'living_here') return { icon: 'home' as const, color: STATUS_COLORS.living_here, label: 'Living Here' };
+  if (status === 'ruled_out') return { icon: 'close-circle' as const, color: STATUS_COLORS.ruled_out, label: 'Ruled Out' };
+  return null;
+};
 
 export default function NeighborhoodCard({
   neighborhood,
   onPress,
-  isFavorite,
+  currentStatus,
   isInComparison,
-  onToggleFavorite,
+  onSetStatus,
   onToggleComparison,
-  statusInfo,
 }: NeighborhoodCardProps) {
   const { session } = useAuth();
   const [showSignInModal, setShowSignInModal] = useState(false);
+  const [showStatusPicker, setShowStatusPicker] = useState(false);
 
-  const handleToggleFavorite = () => {
+  const statusInfo = getStatusInfo(currentStatus);
+
+  const handleAddToPlaces = () => {
     if (!session) {
       setShowSignInModal(true);
       return;
     }
-    onToggleFavorite();
+    setShowStatusPicker(true);
   };
+
   return (
     <View style={styles.card}>
       <TouchableOpacity
@@ -96,13 +105,13 @@ export default function NeighborhoodCard({
 
       <View style={styles.cardActions}>
         <TouchableOpacity
-          style={[styles.cardActionButton, isFavorite && styles.cardActionButtonFavorite]}
-          onPress={handleToggleFavorite}
+          style={[styles.cardActionButton, currentStatus && styles.cardActionButtonSaved]}
+          onPress={handleAddToPlaces}
         >
           <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
+            name={currentStatus ? 'bookmark' : 'bookmark-outline'}
             size={18}
-            color={isFavorite ? COLORS.favorite : COLORS.gray400}
+            color={currentStatus ? COLORS.primary : COLORS.gray400}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -120,7 +129,15 @@ export default function NeighborhoodCard({
       <SignInPromptModal
         visible={showSignInModal}
         onClose={() => setShowSignInModal(false)}
-        featureName="favorites"
+        featureName="saving places"
+      />
+
+      <StatusPickerModal
+        visible={showStatusPicker}
+        onClose={() => setShowStatusPicker(false)}
+        currentStatus={currentStatus}
+        onSelectStatus={onSetStatus}
+        neighborhoodName={neighborhood.name}
       />
     </View>
   );
@@ -220,9 +237,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.gray200,
   },
-  cardActionButtonFavorite: {
-    backgroundColor: COLORS.favoriteLight,
-    borderColor: COLORS.favoriteBorder,
+  cardActionButtonSaved: {
+    backgroundColor: COLORS.primaryLight,
+    borderColor: COLORS.primaryBorder,
   },
   cardActionButtonCompare: {
     backgroundColor: COLORS.primaryLight,

@@ -10,6 +10,7 @@ import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import SignInPromptModal from '../components/SignInPromptModal';
+import StatusPickerModal from '../components/StatusPickerModal';
 import AffordabilityBadge from '../components/AffordabilityBadge';
 import RatingCard from '../components/RatingCard';
 
@@ -19,8 +20,6 @@ export default function DetailScreen() {
   const neighborhood = route.params?.neighborhood as Neighborhood;
   const { session } = useAuth();
   const {
-    isFavorite,
-    toggleFavorite,
     status,
     setNeighborhoodStatus,
     isInComparison,
@@ -35,7 +34,7 @@ export default function DetailScreen() {
     setUserRating,
     destinations,
   } = useApp();
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteText, setNoteText] = useState(notes[neighborhood?.id] || '');
   const [isEditingRatings, setIsEditingRatings] = useState(false);
@@ -344,16 +343,16 @@ export default function DetailScreen() {
       <View style={styles.footer}>
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={[styles.actionButton, isFavorite(neighborhood.id) && styles.actionButtonActive]}
-            onPress={() => requireAuth('favorites', () => toggleFavorite(neighborhood.id))}
+            style={[styles.actionButton, currentStatus && styles.actionButtonActive]}
+            onPress={() => requireAuth('saving places', () => setShowStatusPicker(true))}
           >
             <Ionicons
-              name={isFavorite(neighborhood.id) ? 'heart' : 'heart-outline'}
+              name={currentStatus ? 'bookmark' : 'bookmark-outline'}
               size={20}
-              color={isFavorite(neighborhood.id) ? '#ef4444' : '#6b7280'}
+              color={currentStatus ? COLORS.primary : COLORS.gray500}
             />
-            <Text style={[styles.actionButtonText, isFavorite(neighborhood.id) && styles.actionButtonTextActive]}>
-              {isFavorite(neighborhood.id) ? 'Favorited' : 'Favorite'}
+            <Text style={[styles.actionButtonText, currentStatus && styles.actionButtonTextActive]}>
+              {currentStatus ? 'Saved' : 'Save'}
             </Text>
           </TouchableOpacity>
 
@@ -380,84 +379,33 @@ export default function DetailScreen() {
 
         <TouchableOpacity
           style={styles.statusButton}
-          onPress={() => requireAuth('status', () => setShowStatusMenu(!showStatusMenu))}
+          onPress={() => requireAuth('saving places', () => setShowStatusPicker(true))}
         >
-          <Ionicons name="checkbox-outline" size={20} color="white" />
+          <Ionicons name={currentStatus ? 'bookmark' : 'bookmark-outline'} size={20} color="white" />
           <Text style={styles.statusButtonText}>
-            {currentStatus === 'shortlist' && 'Shortlist'}
+            {currentStatus === 'shortlist' && 'Shortlisted'}
             {currentStatus === 'want_to_visit' && 'Want to Visit'}
             {currentStatus === 'visited' && 'Visited'}
             {currentStatus === 'living_here' && 'Living Here'}
             {currentStatus === 'ruled_out' && 'Ruled Out'}
-            {!currentStatus && 'Set Status'}
+            {!currentStatus && 'Add to My Places'}
           </Text>
           <Ionicons name="chevron-down" size={16} color="white" />
         </TouchableOpacity>
-
-        {showStatusMenu && (
-          <View style={styles.statusMenu}>
-            <TouchableOpacity
-              style={styles.statusOption}
-              onPress={() => {
-                setNeighborhoodStatus(neighborhood.id, 'shortlist');
-                setShowStatusMenu(false);
-              }}
-            >
-              <Text style={styles.statusOptionText}>Shortlist</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.statusOption}
-              onPress={() => {
-                setNeighborhoodStatus(neighborhood.id, 'want_to_visit');
-                setShowStatusMenu(false);
-              }}
-            >
-              <Text style={styles.statusOptionText}>Want to Visit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.statusOption}
-              onPress={() => {
-                setNeighborhoodStatus(neighborhood.id, 'visited');
-                setShowStatusMenu(false);
-              }}
-            >
-              <Text style={styles.statusOptionText}>Visited</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.statusOption}
-              onPress={() => {
-                setNeighborhoodStatus(neighborhood.id, 'living_here');
-                setShowStatusMenu(false);
-              }}
-            >
-              <Text style={styles.statusOptionText}>Living Here</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.statusOption}
-              onPress={() => {
-                setNeighborhoodStatus(neighborhood.id, 'ruled_out');
-                setShowStatusMenu(false);
-              }}
-            >
-              <Text style={styles.statusOptionText}>Ruled Out</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.statusOption, styles.statusOptionClear]}
-              onPress={() => {
-                setNeighborhoodStatus(neighborhood.id, null);
-                setShowStatusMenu(false);
-              }}
-            >
-              <Text style={[styles.statusOptionText, styles.statusOptionClearText]}>Clear Status</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </View>
 
       <SignInPromptModal
         visible={showSignInModal}
         onClose={() => setShowSignInModal(false)}
         featureName={signInFeature}
+      />
+
+      <StatusPickerModal
+        visible={showStatusPicker}
+        onClose={() => setShowStatusPicker(false)}
+        currentStatus={currentStatus}
+        onSelectStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
+        neighborhoodName={neighborhood.name}
       />
     </View>
   );
@@ -621,34 +569,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.base + 1,
     fontWeight: '600',
     marginHorizontal: SPACING.sm,
-  },
-  statusMenu: {
-    position: 'absolute',
-    bottom: 80,
-    left: SPACING.lg,
-    right: SPACING.lg,
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.md,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  statusOption: {
-    padding: SPACING.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray200,
-  },
-  statusOptionText: {
-    fontSize: FONT_SIZES.lg,
-    color: COLORS.gray900,
-  },
-  statusOptionClear: {
-    borderBottomWidth: 0,
-  },
-  statusOptionClearText: {
-    color: COLORS.error,
   },
   photosContainer: {
     backgroundColor: COLORS.white,
