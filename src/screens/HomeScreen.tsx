@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, S
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Neighborhood } from '../data/neighborhoods';
-import { useApp, useCity } from '../contexts/AppContext';
+import { useApp, useCity, useNotesRatings } from '../contexts/AppContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
-import NeighborhoodCard from '../components/NeighborhoodCard';
+import NeighborhoodCard, { ViewMode } from '../components/NeighborhoodCard';
 import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
 
 type SortOption = 'name' | 'affordability' | 'safety' | 'transit';
@@ -14,8 +14,10 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const { status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
+  const { photos } = useNotesRatings();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [showFilters, setShowFilters] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showCitySelectorModal, setShowCitySelectorModal] = useState(false);
@@ -54,16 +56,22 @@ export default function HomeScreen() {
   const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
 
   // Memoized render function for FlatList
-  const renderNeighborhoodCard = useCallback(({ item: neighborhood }: { item: Neighborhood }) => (
-    <NeighborhoodCard
-      neighborhood={neighborhood}
-      onPress={() => navigation.navigate('Detail', { neighborhood })}
-      currentStatus={status[neighborhood.id] || null}
-      isInComparison={comparison.includes(neighborhood.id)}
-      onSetStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
-      onToggleComparison={() => toggleComparison(neighborhood.id)}
-    />
-  ), [navigation, status, comparison, setNeighborhoodStatus, toggleComparison]);
+  const renderNeighborhoodCard = useCallback(({ item: neighborhood }: { item: Neighborhood }) => {
+    const neighborhoodPhotos = photos[neighborhood.id] || [];
+    return (
+      <NeighborhoodCard
+        neighborhood={neighborhood}
+        onPress={() => navigation.navigate('Detail', { neighborhood })}
+        currentStatus={status[neighborhood.id] || null}
+        isInComparison={comparison.includes(neighborhood.id)}
+        onSetStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
+        onToggleComparison={() => toggleComparison(neighborhood.id)}
+        viewMode={viewMode}
+        photoCount={neighborhoodPhotos.length}
+        firstPhotoUri={neighborhoodPhotos[0] || null}
+      />
+    );
+  }, [navigation, status, comparison, setNeighborhoodStatus, toggleComparison, viewMode, photos]);
 
   const keyExtractor = useCallback((item: Neighborhood) => item.id, []);
 
@@ -114,6 +122,17 @@ export default function HomeScreen() {
             <Text style={styles.controlButtonText}>
               Sort: {sortBy === 'name' ? 'Name' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safety' : 'Transit'}
             </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.viewToggleButton}
+            onPress={() => setViewMode(viewMode === 'list' ? 'card' : 'list')}
+          >
+            <Ionicons
+              name={viewMode === 'list' ? 'grid-outline' : 'list-outline'}
+              size={20}
+              color={COLORS.white}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -376,6 +395,14 @@ const styles = StyleSheet.create({
   },
   controlButtonTextActive: {
     color: COLORS.primary,
+  },
+  viewToggleButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
   },
   scrollView: {
     flex: 1,
