@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import {
   syncFavorites,
@@ -14,6 +14,7 @@ import {
   syncNeighborhoodRating,
   getUserNeighborhoodRatings,
 } from '../services/supabase';
+import { useSyncToSupabase, useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
 import logger from '../utils/logger';
 
 export type NeighborhoodStatus = 'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out' | null;
@@ -24,6 +25,35 @@ export interface Destination {
   address: string;
   latitude: number;
   longitude: number;
+}
+
+// Supabase response types
+interface NeighborhoodStatusRow {
+  neighborhood_id: string;
+  status: string;
+}
+
+interface NeighborhoodNoteRow {
+  neighborhood_id: string;
+  note: string;
+}
+
+interface DestinationRow {
+  id: string;
+  label: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface NeighborhoodRatingRow {
+  neighborhood_id: string;
+  affordability: number | null;
+  safety: number | null;
+  transit: number | null;
+  green_space: number | null;
+  nightlife: number | null;
+  family_friendly: number | null;
 }
 
 interface AppContextType {
@@ -122,7 +152,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const { data: statusData, error: statusError } = await getUserNeighborhoodStatuses(user.id);
         if (!statusError && statusData) {
           const statusMap: Record<string, NeighborhoodStatus> = {};
-          statusData.forEach((item: any) => {
+          (statusData as NeighborhoodStatusRow[]).forEach((item) => {
             statusMap[item.neighborhood_id] = item.status as NeighborhoodStatus;
           });
           setStatus(statusMap);
@@ -132,7 +162,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const { data: notesData, error: notesError } = await getUserNotes(user.id);
         if (!notesError && notesData) {
           const notesMap: Record<string, string> = {};
-          notesData.forEach((item: any) => {
+          (notesData as NeighborhoodNoteRow[]).forEach((item) => {
             notesMap[item.neighborhood_id] = item.note;
           });
           setNotes(notesMap);
@@ -141,7 +171,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // Load destinations
         const { data: destData, error: destError } = await getUserDestinations(user.id);
         if (!destError && destData) {
-          const dests: Destination[] = destData.map((d: any) => ({
+          const dests: Destination[] = (destData as DestinationRow[]).map((d) => ({
             id: d.id,
             label: d.label,
             address: d.address,
@@ -162,14 +192,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             nightlife: number;
             familyFriendly: number;
           }>> = {};
-          ratingsData.forEach((item: any) => {
+          (ratingsData as NeighborhoodRatingRow[]).forEach((item) => {
             ratingsMap[item.neighborhood_id] = {
-              affordability: item.affordability,
-              safety: item.safety,
-              transit: item.transit,
-              greenSpace: item.green_space,
-              nightlife: item.nightlife,
-              familyFriendly: item.family_friendly,
+              affordability: item.affordability ?? undefined,
+              safety: item.safety ?? undefined,
+              transit: item.transit ?? undefined,
+              greenSpace: item.green_space ?? undefined,
+              nightlife: item.nightlife ?? undefined,
+              familyFriendly: item.family_friendly ?? undefined,
             };
           });
           setUserRatings(ratingsMap);
@@ -187,110 +217,72 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     loadUserData();
   }, [user?.id]);
 
-  // Sync favorites to Supabase when changed
-  useEffect(() => {
-    if (!user?.id || !dataLoaded || isSyncingRef.current) return;
+  // Sync options shared by all sync hooks
+  const syncOptions = {
+    userId: user?.id,
+    dataLoaded,
+    isSyncing: isSyncingRef,
+  };
 
-    const syncTimer = setTimeout(async () => {
-      logger.log('Syncing favorites to Supabase...');
-      const { error } = await syncFavorites(user.id, favorites);
-      if (error) {
-        logger.error('Error syncing favorites:', error);
-      }
-    }, 500); // Debounce for 500ms
+  // Sync favorites to Supabase
+  useSyncToSupabase(
+    favorites,
+    useCallback(async () => syncFavorites(user?.id ?? '', favorites), [user?.id, favorites]),
+    'favorites',
+    syncOptions
+  );
 
-    return () => clearTimeout(syncTimer);
-  }, [favorites, user?.id, dataLoaded]);
+  // Sync comparison to Supabase
+  useSyncToSupabase(
+    comparison,
+    useCallback(async () => syncComparison(user?.id ?? '', comparison), [user?.id, comparison]),
+    'comparison',
+    syncOptions
+  );
 
-  // Sync comparison to Supabase when changed
-  useEffect(() => {
-    if (!user?.id || !dataLoaded || isSyncingRef.current) return;
+  // Sync destinations to Supabase
+  useSyncToSupabase(
+    destinations,
+    useCallback(async () => syncDestinations(user?.id ?? '', destinations), [user?.id, destinations]),
+    'destinations',
+    syncOptions
+  );
 
-    const syncTimer = setTimeout(async () => {
-      logger.log('Syncing comparison list to Supabase...');
-      const { error } = await syncComparison(user.id, comparison);
-      if (error) {
-        logger.error('Error syncing comparison:', error);
-      }
-    }, 500);
+  // Sync neighborhood statuses to Supabase
+  useSyncRecordToSupabase(
+    status,
+    useCallback(
+      async (neighborhoodId: string, statusValue: NeighborhoodStatus) =>
+        syncNeighborhoodStatus(user?.id ?? '', neighborhoodId, statusValue ?? ''),
+      [user?.id]
+    ),
+    'statuses',
+    syncOptions
+  );
 
-    return () => clearTimeout(syncTimer);
-  }, [comparison, user?.id, dataLoaded]);
+  // Sync neighborhood notes to Supabase
+  useSyncRecordToSupabase(
+    notes,
+    useCallback(
+      async (neighborhoodId: string, note: string) =>
+        syncNeighborhoodNote(user?.id ?? '', neighborhoodId, note),
+      [user?.id]
+    ),
+    'notes',
+    syncOptions
+  );
 
-  // Sync neighborhood statuses to Supabase when changed
-  useEffect(() => {
-    if (!user?.id || !dataLoaded || isSyncingRef.current) return;
-
-    const syncTimer = setTimeout(async () => {
-      logger.log('Syncing neighborhood statuses to Supabase...');
-      // Sync each status entry
-      for (const [neighborhoodId, statusValue] of Object.entries(status)) {
-        if (statusValue) {
-          const { error } = await syncNeighborhoodStatus(user.id, neighborhoodId, statusValue);
-          if (error) {
-            logger.error(`Error syncing status for ${neighborhoodId}:`, error);
-          }
-        }
-      }
-    }, 500);
-
-    return () => clearTimeout(syncTimer);
-  }, [status, user?.id, dataLoaded]);
-
-  // Sync neighborhood notes to Supabase when changed
-  useEffect(() => {
-    if (!user?.id || !dataLoaded || isSyncingRef.current) return;
-
-    const syncTimer = setTimeout(async () => {
-      logger.log('Syncing neighborhood notes to Supabase...');
-      // Sync each note entry
-      for (const [neighborhoodId, note] of Object.entries(notes)) {
-        if (note) {
-          const { error } = await syncNeighborhoodNote(user.id, neighborhoodId, note);
-          if (error) {
-            logger.error(`Error syncing note for ${neighborhoodId}:`, error);
-          }
-        }
-      }
-    }, 500);
-
-    return () => clearTimeout(syncTimer);
-  }, [notes, user?.id, dataLoaded]);
-
-  // Sync destinations to Supabase when changed
-  useEffect(() => {
-    if (!user?.id || !dataLoaded || isSyncingRef.current) return;
-
-    const syncTimer = setTimeout(async () => {
-      logger.log('Syncing destinations to Supabase...');
-      const { error } = await syncDestinations(user.id, destinations);
-      if (error) {
-        logger.error('Error syncing destinations:', error);
-      }
-    }, 500);
-
-    return () => clearTimeout(syncTimer);
-  }, [destinations, user?.id, dataLoaded]);
-
-  // Sync user ratings to Supabase when changed
-  useEffect(() => {
-    if (!user?.id || !dataLoaded || isSyncingRef.current) return;
-
-    const syncTimer = setTimeout(async () => {
-      logger.log('Syncing user ratings to Supabase...');
-      // Sync each rating entry
-      for (const [neighborhoodId, ratings] of Object.entries(userRatings)) {
-        if (ratings && Object.keys(ratings).length > 0) {
-          const { error } = await syncNeighborhoodRating(user.id, neighborhoodId, ratings);
-          if (error) {
-            logger.error(`Error syncing ratings for ${neighborhoodId}:`, error);
-          }
-        }
-      }
-    }, 500);
-
-    return () => clearTimeout(syncTimer);
-  }, [userRatings, user?.id, dataLoaded]);
+  // Sync user ratings to Supabase
+  useSyncRecordToSupabase(
+    userRatings,
+    useCallback(
+      async (neighborhoodId: string, ratings: typeof userRatings[string]) =>
+        syncNeighborhoodRating(user?.id ?? '', neighborhoodId, ratings),
+      [user?.id]
+    ),
+    'ratings',
+    syncOptions
+  );
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) =>

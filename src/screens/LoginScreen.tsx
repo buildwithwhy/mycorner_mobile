@@ -60,21 +60,19 @@ export default function LoginScreen() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    const { data, error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle();
     setLoading(false);
 
     if (error) {
       // More descriptive error messages
-      let errorMessage = error.message || 'An error occurred';
+      const errorMessage = (error as Error).message || 'An error occurred';
       if (errorMessage.includes('cancelled')) {
         // Don't show alert for user-initiated cancellation
         return;
       }
       Alert.alert('Google Login Failed', errorMessage);
-    } else if (data?.session) {
-      // Successfully signed in - navigation will happen automatically via AuthContext
-      logger.log('Google sign in successful!');
     }
+    // Successfully signed in - navigation will happen automatically via AuthContext
   };
 
   return (

@@ -8,6 +8,25 @@ import * as AuthSession from 'expo-auth-session';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../config';
 import logger from '../utils/logger';
 
+// Type definitions
+interface DestinationInput {
+  label: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface DbRatings {
+  user_id: string;
+  neighborhood_id: string;
+  affordability?: number;
+  safety?: number;
+  transit?: number;
+  green_space?: number;
+  nightlife?: number;
+  family_friendly?: number;
+}
+
 WebBrowser.maybeCompleteAuthSession();
 
 // Initialize Supabase client with AsyncStorage for session persistence
@@ -270,7 +289,7 @@ export const getUserNotes = async (userId: string) => {
 };
 
 // Sync user destinations
-export const syncDestinations = async (userId: string, destinations: any[]) => {
+export const syncDestinations = async (userId: string, destinations: DestinationInput[]) => {
   // Delete existing destinations
   await supabase.from('user_destinations').delete().eq('user_id', userId);
 
@@ -310,7 +329,7 @@ export const syncNeighborhoodRating = async (
   }
 ) => {
   // Convert camelCase to snake_case for database
-  const dbRatings: any = {
+  const dbRatings: DbRatings = {
     user_id: userId,
     neighborhood_id: neighborhoodId,
   };

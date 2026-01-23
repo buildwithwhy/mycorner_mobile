@@ -181,7 +181,7 @@ export const getDirections = async (
 ): Promise<{
   distance: string;
   duration: string;
-  steps: any[];
+  steps: Array<{ html_instructions: string; distance: { text: string }; duration: { text: string } }>;
 } | null> => {
   try {
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&mode=${mode}&key=${GOOGLE_MAPS_API_KEY}`;
