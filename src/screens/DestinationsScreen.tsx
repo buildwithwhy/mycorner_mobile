@@ -3,10 +3,13 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal,
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useApp } from '../contexts/AppContext';
+import { useApp, TransportMode } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
+import { getTransportModeInfo } from '../utils/commute';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+
+const TRANSPORT_MODES: TransportMode[] = ['transit', 'walking', 'cycling', 'driving'];
 
 // Suppress VirtualizedLists warning for GooglePlacesAutocomplete
 // This is safe because the autocomplete dropdown only shows a small number of items
@@ -20,6 +23,7 @@ export default function DestinationsScreen() {
   const [newLabel, setNewLabel] = useState('');
   const [newAddress, setNewAddress] = useState('');
   const [selectedCoords, setSelectedCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [selectedTransportMode, setSelectedTransportMode] = useState<TransportMode>('transit');
   const autocompleteRef = useRef<any>(null);
 
   const handleAddDestination = () => {
@@ -40,11 +44,13 @@ export default function DestinationsScreen() {
       address: newAddress,
       latitude: selectedCoords.latitude,
       longitude: selectedCoords.longitude,
+      transportMode: selectedTransportMode,
     });
 
     setNewLabel('');
     setNewAddress('');
     setSelectedCoords(null);
+    setSelectedTransportMode('transit');
     if (autocompleteRef.current) {
       autocompleteRef.current.setAddressText('');
     }
@@ -55,6 +61,7 @@ export default function DestinationsScreen() {
     setNewLabel('');
     setNewAddress('');
     setSelectedCoords(null);
+    setSelectedTransportMode('transit');
     if (autocompleteRef.current) {
       autocompleteRef.current.setAddressText('');
     }
@@ -110,14 +117,17 @@ export default function DestinationsScreen() {
 
           {destinations.length > 0 ? (
             <>
-              {destinations.map((destination) => (
+              {destinations.map((destination) => {
+                const modeInfo = getTransportModeInfo(destination.transportMode || 'transit');
+                return (
                 <View key={destination.id} style={styles.destinationCard}>
                   <View style={styles.destinationIcon}>
-                    <Ionicons name="location" size={24} color={COLORS.primary} />
+                    <Ionicons name={modeInfo.icon as keyof typeof Ionicons.glyphMap} size={24} color={COLORS.primary} />
                   </View>
                   <View style={styles.destinationInfo}>
                     <Text style={styles.destinationLabel}>{destination.label}</Text>
                     <Text style={styles.destinationAddress}>{destination.address}</Text>
+                    <Text style={styles.destinationTransport}>{modeInfo.label}</Text>
                   </View>
                   <TouchableOpacity
                     style={styles.removeButton}
@@ -135,7 +145,8 @@ export default function DestinationsScreen() {
                     <Ionicons name="trash" size={20} color={COLORS.error} />
                   </TouchableOpacity>
                 </View>
-              ))}
+              );
+              })}
             </>
           ) : (
             <View style={styles.emptyState}>
@@ -282,6 +293,38 @@ export default function DestinationsScreen() {
                       </View>
                     ) : null}
 
+                  <Text style={styles.inputLabel}>How will you get there?</Text>
+                  <View style={styles.transportModeContainer}>
+                    {TRANSPORT_MODES.map((mode) => {
+                      const modeInfo = getTransportModeInfo(mode);
+                      const isSelected = selectedTransportMode === mode;
+                      return (
+                        <TouchableOpacity
+                          key={mode}
+                          style={[
+                            styles.transportModeOption,
+                            isSelected && styles.transportModeOptionSelected,
+                          ]}
+                          onPress={() => setSelectedTransportMode(mode)}
+                        >
+                          <Ionicons
+                            name={modeInfo.icon as keyof typeof Ionicons.glyphMap}
+                            size={24}
+                            color={isSelected ? COLORS.primary : COLORS.gray400}
+                          />
+                          <Text
+                            style={[
+                              styles.transportModeLabel,
+                              isSelected && styles.transportModeLabelSelected,
+                            ]}
+                          >
+                            {modeInfo.label}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+
                   <Text style={styles.helperText}>
                     💡 Start typing and select from suggestions for accurate coordinates
                   </Text>
@@ -388,6 +431,12 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.md,
     color: COLORS.gray500,
     lineHeight: 18,
+  },
+  destinationTransport: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.primary,
+    fontWeight: '500',
+    marginTop: 4,
   },
   removeButton: {
     padding: SPACING.sm,
@@ -606,5 +655,36 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: FONT_SIZES.lg,
     fontWeight: '600',
+  },
+  transportModeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  transportModeOption: {
+    flex: 1,
+    minWidth: '45%',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.gray50,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 2,
+    borderColor: COLORS.transparent,
+  },
+  transportModeOptionSelected: {
+    backgroundColor: COLORS.primaryLight,
+    borderColor: COLORS.primary,
+  },
+  transportModeLabel: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '500',
+    color: COLORS.gray500,
+    marginTop: SPACING.xs,
+    textAlign: 'center',
+  },
+  transportModeLabelSelected: {
+    color: COLORS.primary,
   },
 });

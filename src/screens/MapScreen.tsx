@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { neighborhoods } from '../data/neighborhoods';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
-import { calculateDistance, estimateCommuteTime } from '../utils/commute';
+import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import AffordabilityBadge from '../components/AffordabilityBadge';
@@ -165,12 +165,14 @@ export default function MapScreen() {
                         destination.latitude,
                         destination.longitude
                       );
-                      const time = estimateCommuteTime(distance);
+                      const transportMode = destination.transportMode || 'transit';
+                      const time = estimateCommuteTime(distance, transportMode);
+                      const modeInfo = getTransportModeInfo(transportMode);
 
                       return (
                         <View key={destination.id} style={styles.commuteItem}>
                           <View style={[styles.commuteIcon, { backgroundColor: DESTINATION_COLORS[index % DESTINATION_COLORS.length] }]}>
-                            <Ionicons name="flag" size={12} color="white" />
+                            <Ionicons name={modeInfo.icon as keyof typeof Ionicons.glyphMap} size={12} color="white" />
                           </View>
                           <Text style={styles.commuteLabel}>{destination.label}</Text>
                           <Text style={styles.commuteTime}>{time}</Text>

@@ -17,12 +17,15 @@ import logger from '../utils/logger';
 
 export type NeighborhoodStatus = 'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out' | null;
 
+export type TransportMode = 'transit' | 'walking' | 'cycling' | 'driving';
+
 export interface Destination {
   id: string;
   label: string;
   address: string;
   latitude: number;
   longitude: number;
+  transportMode: TransportMode;
 }
 
 // Supabase response types
@@ -42,6 +45,7 @@ interface DestinationRow {
   address: string;
   latitude: number;
   longitude: number;
+  transport_mode?: string;
 }
 
 interface NeighborhoodRatingRow {
@@ -163,6 +167,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             address: d.address,
             latitude: d.latitude,
             longitude: d.longitude,
+            transportMode: (d.transport_mode as TransportMode) || 'transit',
           }));
           setDestinations(dests);
         }

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../contexts/AppContext';
 import { neighborhoods } from '../data/neighborhoods';
-import { calculateDistance, estimateCommuteTime } from '../utils/commute';
+import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import EmptyState from '../components/EmptyState';
@@ -142,7 +142,8 @@ export default function CompareScreen() {
                         destination.latitude,
                         destination.longitude
                       );
-                      const time = estimateCommuteTime(distance);
+                      const transportMode = destination.transportMode || 'transit';
+                      const time = estimateCommuteTime(distance, transportMode);
                       return (
                         <View key={destination.id} style={styles.metricValueCell}>
                           <Text style={styles.valueText}>{time}</Text>

@@ -14,6 +14,7 @@ interface DestinationInput {
   address: string;
   latitude: number;
   longitude: number;
+  transportMode: string;
 }
 
 interface DbRatings {
@@ -301,6 +302,7 @@ export const syncDestinations = async (userId: string, destinations: Destination
       address: dest.address,
       latitude: dest.latitude,
       longitude: dest.longitude,
+      transport_mode: dest.transportMode,
     }))
   );
   return { data, error };
