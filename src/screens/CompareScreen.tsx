@@ -112,7 +112,7 @@ export default function CompareScreen() {
                                 key={i}
                                 name={i < value ? 'star' : 'star-outline'}
                                 size={14}
-                                color="#6366f1"
+                                color={COLORS.primary}
                               />
                             ))}
                           </View>

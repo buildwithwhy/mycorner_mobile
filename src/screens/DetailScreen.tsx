@@ -152,7 +152,7 @@ export default function DetailScreen() {
             <View style={styles.highlightsContainer}>
               {neighborhood.highlights.map((highlight, index) => (
                 <View key={index} style={styles.highlightItem}>
-                  <Ionicons name="checkmark-circle" size={20} color="#6366f1" />
+                  <Ionicons name="checkmark-circle" size={20} color={COLORS.primary} />
                   <Text style={styles.highlightText}>{highlight}</Text>
                 </View>
               ))}
@@ -166,7 +166,7 @@ export default function DetailScreen() {
                 <Ionicons
                   name={isEditingRatings ? 'checkmark-circle' : 'pencil'}
                   size={20}
-                  color="#6366f1"
+                  color={COLORS.primary}
                 />
               </TouchableOpacity>
             </View>
@@ -210,11 +210,11 @@ export default function DetailScreen() {
               )}
               <View style={styles.photoActions}>
                 <TouchableOpacity style={styles.photoActionButton} onPress={() => requireAuth('photos', takePhoto)}>
-                  <Ionicons name="camera" size={24} color="#6366f1" />
+                  <Ionicons name="camera" size={24} color={COLORS.primary} />
                   <Text style={styles.photoActionText}>Take Photo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.photoActionButton} onPress={() => requireAuth('photos', pickImage)}>
-                  <Ionicons name="images" size={24} color="#6366f1" />
+                  <Ionicons name="images" size={24} color={COLORS.primary} />
                   <Text style={styles.photoActionText}>Choose from Library</Text>
                 </TouchableOpacity>
               </View>
@@ -226,7 +226,7 @@ export default function DetailScreen() {
               <Text style={styles.sectionTitle}>My Notes</Text>
               {!isEditingNote && (
                 <TouchableOpacity onPress={() => requireAuth('notes', () => setIsEditingNote(true))}>
-                  <Ionicons name="pencil" size={20} color="#6366f1" />
+                  <Ionicons name="pencil" size={20} color={COLORS.primary} />
                 </TouchableOpacity>
               )}
             </View>
@@ -263,7 +263,7 @@ export default function DetailScreen() {
                     <Text style={styles.noteText}>{notes[neighborhood.id]}</Text>
                   ) : (
                     <TouchableOpacity style={styles.addNoteButton} onPress={() => requireAuth('notes', () => setIsEditingNote(true))}>
-                      <Ionicons name="add-circle-outline" size={24} color="#6366f1" />
+                      <Ionicons name="add-circle-outline" size={24} color={COLORS.primary} />
                       <Text style={styles.addNoteText}>Add a note</Text>
                     </TouchableOpacity>
                   )}
@@ -276,23 +276,23 @@ export default function DetailScreen() {
             <Text style={styles.sectionTitle}>Quick Facts</Text>
             <View style={styles.factsList}>
               <View style={styles.fact}>
-                <Ionicons name="location" size={20} color="#6b7280" />
+                <Ionicons name="location" size={20} color={COLORS.gray500} />
                 <Text style={styles.factText}>Located in {neighborhood.borough}</Text>
               </View>
               <View style={styles.fact}>
-                <Ionicons name="cash-outline" size={20} color="#6b7280" />
+                <Ionicons name="cash-outline" size={20} color={COLORS.gray500} />
                 <Text style={styles.factText}>
                   {neighborhood.affordability >= 4 ? 'Affordable area' : neighborhood.affordability === 3 ? 'Moderately priced' : 'Premium area'}
                 </Text>
               </View>
               <View style={styles.fact}>
-                <Ionicons name="shield-checkmark" size={20} color="#6b7280" />
+                <Ionicons name="shield-checkmark" size={20} color={COLORS.gray500} />
                 <Text style={styles.factText}>
                   {neighborhood.safety >= 4 ? 'Very safe area' : 'Safe area'}
                 </Text>
               </View>
               <View style={styles.fact}>
-                <Ionicons name="people" size={20} color="#6b7280" />
+                <Ionicons name="people" size={20} color={COLORS.gray500} />
                 <Text style={styles.factText}>
                   {neighborhood.familyFriendly >= 4 ? 'Very family-friendly' : neighborhood.familyFriendly >= 3 ? 'Family-friendly' : 'Best for adults'}
                 </Text>
@@ -318,7 +318,6 @@ export default function DetailScreen() {
                     destination.longitude
                   );
                   const time = estimateCommuteTime(distance);
-                  const DESTINATION_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#14b8a6'];
 
                   return (
                     <View key={destination.id} style={styles.commuteItem}>
@@ -371,7 +370,7 @@ export default function DetailScreen() {
             <Ionicons
               name={isInComparison(neighborhood.id) ? 'git-compare' : 'git-compare-outline'}
               size={20}
-              color={isInComparison(neighborhood.id) ? '#6366f1' : '#6b7280'}
+              color={isInComparison(neighborhood.id) ? COLORS.primary : COLORS.gray500}
             />
             <Text style={[styles.actionButtonText, isInComparison(neighborhood.id) && styles.actionButtonTextActive]}>
               {isInComparison(neighborhood.id) ? 'Comparing' : 'Compare'}

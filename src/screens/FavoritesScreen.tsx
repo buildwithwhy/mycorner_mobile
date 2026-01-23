@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { neighborhoods } from '../data/neighborhoods';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard from '../components/NeighborhoodCard';
 import EmptyState from '../components/EmptyState';
 
@@ -18,11 +18,11 @@ export default function FavoritesScreen() {
 
   const getStatusIcon = (id: string) => {
     const s = status[id];
-    if (s === 'shortlist') return { icon: 'star', color: '#f59e0b', label: 'Shortlist' };
-    if (s === 'want_to_visit') return { icon: 'bookmark', color: '#3b82f6', label: 'Want to Visit' };
-    if (s === 'visited') return { icon: 'checkmark-circle', color: '#6366f1', label: 'Visited' };
-    if (s === 'living_here') return { icon: 'home', color: '#10b981', label: 'Living Here' };
-    if (s === 'ruled_out') return { icon: 'close-circle', color: '#ef4444', label: 'Ruled Out' };
+    if (s === 'shortlist') return { icon: 'star', color: STATUS_COLORS.shortlist, label: 'Shortlist' };
+    if (s === 'want_to_visit') return { icon: 'bookmark', color: STATUS_COLORS.want_to_visit, label: 'Want to Visit' };
+    if (s === 'visited') return { icon: 'checkmark-circle', color: STATUS_COLORS.visited, label: 'Visited' };
+    if (s === 'living_here') return { icon: 'home', color: STATUS_COLORS.living_here, label: 'Living Here' };
+    if (s === 'ruled_out') return { icon: 'close-circle', color: STATUS_COLORS.ruled_out, label: 'Ruled Out' };
     return null;
   };
 

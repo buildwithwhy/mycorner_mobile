@@ -45,7 +45,7 @@ export default function MapScreen() {
               onPress={() => setSelectedNeighborhood(neighborhood.id)}
             >
               <View style={[styles.marker, isSelected && styles.markerSelected]}>
-                <Ionicons name="location" size={24} color={isSelected ? '#6366f1' : '#6b7280'} />
+                <Ionicons name="location" size={24} color={isSelected ? COLORS.primary : COLORS.gray500} />
               </View>
             </Marker>
           );
@@ -172,7 +172,7 @@ export default function MapScreen() {
                     <Ionicons
                       name={comparison.includes(neighborhood.id) ? 'git-compare' : 'git-compare-outline'}
                       size={20}
-                      color={comparison.includes(neighborhood.id) ? '#6366f1' : '#6b7280'}
+                      color={comparison.includes(neighborhood.id) ? COLORS.primary : COLORS.gray500}
                     />
                   </TouchableOpacity>
                 </View>
