@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -9,12 +8,12 @@ import {
   Platform,
   ScrollView,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { Button, Heading, Subheading, Body, Caption } from '../components';
 import logger from '../utils/logger';
 
 export default function LoginScreen() {
@@ -85,13 +84,13 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Text style={styles.logo}>MyCorner</Text>
-          <Text style={styles.tagline}>Find your perfect London neighborhood</Text>
+          <Heading style={styles.logo} color={COLORS.primary}>MyCorner</Heading>
+          <Body align="center" color={COLORS.gray500}>Find your perfect London neighborhood</Body>
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
+          <Subheading style={styles.title}>Welcome Back</Subheading>
+          <Body color={COLORS.gray500} style={styles.subtitle}>Sign in to continue</Body>
 
           <View style={styles.inputContainer}>
             <Ionicons name="mail-outline" size={20} color={COLORS.gray400} style={styles.inputIcon} />
@@ -128,46 +127,47 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={styles.loginButton}
+          <Button
+            title="Sign In"
             onPress={handleEmailLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color={COLORS.white} />
-            ) : (
-              <Text style={styles.loginButtonText}>Sign In</Text>
-            )}
-          </TouchableOpacity>
+            loading={loading}
+            fullWidth
+            size="large"
+            style={styles.loginButton}
+          />
 
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
+            <Caption style={styles.dividerText}>OR</Caption>
             <View style={styles.dividerLine} />
           </View>
 
-          <TouchableOpacity
-            style={styles.googleButton}
+          <Button
+            title="Continue with Google"
             onPress={handleGoogleLogin}
+            variant="outline"
+            icon="logo-google"
             disabled={loading}
-          >
-            <Ionicons name="logo-google" size={20} color="#DB4437" />
-            <Text style={styles.googleButtonText}>Continue with Google</Text>
-          </TouchableOpacity>
+            fullWidth
+            size="large"
+            style={styles.googleButton}
+            textStyle={styles.googleButtonText}
+          />
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
+            <Body color={COLORS.gray500}>Don't have an account? </Body>
             <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
-              <Text style={styles.footerLink}>Sign Up</Text>
+              <Body color={COLORS.primary} style={styles.footerLink}>Sign Up</Body>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={styles.skipButton}
+          <Button
+            title="Skip for now"
             onPress={() => navigation.navigate('Main' as never)}
-          >
-            <Text style={styles.skipButtonText}>Skip for now</Text>
-          </TouchableOpacity>
+            variant="ghost"
+            style={styles.skipButton}
+            textStyle={styles.skipButtonText}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -190,14 +190,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontSize: 48,
-    fontWeight: 'bold',
-    color: COLORS.primary,
     marginBottom: SPACING.sm,
-  },
-  tagline: {
-    fontSize: FONT_SIZES.base,
-    color: COLORS.gray500,
-    textAlign: 'center',
   },
   form: {
     backgroundColor: COLORS.warmWhite,
@@ -206,14 +199,9 @@ const styles = StyleSheet.create({
     ...SHADOWS.medium,
   },
   title: {
-    fontSize: FONT_SIZES.xxxl,
-    fontWeight: 'bold',
-    color: COLORS.gray900,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: FONT_SIZES.base,
-    color: COLORS.gray500,
     marginBottom: SPACING.xxl,
   },
   inputContainer: {
@@ -239,16 +227,7 @@ const styles = StyleSheet.create({
     padding: SPACING.sm,
   },
   loginButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS.md,
-    paddingVertical: SPACING.lg,
-    alignItems: 'center',
     marginBottom: SPACING.lg,
-  },
-  loginButtonText: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
   },
   divider: {
     flexDirection: 'row',
@@ -262,45 +241,25 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     marginHorizontal: SPACING.md,
-    color: COLORS.gray400,
-    fontSize: FONT_SIZES.sm,
   },
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.md,
-    paddingVertical: SPACING.lg,
-    borderWidth: 1,
     borderColor: COLORS.gray300,
-    gap: SPACING.sm,
   },
   googleButtonText: {
     color: COLORS.gray900,
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: SPACING.xl,
   },
-  footerText: {
-    color: COLORS.gray500,
-    fontSize: FONT_SIZES.base,
-  },
   footerLink: {
-    color: COLORS.primary,
-    fontSize: FONT_SIZES.base,
     fontWeight: '600',
   },
   skipButton: {
     marginTop: SPACING.lg,
-    alignItems: 'center',
   },
   skipButtonText: {
     color: COLORS.gray400,
-    fontSize: FONT_SIZES.base,
   },
 });
