@@ -1,21 +1,57 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
-import MapScreen from '../screens/MapScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import DetailScreen from '../screens/DetailScreen';
 import MyPlacesScreen from '../screens/MyPlacesScreen';
 import CompareScreen from '../screens/CompareScreen';
-import DestinationsScreen from '../screens/DestinationsScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS } from '../constants/theme';
+
+// Lazy load heavy screens to reduce initial bundle parse time
+const MapScreen = lazy(() => import('../screens/MapScreen'));
+const DetailScreen = lazy(() => import('../screens/DetailScreen'));
+const DestinationsScreen = lazy(() => import('../screens/DestinationsScreen'));
+
+// Loading fallback component
+function ScreenLoader() {
+  return (
+    <View style={styles.loader}>
+      <ActivityIndicator size="large" color={COLORS.primary} />
+    </View>
+  );
+}
+
+// Wrapper for lazy-loaded screens
+function LazyMapScreen() {
+  return (
+    <Suspense fallback={<ScreenLoader />}>
+      <MapScreen />
+    </Suspense>
+  );
+}
+
+function LazyDetailScreen() {
+  return (
+    <Suspense fallback={<ScreenLoader />}>
+      <DetailScreen />
+    </Suspense>
+  );
+}
+
+function LazyDestinationsScreen() {
+  return (
+    <Suspense fallback={<ScreenLoader />}>
+      <DestinationsScreen />
+    </Suspense>
+  );
+}
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -52,7 +88,7 @@ function TabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Map" component={MapScreen} />
+      <Tab.Screen name="Map" component={LazyMapScreen} />
       <Tab.Screen name="MyPlaces" component={MyPlacesScreen} options={{ title: 'My Places' }} />
       <Tab.Screen name="Compare" component={CompareScreen} />
       <Tab.Screen name="Profile" component={ProfileTabScreen} />
@@ -75,11 +111,20 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={TabNavigator} />
-        <Stack.Screen name="Detail" component={DetailScreen} />
-        <Stack.Screen name="Destinations" component={DestinationsScreen} />
+        <Stack.Screen name="Detail" component={LazyDetailScreen} />
+        <Stack.Screen name="Destinations" component={LazyDestinationsScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.gray50,
+  },
+});

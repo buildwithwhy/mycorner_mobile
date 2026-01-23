@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -41,6 +41,14 @@ export default function DetailScreen() {
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [signInFeature, setSignInFeature] = useState('this feature');
 
+  // Track if component is mounted to prevent state updates after unmount
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const requireAuth = (featureName: string, action: () => void) => {
     if (!session) {
       setSignInFeature(featureName);
@@ -61,6 +69,8 @@ export default function DetailScreen() {
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!isMountedRef.current) return;
+
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Please allow access to your photo library');
       return;
@@ -73,6 +83,9 @@ export default function DetailScreen() {
       quality: 0.7,
     });
 
+    // Check if still mounted after async operation
+    if (!isMountedRef.current) return;
+
     if (!result.canceled) {
       addNeighborhoodPhoto(neighborhood.id, result.assets[0].uri);
     }
@@ -80,6 +93,8 @@ export default function DetailScreen() {
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (!isMountedRef.current) return;
+
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Please allow access to your camera');
       return;
@@ -90,6 +105,9 @@ export default function DetailScreen() {
       aspect: [4, 3],
       quality: 0.7,
     });
+
+    // Check if still mounted after async operation
+    if (!isMountedRef.current) return;
 
     if (!result.canceled) {
       addNeighborhoodPhoto(neighborhood.id, result.assets[0].uri);
