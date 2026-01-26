@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from './AuthContext';
+import { useSubscription } from './SubscriptionContext';
 import {
   syncComparison,
   getComparison,
@@ -7,6 +8,7 @@ import {
   getUserNeighborhoodStatuses,
 } from '../services/supabase';
 import { useSyncToSupabase, useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
+import { getComparisonLimit, UserTier } from '../utils/features';
 import logger from '../utils/logger';
 
 export type NeighborhoodStatus = 'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out' | null;
@@ -16,24 +18,37 @@ interface NeighborhoodStatusRow {
   status: string;
 }
 
+interface ToggleComparisonResult {
+  success: boolean;
+  action: 'added' | 'removed' | 'limit_reached';
+}
+
 interface StatusComparisonContextType {
   status: Record<string, NeighborhoodStatus>;
   setNeighborhoodStatus: (id: string, status: NeighborhoodStatus) => void;
   getNeighborhoodsByStatus: (status: NeighborhoodStatus) => string[];
   comparison: string[];
-  toggleComparison: (id: string) => void;
+  toggleComparison: (id: string) => ToggleComparisonResult;
   isInComparison: (id: string) => boolean;
   clearComparison: () => void;
+  comparisonLimit: number;
+  isComparisonLimitReached: boolean;
 }
 
 const StatusComparisonContext = createContext<StatusComparisonContextType | undefined>(undefined);
 
 export function StatusComparisonProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { isPremium } = useSubscription();
   const [status, setStatus] = useState<Record<string, NeighborhoodStatus>>({});
   const [comparison, setComparison] = useState<string[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const isSyncingRef = useRef(false);
+
+  // Determine user tier and comparison limit
+  const userTier: UserTier = !user ? 'anonymous' : isPremium ? 'premium' : 'free';
+  const comparisonLimit = getComparisonLimit(userTier);
+  const isComparisonLimitReached = comparison.length >= comparisonLimit;
 
   // Load data from Supabase when user logs in
   useEffect(() => {
@@ -128,17 +143,22 @@ export function StatusComparisonProvider({ children }: { children: React.ReactNo
       .map(([id]) => id);
   }, [status]);
 
-  const toggleComparison = useCallback((id: string) => {
-    setComparison((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((compId) => compId !== id);
-      }
-      if (prev.length >= 3) {
-        return prev;
-      }
-      return [...prev, id];
-    });
-  }, []);
+  const toggleComparison = useCallback((id: string): ToggleComparisonResult => {
+    // Check if removing
+    if (comparison.includes(id)) {
+      setComparison((prev) => prev.filter((compId) => compId !== id));
+      return { success: true, action: 'removed' };
+    }
+
+    // Check if at limit
+    if (comparison.length >= comparisonLimit) {
+      return { success: false, action: 'limit_reached' };
+    }
+
+    // Add to comparison
+    setComparison((prev) => [...prev, id]);
+    return { success: true, action: 'added' };
+  }, [comparison, comparisonLimit]);
 
   const isInComparison = useCallback((id: string) => comparison.includes(id), [comparison]);
 
@@ -154,6 +174,8 @@ export function StatusComparisonProvider({ children }: { children: React.ReactNo
         toggleComparison,
         isInComparison,
         clearComparison,
+        comparisonLimit,
+        isComparisonLimitReached,
       }}
     >
       {children}

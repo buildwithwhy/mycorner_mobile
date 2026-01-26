@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useSubscription } from '../contexts/SubscriptionContext';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { neighborhoods } from '../data/neighborhoods';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
@@ -15,6 +17,8 @@ export default function ProfileScreen() {
   const navigation = useNavigation();
   const { comparison, status, getNeighborhoodsByStatus, destinations } = useApp();
   const { user, signOut } = useAuth();
+  const { isPremium, getManageSubscriptionUrl } = useSubscription();
+  const { tier } = useFeatureAccess();
 
   const shortlist = getNeighborhoodsByStatus('shortlist');
   const wantToVisit = getNeighborhoodsByStatus('want_to_visit');
@@ -36,6 +40,71 @@ export default function ProfileScreen() {
           },
         },
       ]
+    );
+  };
+
+  const handleManageSubscription = async () => {
+    const url = await getManageSubscriptionUrl();
+    if (url) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert('Unable to open', 'Could not open subscription management. Please try again later.');
+    }
+  };
+
+  const renderPremiumCard = () => {
+    if (isPremium) {
+      // Premium user - show status
+      return (
+        <View style={styles.premiumCard}>
+          <View style={styles.premiumBadgeContainer}>
+            <View style={styles.premiumBadge}>
+              <Ionicons name="star" size={20} color={COLORS.white} />
+            </View>
+            <View style={styles.premiumTextContainer}>
+              <Text style={styles.premiumTitle}>Premium Member</Text>
+              <Text style={styles.premiumSubtitle}>You have access to all features</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.manageButton} onPress={handleManageSubscription}>
+            <Text style={styles.manageButtonText}>Manage Subscription</Text>
+            <Ionicons name="open-outline" size={16} color={COLORS.primary} />
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    // Non-premium user - show upgrade CTA
+    return (
+      <TouchableOpacity
+        style={styles.upgradeCard}
+        onPress={() => navigation.navigate('Paywall' as never, { source: 'profile' } as never)}
+      >
+        <View style={styles.upgradeHeader}>
+          <View style={styles.upgradeIconContainer}>
+            <Ionicons name="star" size={28} color={COLORS.white} />
+          </View>
+          <View style={styles.upgradeTextContainer}>
+            <Text style={styles.upgradeTitle}>Upgrade to Premium</Text>
+            <Text style={styles.upgradeSubtitle}>Unlock all features</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={24} color={COLORS.white} />
+        </View>
+        <View style={styles.upgradeFeatures}>
+          <View style={styles.upgradeFeatureItem}>
+            <Ionicons name="checkmark" size={16} color={COLORS.white} />
+            <Text style={styles.upgradeFeatureText}>Unlimited comparisons</Text>
+          </View>
+          <View style={styles.upgradeFeatureItem}>
+            <Ionicons name="checkmark" size={16} color={COLORS.white} />
+            <Text style={styles.upgradeFeatureText}>Unlimited destinations</Text>
+          </View>
+          <View style={styles.upgradeFeatureItem}>
+            <Ionicons name="checkmark" size={16} color={COLORS.white} />
+            <Text style={styles.upgradeFeatureText}>AI neighborhood matcher</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -105,6 +174,8 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           )}
+
+          {renderPremiumCard()}
 
           <TouchableOpacity
             style={styles.destinationsCard}
@@ -256,6 +327,106 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.base,
     fontWeight: '600',
     color: COLORS.error,
+  },
+  premiumCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOWS.small,
+  },
+  premiumBadgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
+  premiumBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  premiumTextContainer: {
+    flex: 1,
+  },
+  premiumTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginBottom: 2,
+  },
+  premiumSubtitle: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.gray500,
+  },
+  manageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.xs,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.md,
+  },
+  manageButtonText: {
+    fontSize: FONT_SIZES.base,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  upgradeCard: {
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.medium,
+  },
+  upgradeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.md,
+  },
+  upgradeIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  upgradeTextContainer: {
+    flex: 1,
+  },
+  upgradeTitle: {
+    fontSize: FONT_SIZES.xl,
+    fontWeight: '700',
+    color: COLORS.white,
+    marginBottom: 2,
+  },
+  upgradeSubtitle: {
+    fontSize: FONT_SIZES.md,
+    color: 'rgba(255,255,255,0.8)',
+  },
+  upgradeFeatures: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.md,
+    gap: SPACING.sm,
+  },
+  upgradeFeatureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  upgradeFeatureText: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.white,
+    fontWeight: '500',
   },
   destinationsCard: {
     backgroundColor: COLORS.white,

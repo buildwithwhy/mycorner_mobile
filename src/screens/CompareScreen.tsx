@@ -7,10 +7,12 @@ import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import EmptyState from '../components/EmptyState';
 import AffordabilityBadge from '../components/AffordabilityBadge';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
 
 export default function CompareScreen() {
   const { comparison, toggleComparison, clearComparison, notes, destinations } = useApp();
   const { cityNeighborhoods } = useCity();
+  const { comparisonLimit, isPremium } = useFeatureAccess();
 
   // Filter comparison to only include neighborhoods from the current city
   const compareNeighborhoods = useMemo(
@@ -52,7 +54,7 @@ export default function CompareScreen() {
         <EmptyState
           icon="git-compare-outline"
           title="No neighborhoods to compare"
-          message="Tap the compare button on neighborhood details to add them here (max 3)"
+          message={`Tap the compare button on neighborhood details to add them here (max ${comparisonLimit}${!isPremium ? ' - upgrade for more!' : ''})`}
         />
       </View>
     );

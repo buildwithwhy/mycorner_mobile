@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Neighborhood } from '../data/neighborhoods';
@@ -12,7 +12,7 @@ type SortOption = 'name' | 'affordability' | 'safety' | 'transit';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const { status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
+  const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useApp();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
   const { photos } = useNotesRatings();
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +24,21 @@ export default function HomeScreen() {
   const [minAffordability, setMinAffordability] = useState(1);
   const [minSafety, setMinSafety] = useState(1);
   const [minTransit, setMinTransit] = useState(1);
+
+  // Handle comparison toggle with limit feedback
+  const handleToggleComparison = useCallback((id: string) => {
+    const result = toggleComparison(id);
+    if (result.action === 'limit_reached') {
+      Alert.alert(
+        'Comparison Limit Reached',
+        `You can compare up to ${comparisonLimit} neighborhoods. Upgrade to Premium to compare more!`,
+        [
+          { text: 'OK', style: 'cancel' },
+          { text: 'Upgrade', onPress: () => navigation.navigate('Paywall' as never) },
+        ]
+      );
+    }
+  }, [toggleComparison, comparisonLimit, navigation]);
 
   // Memoized filter and sort for better performance
   const filteredNeighborhoods = useMemo(() => {

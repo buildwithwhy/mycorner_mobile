@@ -8,6 +8,14 @@ import {
   signOut as supabaseSignOut,
   getSession,
 } from '../services/supabase';
+import { setUser as setSentryUser } from '../services/sentry';
+import {
+  identifyUser,
+  resetUser,
+  trackSignIn,
+  trackSignUp,
+  trackSignOut,
+} from '../services/analytics';
 
 interface AuthContextType {
   session: Session | null;
@@ -55,6 +63,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Update Sentry user context
+      if (session?.user) {
+        setSentryUser({
+          id: session.user.id,
+          email: session.user.email,
+        });
+      } else {
+        setSentryUser(null);
+      }
     });
 
     return () => {
@@ -67,6 +85,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (data.session) {
       setSession(data.session);
       setUser(data.session.user);
+      // Track successful sign in
+      trackSignIn('email');
+      identifyUser(data.session.user.id, { email: data.session.user.email });
     }
     return { error };
   };
@@ -76,6 +97,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (data.session) {
       setSession(data.session);
       setUser(data.session.user);
+      // Track successful sign up
+      trackSignUp('email');
+      identifyUser(data.session.user.id, { email: data.session.user.email, name: fullName });
     }
     return { error };
   };
@@ -86,6 +110,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    // Track sign out before clearing session
+    trackSignOut();
+    resetUser();
+
     await supabaseSignOut();
     setSession(null);
     setUser(null);

@@ -5,17 +5,29 @@ import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useApp, TransportMode, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { getTransportModeInfo } from '../utils/commute';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 const TRANSPORT_MODES: TransportMode[] = ['transit', 'walking', 'cycling', 'driving'];
 
+// Destination limits by tier
+const DESTINATION_LIMITS = {
+  anonymous: 0,
+  free: 1,
+  premium: 99, // effectively unlimited
+};
+
 export default function DestinationsScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
   const { destinations, addDestination, removeDestination } = useApp();
   const { selectedCity } = useCity();
+  const { tier, isPremium } = useFeatureAccess();
+
+  const destinationLimit = DESTINATION_LIMITS[tier];
+  const canAddMore = destinations.length < destinationLimit;
   const [showAddModal, setShowAddModal] = useState(false);
   const [newLabel, setNewLabel] = useState('');
   const [newAddress, setNewAddress] = useState('');
@@ -127,6 +139,7 @@ export default function DestinationsScreen() {
         <View style={styles.content}>
           <Text style={styles.description}>
             Add places you visit regularly in {selectedCity.name} to see commute information from each neighborhood
+            {!isPremium && ` (${destinations.length}/${destinationLimit} on free plan)`}
           </Text>
 
           {destinations.length > 0 ? (
@@ -175,10 +188,28 @@ export default function DestinationsScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
-          <Ionicons name="add-circle" size={24} color={COLORS.white} />
-          <Text style={styles.addButtonText}>Add Destination</Text>
-        </TouchableOpacity>
+        {!canAddMore && !isPremium ? (
+          <View style={styles.limitReachedContainer}>
+            <View style={styles.limitReachedInfo}>
+              <Ionicons name="lock-closed" size={20} color={COLORS.primary} />
+              <Text style={styles.limitReachedText}>
+                Free plan includes 1 destination
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.upgradeButton}
+              onPress={() => navigation.navigate('Paywall' as never, { source: 'destinations_limit' } as never)}
+            >
+              <Ionicons name="star" size={20} color={COLORS.white} />
+              <Text style={styles.upgradeButtonText}>Upgrade for Unlimited</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.addButton} onPress={() => setShowAddModal(true)}>
+            <Ionicons name="add-circle" size={24} color={COLORS.white} />
+            <Text style={styles.addButtonText}>Add Destination</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <Modal visible={showAddModal} animationType="slide" transparent={true}>
@@ -488,6 +519,37 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.sm,
   },
   addButtonText: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '600',
+    color: COLORS.white,
+  },
+  limitReachedContainer: {
+    gap: SPACING.md,
+  },
+  limitReachedInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    paddingVertical: SPACING.md,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  limitReachedText: {
+    fontSize: FONT_SIZES.base,
+    fontWeight: '500',
+    color: COLORS.primary,
+  },
+  upgradeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  upgradeButtonText: {
     fontSize: FONT_SIZES.lg,
     fontWeight: '600',
     color: COLORS.white,

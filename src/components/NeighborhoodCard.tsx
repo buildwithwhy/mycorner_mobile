@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import SignInPromptModal from './SignInPromptModal';
 import StatusPickerModal from './StatusPickerModal';
 import AffordabilityBadge from './AffordabilityBadge';
+import { getNeighborhoodImage } from '../assets/neighborhood-images';
 
 export type ViewMode = 'list' | 'card';
 
@@ -93,6 +94,8 @@ export default function NeighborhoodCard({
           <View style={styles.heroSection}>
             {firstPhotoUri ? (
               <Image source={{ uri: firstPhotoUri }} style={styles.heroImage} />
+            ) : getNeighborhoodImage(neighborhood.id) ? (
+              <Image source={getNeighborhoodImage(neighborhood.id)} style={styles.heroImage} />
             ) : (
               <View style={[styles.heroPlaceholder, { backgroundColor: boroughColor }]}>
                 <Text style={styles.heroInitial}>{neighborhood.name[0]}</Text>

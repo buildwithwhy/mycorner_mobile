@@ -11,6 +11,7 @@ import MyPlacesScreen from '../screens/MyPlacesScreen';
 import CompareScreen from '../screens/CompareScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import PaywallScreen from '../screens/PaywallScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS } from '../constants/theme';
 
@@ -115,6 +116,11 @@ export default function AppNavigator() {
         <Stack.Screen name="Destinations" component={LazyDestinationsScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen
+          name="Paywall"
+          component={PaywallScreen}
+          options={{ presentation: 'modal' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

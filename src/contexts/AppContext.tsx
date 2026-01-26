@@ -64,6 +64,8 @@ export function useApp() {
     toggleComparison: statusComparison.toggleComparison,
     isInComparison: statusComparison.isInComparison,
     clearComparison: statusComparison.clearComparison,
+    comparisonLimit: statusComparison.comparisonLimit,
+    isComparisonLimitReached: statusComparison.isComparisonLimitReached,
 
     // Notes, Photos & Ratings
     notes: notesRatings.notes,
