@@ -43,6 +43,7 @@ interface NeighborhoodCardProps {
   viewMode?: ViewMode;
   photoCount?: number;
   firstPhotoUri?: string | null;
+  matchScore?: number | null; // Personalized match percentage (0-100)
 }
 
 const getStatusInfo = (status: NeighborhoodStatus) => {
@@ -64,6 +65,7 @@ export default function NeighborhoodCard({
   viewMode = 'list',
   photoCount = 0,
   firstPhotoUri = null,
+  matchScore = null,
 }: NeighborhoodCardProps) {
   const { session } = useAuth();
   const [showSignInModal, setShowSignInModal] = useState(false);
@@ -105,6 +107,12 @@ export default function NeighborhoodCard({
 
             {/* Overlay badges */}
             <View style={styles.heroOverlay}>
+              {matchScore !== null && (
+                <View style={[styles.matchScoreBadge, matchScore >= 90 && styles.matchScoreBadgeTop]}>
+                  <Ionicons name="trophy" size={10} color={COLORS.white} />
+                  <Text style={styles.matchScoreText}>Top {matchScore}%</Text>
+                </View>
+              )}
               {statusInfo && (
                 <View style={[styles.heroStatusBadge, { backgroundColor: statusInfo.color }]}>
                   <Ionicons name={statusInfo.icon} size={14} color={COLORS.white} />
@@ -194,6 +202,14 @@ export default function NeighborhoodCard({
           <View style={styles.cardHeaderText}>
             <View style={styles.titleRow}>
               <Text style={styles.cardTitle}>{neighborhood.name}</Text>
+              {matchScore !== null && (
+                <View style={[styles.listMatchBadge, matchScore >= 90 && styles.listMatchBadgeTop]}>
+                  <Ionicons name="trophy" size={12} color={matchScore >= 90 ? COLORS.warning : COLORS.success} />
+                  <Text style={[styles.listMatchText, matchScore >= 90 && styles.listMatchTextTop]}>
+                    Top {matchScore}%
+                  </Text>
+                </View>
+              )}
               {hasPhotos && (
                 <View style={styles.photoBadge}>
                   <Ionicons name="camera" size={12} color={COLORS.gray500} />
@@ -519,5 +535,45 @@ const styles = StyleSheet.create({
   },
   cardViewActionButtonActive: {
     backgroundColor: COLORS.primaryLight,
+  },
+
+  // === MATCH SCORE STYLES ===
+  matchScoreBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: COLORS.success,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  matchScoreBadgeTop: {
+    backgroundColor: COLORS.warning,
+  },
+  matchScoreText: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '700',
+    color: COLORS.white,
+  },
+  listMatchBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: COLORS.successLight || '#ECFDF5',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: BORDER_RADIUS.sm,
+    marginBottom: 4,
+  },
+  listMatchBadgeTop: {
+    backgroundColor: COLORS.warningLight || '#FFFBEB',
+  },
+  listMatchText: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+    color: COLORS.success,
+  },
+  listMatchTextTop: {
+    color: COLORS.warning,
   },
 });

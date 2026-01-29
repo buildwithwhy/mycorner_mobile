@@ -12,6 +12,8 @@ import CompareScreen from '../screens/CompareScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import PaywallScreen from '../screens/PaywallScreen';
+import PreferencesScreen from '../screens/PreferencesScreen';
+import MatcherScreen from '../screens/MatcherScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS } from '../constants/theme';
 
@@ -121,6 +123,8 @@ export default function AppNavigator() {
           component={PaywallScreen}
           options={{ presentation: 'modal' }}
         />
+        <Stack.Screen name="Preferences" component={PreferencesScreen} />
+        <Stack.Screen name="Matcher" component={MatcherScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

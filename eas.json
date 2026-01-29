@@ -12,7 +12,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "APP_ENV": "development"
+        "APP_ENV": "development",
+        "GOOGLE_MAPS_API_KEY": "AIzaSyA8cDgOrETAOyTWu_WlRoEaf2aS7vMSyS8"
       },
       "ios": {
         "simulator": true
@@ -39,7 +40,7 @@
         "simulator": false
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       }
     },
     "production": {
@@ -49,19 +50,17 @@
         "APP_ENV": "production"
       },
       "autoIncrement": true
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "environment": "development"
     }
   },
   "submit": {
-    "production": {
-      "ios": {
-        "appleId": "",
-        "ascAppId": "",
-        "appleTeamId": ""
-      },
-      "android": {
-        "serviceAccountKeyPath": "",
-        "track": "internal"
-      }
-    }
+    "production": {}
   }
 }

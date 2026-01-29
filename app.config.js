@@ -47,6 +47,10 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: currentEnv.bundleIdentifier,
+      config: {
+        usesNonExemptEncryption: false,
+        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+      },
     },
     android: {
       package: currentEnv.package,
@@ -54,8 +58,13 @@ module.exports = {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      edgeToEdgeEnabled: true,
-      predictiveBackGestureEnabled: false
+      edgeToEdgeEnabled: false,
+      predictiveBackGestureEnabled: false,
+      config: {
+        googleMaps: {
+          apiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+        },
+      },
     },
     web: {
       favicon: "./assets/favicon.png"
@@ -63,13 +72,14 @@ module.exports = {
     plugins: [
       "expo-font",
       "expo-splash-screen",
-      [
-        "@sentry/react-native/expo",
-        {
-          organization: process.env.SENTRY_ORG || "your-org",
-          project: process.env.SENTRY_PROJECT || "mycorner",
-        }
-      ]
+      // Sentry plugin disabled until configured - uncomment when ready:
+      // [
+      //   "@sentry/react-native/expo",
+      //   {
+      //     organization: process.env.SENTRY_ORG,
+      //     project: process.env.SENTRY_PROJECT,
+      //   }
+      // ]
     ],
     extra: {
       // Current environment

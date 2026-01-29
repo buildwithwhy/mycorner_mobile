@@ -1,0 +1,53 @@
+# EAS Build Ignore File
+# Files and directories listed here are excluded from EAS Build uploads
+# This reduces upload size and build time
+
+# Git
+.git
+
+# Documentation
+*.md
+!README.md
+
+# SQL files (not needed in app)
+*.sql
+
+# Text files
+*.txt
+
+# Local environment files (EAS uses secrets instead)
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local Expo files
+.expo/
+
+# Test files
+__tests__/
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+
+# Build artifacts
+dist/
+build/
+
+# Scripts (not needed in build)
+scripts/
+
+# Claude Code files
+.claude/

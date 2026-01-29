@@ -3,6 +3,11 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { CustomerInfo, PurchasesPackage, PurchasesOffering } from 'react-native-purchases';
+
+// TEMPORARY: Set to true to unlock all premium features for testing
+// Must match the flag in useFeatureAccess.ts
+// Set to false before production release
+const DEV_UNLOCK_ALL_FEATURES = true;
 import {
   initSubscriptions,
   isRevenueCatConfigured,
@@ -168,7 +173,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const value: SubscriptionContextType = {
-    isPremium,
+    isPremium: DEV_UNLOCK_ALL_FEATURES || isPremium,
     isLoading,
     customerInfo,
     offerings,

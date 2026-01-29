@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from './src/contexts/AppContext';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { SubscriptionProvider } from './src/contexts/SubscriptionContext';
+import { PreferencesProvider } from './src/contexts/PreferencesContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import OfflineBanner from './src/components/OfflineBanner';
@@ -35,11 +36,13 @@ function App() {
       <ErrorBoundary>
         <AuthProvider>
           <SubscriptionProvider>
-            <AppProvider>
-              <OfflineBanner />
-              <AppNavigator />
-              <StatusBar style="light" />
-            </AppProvider>
+            <PreferencesProvider>
+              <AppProvider>
+                <OfflineBanner />
+                <AppNavigator />
+                <StatusBar style="light" />
+              </AppProvider>
+            </PreferencesProvider>
           </SubscriptionProvider>
         </AuthProvider>
       </ErrorBoundary>

@@ -14,6 +14,10 @@ import {
   FEATURES,
 } from '../utils/features';
 
+// TEMPORARY: Set to true to unlock all premium features for testing
+// Set to false before production release
+const DEV_UNLOCK_ALL_FEATURES = true;
+
 interface FeatureAccessResult {
   // Current user tier
   tier: UserTier;
@@ -45,6 +49,9 @@ export const useFeatureAccess = (): FeatureAccessResult => {
 
   // Determine user tier
   const tier: UserTier = useMemo(() => {
+    // TEMPORARY: Unlock all features for testing
+    if (DEV_UNLOCK_ALL_FEATURES) return 'premium';
+
     if (!user) return 'anonymous';
     if (isPremium) return 'premium';
     return 'free';
@@ -108,7 +115,7 @@ export const useFeatureAccess = (): FeatureAccessResult => {
     canAccess,
     getLimit,
     isLimitExceeded,
-    isPremium,
+    isPremium: DEV_UNLOCK_ALL_FEATURES || isPremium,
     isLoggedIn: !!user,
     comparisonLimit,
     requiresSignIn,

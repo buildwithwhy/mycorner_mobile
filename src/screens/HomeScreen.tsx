@@ -1,29 +1,39 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Neighborhood } from '../data/neighborhoods';
 import { useApp, useCity, useNotesRatings } from '../contexts/AppContext';
+import { usePreferences } from '../contexts/PreferencesContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard, { ViewMode } from '../components/NeighborhoodCard';
 import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
+import { scoreAndSortNeighborhoods, calculateMatchPercentage, ScoredNeighborhood } from '../utils/personalizedScoring';
 
-type SortOption = 'name' | 'affordability' | 'safety' | 'transit';
+type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useApp();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
   const { photos } = useNotesRatings();
+  const { preferences, hasCustomPreferences } = usePreferences();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [showFilters, setShowFilters] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showCitySelectorModal, setShowCitySelectorModal] = useState(false);
   const [minAffordability, setMinAffordability] = useState(1);
   const [minSafety, setMinSafety] = useState(1);
   const [minTransit, setMinTransit] = useState(1);
+
+  // Auto-switch to "Best Match" sort when user has custom preferences
+  useEffect(() => {
+    if (hasCustomPreferences && sortBy === 'name') {
+      setSortBy('bestMatch');
+    }
+  }, [hasCustomPreferences]);
 
   // Handle comparison toggle with limit feedback
   const handleToggleComparison = useCallback((id: string) => {
@@ -59,6 +69,11 @@ export default function HomeScreen() {
     });
 
     // Sort filtered results
+    if (sortBy === 'bestMatch') {
+      // Use personalized scoring for "Best Match" sort
+      return scoreAndSortNeighborhoods(filtered, preferences);
+    }
+
     return filtered.sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
       if (sortBy === 'affordability') return b.affordability - a.affordability;
@@ -66,13 +81,35 @@ export default function HomeScreen() {
       if (sortBy === 'transit') return b.transit - a.transit;
       return 0;
     });
-  }, [cityNeighborhoods, searchQuery, sortBy, minAffordability, minSafety, minTransit]);
+  }, [cityNeighborhoods, searchQuery, sortBy, minAffordability, minSafety, minTransit, preferences]);
+
+  // Calculate match percentages as ranking percentiles for display
+  // Shows "Top X%" - how this neighborhood ranks among all neighborhoods based on preferences
+  // Always calculate when user has custom preferences, regardless of current sort
+  const matchPercentages = useMemo(() => {
+    if (!hasCustomPreferences) return {};
+
+    // Score and sort by preferences to get rankings
+    const scoredAndSorted = scoreAndSortNeighborhoods(filteredNeighborhoods, preferences);
+    const total = scoredAndSorted.length;
+
+    const percentages: Record<string, number> = {};
+    scoredAndSorted.forEach((n, index) => {
+      // Calculate percentile rank (top 1 = 99%, middle = 50%, last = 1%)
+      const percentileRank = Math.round(((total - index) / total) * 100);
+      percentages[n.id] = Math.max(1, percentileRank);
+    });
+
+    return percentages;
+  }, [filteredNeighborhoods, preferences, hasCustomPreferences]);
 
   const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
 
   // Memoized render function for FlatList
-  const renderNeighborhoodCard = useCallback(({ item: neighborhood }: { item: Neighborhood }) => {
+  const renderNeighborhoodCard = useCallback(({ item: neighborhood }: { item: Neighborhood | ScoredNeighborhood }) => {
     const neighborhoodPhotos = photos[neighborhood.id] || [];
+    // Show match score whenever user has custom preferences (not just when sorting by bestMatch)
+    const matchScore = hasCustomPreferences ? matchPercentages[neighborhood.id] : null;
     return (
       <NeighborhoodCard
         neighborhood={neighborhood}
@@ -84,17 +121,38 @@ export default function HomeScreen() {
         viewMode={viewMode}
         photoCount={neighborhoodPhotos.length}
         firstPhotoUri={neighborhoodPhotos[0] || null}
+        matchScore={matchScore}
       />
     );
-  }, [navigation, status, comparison, setNeighborhoodStatus, toggleComparison, viewMode, photos]);
+  }, [navigation, status, comparison, setNeighborhoodStatus, toggleComparison, viewMode, photos, hasCustomPreferences, matchPercentages]);
 
   const keyExtractor = useCallback((item: Neighborhood) => item.id, []);
 
   const ListHeader = useMemo(() => (
-    <Text style={styles.resultCount}>
-      {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
-    </Text>
-  ), [filteredNeighborhoods.length]);
+    <View>
+      {/* Matcher promo card - show when user hasn't set preferences */}
+      {!hasCustomPreferences && (
+        <TouchableOpacity
+          style={styles.matcherPromoCard}
+          onPress={() => navigation.navigate('Matcher' as never)}
+        >
+          <View style={styles.matcherPromoIcon}>
+            <Ionicons name="search" size={24} color={COLORS.primary} />
+          </View>
+          <View style={styles.matcherPromoContent}>
+            <Text style={styles.matcherPromoTitle}>Find Your Perfect Match</Text>
+            <Text style={styles.matcherPromoSubtitle}>
+              Answer a few questions or describe what you're looking for
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+        </TouchableOpacity>
+      )}
+      <Text style={styles.resultCount}>
+        {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
+      </Text>
+    </View>
+  ), [filteredNeighborhoods.length, hasCustomPreferences, navigation]);
 
   return (
     <View style={styles.container}>
@@ -133,10 +191,24 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.controlButton} onPress={() => setShowSortModal(true)}>
-            <Ionicons name="swap-vertical" size={18} color="#6b7280" />
-            <Text style={styles.controlButtonText}>
-              Sort: {sortBy === 'name' ? 'Name' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safety' : 'Transit'}
+            <Ionicons name="swap-vertical" size={18} color={sortBy === 'bestMatch' ? COLORS.primary : "#6b7280"} />
+            <Text style={[styles.controlButtonText, sortBy === 'bestMatch' && styles.controlButtonTextActive]}>
+              {sortBy === 'name' ? 'Name' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safety' : sortBy === 'transit' ? 'Transit' : 'Best Match'}
             </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.matcherButton}
+            onPress={() => navigation.navigate('Matcher' as never)}
+          >
+            <Ionicons name="sparkles" size={18} color={COLORS.white} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.preferencesButton, hasCustomPreferences && styles.preferencesButtonActive]}
+            onPress={() => navigation.navigate('Preferences' as never)}
+          >
+            <Ionicons name="options" size={18} color={hasCustomPreferences ? COLORS.primary : COLORS.white} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -258,6 +330,23 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.sortOptions}>
+              <TouchableOpacity
+                style={[styles.sortOption, sortBy === 'bestMatch' && styles.sortOptionActive]}
+                onPress={() => {
+                  setSortBy('bestMatch');
+                  setShowSortModal(false);
+                }}
+              >
+                <Ionicons name="heart" size={24} color={sortBy === 'bestMatch' ? COLORS.primary : COLORS.gray500} />
+                <View style={styles.sortOptionText}>
+                  <Text style={[styles.sortOptionTitle, sortBy === 'bestMatch' && styles.sortOptionTitleActive]}>
+                    Best Match
+                  </Text>
+                  <Text style={styles.sortOptionDescription}>Based on your preferences</Text>
+                </View>
+                {sortBy === 'bestMatch' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={[styles.sortOption, sortBy === 'name' && styles.sortOptionActive]}
                 onPress={() => {
@@ -419,11 +508,62 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
   },
+  matcherButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.accent,
+    borderRadius: 8,
+  },
+  preferencesButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+  },
+  preferencesButtonActive: {
+    backgroundColor: COLORS.white,
+  },
   scrollView: {
     flex: 1,
   },
   content: {
     padding: SPACING.lg,
+  },
+  matcherPromoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primaryLight,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.primaryBorder || COLORS.primary + '30',
+  },
+  matcherPromoIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: BORDER_RADIUS.md,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  matcherPromoContent: {
+    flex: 1,
+  },
+  matcherPromoTitle: {
+    fontSize: FONT_SIZES.base,
+    fontWeight: '700',
+    color: COLORS.primary,
+    marginBottom: 2,
+  },
+  matcherPromoSubtitle: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray600 || COLORS.gray500,
   },
   resultCount: {
     fontSize: FONT_SIZES.base,
