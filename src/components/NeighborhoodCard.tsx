@@ -6,6 +6,7 @@ import { NeighborhoodStatus } from '../contexts/AppContext';
 import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import AffordabilityBadge from './AffordabilityBadge';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
+import { shareNeighborhood } from '../utils/sharing';
 
 export type ViewMode = 'list' | 'card';
 
@@ -113,6 +114,10 @@ function NeighborhoodCard({
     onAddToPlaces(neighborhood.id);
   }, [onAddToPlaces, neighborhood.id]);
 
+  const handleShare = useCallback(() => {
+    shareNeighborhood(neighborhood);
+  }, [neighborhood]);
+
   // Render stats row - shared between both views
   const renderStats = (size: 'small' | 'medium') => (
     <View style={size === 'small' ? styles.cardViewStats : styles.statsRow}>
@@ -202,6 +207,16 @@ function NeighborhoodCard({
               color={isInComparison ? COLORS.primary : COLORS.gray400}
             />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cardViewActionButton}
+            onPress={handleShare}
+          >
+            <Ionicons
+              name="share-outline"
+              size={16}
+              color={COLORS.gray400}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -277,6 +292,16 @@ function NeighborhoodCard({
             name={isInComparison ? 'git-compare' : 'git-compare-outline'}
             size={18}
             color={isInComparison ? COLORS.primary : COLORS.gray500}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.cardActionButton}
+          onPress={handleShare}
+        >
+          <Ionicons
+            name="share-outline"
+            size={18}
+            color={COLORS.gray500}
           />
         </TouchableOpacity>
       </View>
