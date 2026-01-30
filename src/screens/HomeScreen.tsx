@@ -616,11 +616,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingRight: 2,
   },
   controlsLeft: {
     flexDirection: 'row',
     gap: 6,
     flexShrink: 1,
+    marginRight: 12,
   },
   controlPill: {
     flexDirection: 'row',
