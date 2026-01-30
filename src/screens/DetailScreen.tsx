@@ -93,9 +93,22 @@ export default function DetailScreen() {
     galleryImages.push({ uri });
   });
 
+  // Convert vibe category to numeric score
+  const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
+    switch (vibe) {
+      case 'happening': return 5;
+      case 'moderate': return 3;
+      case 'quiet': return 1;
+      default: return 3;
+    }
+  };
+
   // Get effective ratings (user ratings override defaults)
-  const getEffectiveRating = (metric: keyof typeof neighborhood) => {
-    return currentUserRatings[metric as keyof typeof currentUserRatings] ?? neighborhood[metric];
+  const getEffectiveRating = (metric: string) => {
+    if (metric === 'vibe') {
+      return currentUserRatings.vibe ?? vibeToScore(neighborhood.vibe);
+    }
+    return currentUserRatings[metric as keyof typeof currentUserRatings] ?? neighborhood[metric as keyof typeof neighborhood];
   };
 
   const pickImage = async () => {
@@ -352,39 +365,19 @@ export default function DetailScreen() {
                 { key: 'nightlife', icon: 'moon', label: 'Nightlife', description: CRITERIA_INFO.nightlife.description },
                 { key: 'familyFriendly', icon: 'home', label: 'Family', description: CRITERIA_INFO.familyFriendly.description },
                 { key: 'dining', icon: 'restaurant', label: 'Dining', description: CRITERIA_INFO.dining.description },
+                { key: 'vibe', icon: 'people', label: 'Local Scene', description: CRITERIA_INFO.vibe.description },
               ].map((rating) => (
                 <RatingCard
                   key={rating.key}
                   icon={rating.icon as keyof typeof Ionicons.glyphMap}
                   label={rating.label}
                   description={rating.description}
-                  value={getEffectiveRating(rating.key as keyof typeof neighborhood) as number}
+                  value={getEffectiveRating(rating.key) as number}
                   isEditing={isEditingRatings}
                   isCustom={!!currentUserRatings[rating.key as keyof typeof currentUserRatings]}
                   onRatingChange={(value) => setUserRating(neighborhood.id, rating.key, value)}
                 />
               ))}
-            </View>
-
-            {/* Local Scene (Vibe) */}
-            <View style={styles.localSceneCard}>
-              <View style={styles.localSceneHeader}>
-                <Ionicons name="people" size={24} color={COLORS.primary} />
-                <View style={styles.localSceneLabelContainer}>
-                  <Text style={styles.localSceneLabelText}>Local Scene</Text>
-                  <Text style={styles.localSceneDescription}>{CRITERIA_INFO.vibe.description}</Text>
-                </View>
-              </View>
-              <View style={[
-                styles.localSceneBadge,
-                neighborhood.vibe === 'happening' && styles.localSceneBadgeHappening,
-                neighborhood.vibe === 'quiet' && styles.localSceneBadgeQuiet,
-              ]}>
-                <Text style={styles.localSceneBadgeText}>
-                  {neighborhood.vibe === 'happening' ? 'Active' :
-                   neighborhood.vibe === 'quiet' ? 'Quiet' : 'Balanced'}
-                </Text>
-              </View>
             </View>
           </View>
 
@@ -822,50 +815,6 @@ const styles = StyleSheet.create({
   ratingsGrid: {
     gap: SPACING.sm,
   },
-  localSceneCard: {
-    backgroundColor: COLORS.white,
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.md,
-    marginTop: SPACING.sm,
-    ...SHADOWS.small,
-  },
-  localSceneHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.md,
-  },
-  localSceneLabelContainer: {
-    flex: 1,
-    marginLeft: SPACING.md,
-  },
-  localSceneLabelText: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray900,
-  },
-  localSceneDescription: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.gray500,
-    marginTop: 2,
-  },
-  localSceneBadge: {
-    backgroundColor: COLORS.gray100,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.md,
-  },
-  localSceneBadgeHappening: {
-    backgroundColor: COLORS.warningLight || '#FEF3C7',
-  },
-  localSceneBadgeQuiet: {
-    backgroundColor: COLORS.successLight || '#D1FAE5',
-  },
-  localSceneBadgeText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
-    color: COLORS.gray700,
-  },
-
   // Commute
   commuteList: {
     backgroundColor: COLORS.white,
