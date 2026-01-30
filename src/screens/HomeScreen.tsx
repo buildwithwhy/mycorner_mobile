@@ -615,12 +615,12 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
   },
   controlsLeft: {
-    flex: 1,
     flexDirection: 'row',
     gap: 6,
+    flexShrink: 1,
   },
   controlPill: {
     flexDirection: 'row',
