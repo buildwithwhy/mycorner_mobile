@@ -133,29 +133,29 @@ export default function NeighborhoodCard({
             <Text style={styles.cardViewBorough}>{neighborhood.borough}</Text>
 
             <View style={styles.cardViewStats}>
-              <View style={styles.cardViewStatIcon} title="Safety">
+              <View style={styles.cardViewStatIcon}>
+                <Ionicons name="cash-outline" size={14} color={neighborhood.affordability >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.affordability >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.affordability}</Text>
+              </View>
+              <View style={styles.cardViewStatIcon}>
                 <Ionicons name="shield-checkmark" size={14} color={neighborhood.safety >= 4 ? COLORS.success : COLORS.gray400} />
                 <Text style={[styles.cardViewStatMini, neighborhood.safety >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.safety}</Text>
               </View>
-              <View style={styles.cardViewStatIcon} title="Transit">
+              <View style={styles.cardViewStatIcon}>
                 <Ionicons name="bus" size={14} color={neighborhood.transit >= 4 ? COLORS.success : COLORS.gray400} />
                 <Text style={[styles.cardViewStatMini, neighborhood.transit >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.transit}</Text>
               </View>
-              <View style={styles.cardViewStatIcon} title="Green Space">
+              <View style={styles.cardViewStatIcon}>
                 <Ionicons name="leaf" size={14} color={neighborhood.greenSpace >= 4 ? COLORS.success : COLORS.gray400} />
                 <Text style={[styles.cardViewStatMini, neighborhood.greenSpace >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.greenSpace}</Text>
               </View>
-              <View style={styles.cardViewStatIcon} title="Family">
+              <View style={styles.cardViewStatIcon}>
                 <Ionicons name="home" size={14} color={neighborhood.familyFriendly >= 4 ? COLORS.success : COLORS.gray400} />
                 <Text style={[styles.cardViewStatMini, neighborhood.familyFriendly >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.familyFriendly}</Text>
               </View>
-              <View style={styles.cardViewStatIcon} title="Dining">
+              <View style={styles.cardViewStatIcon}>
                 <Ionicons name="restaurant" size={14} color={neighborhood.dining >= 4 ? COLORS.success : COLORS.gray400} />
                 <Text style={[styles.cardViewStatMini, neighborhood.dining >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.dining}</Text>
-              </View>
-              <View style={styles.cardViewStatIcon} title="Local Scene">
-                <Ionicons name="people" size={14} color={neighborhood.vibe === 'happening' ? COLORS.warning : COLORS.gray400} />
-                <Text style={styles.cardViewVibeShort}>{neighborhood.vibe === 'happening' ? '!' : neighborhood.vibe === 'quiet' ? '~' : '-'}</Text>
               </View>
             </View>
           </View>
@@ -255,25 +255,33 @@ export default function NeighborhoodCard({
             <Ionicons name="cash-outline" size={16} color={COLORS.gray500} />
             <AffordabilityBadge value={neighborhood.affordability} />
           </View>
-
           <View style={styles.stat}>
             <Ionicons name="shield-checkmark" size={16} color={COLORS.gray500} />
             <Text style={styles.statText}>{neighborhood.safety}/5</Text>
           </View>
-
           <View style={styles.stat}>
             <Ionicons name="bus" size={16} color={COLORS.gray500} />
             <Text style={styles.statText}>{neighborhood.transit}/5</Text>
           </View>
-
+          <View style={styles.stat}>
+            <Ionicons name="leaf" size={16} color={COLORS.gray500} />
+            <Text style={styles.statText}>{neighborhood.greenSpace}/5</Text>
+          </View>
+        </View>
+        <View style={styles.statsSecondRow}>
+          <View style={styles.stat}>
+            <Ionicons name="home" size={16} color={COLORS.gray500} />
+            <Text style={styles.statText}>{neighborhood.familyFriendly}/5</Text>
+          </View>
           <View style={styles.stat}>
             <Ionicons name="restaurant" size={16} color={COLORS.gray500} />
             <Text style={styles.statText}>{neighborhood.dining}/5</Text>
           </View>
-
           <View style={styles.stat}>
             <Ionicons name="people" size={16} color={COLORS.gray500} />
-            <Text style={styles.vibeText}>{neighborhood.vibe}</Text>
+            <Text style={styles.vibeText}>
+              {neighborhood.vibe === 'happening' ? 'Active' : neighborhood.vibe === 'quiet' ? 'Quiet' : 'Balanced'}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -406,6 +414,12 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.gray200,
+  },
+  statsSecondRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    gap: SPACING.lg,
+    marginTop: SPACING.sm,
   },
   stat: {
     flexDirection: 'row',

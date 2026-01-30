@@ -367,10 +367,13 @@ export default function DetailScreen() {
             </View>
 
             {/* Local Scene (Vibe) */}
-            <View style={styles.localSceneRow}>
-              <View style={styles.localSceneLabel}>
-                <Ionicons name="people" size={20} color={COLORS.primary} />
-                <Text style={styles.localSceneLabelText}>Local Scene</Text>
+            <View style={styles.localSceneCard}>
+              <View style={styles.localSceneHeader}>
+                <Ionicons name="people" size={24} color={COLORS.primary} />
+                <View style={styles.localSceneLabelContainer}>
+                  <Text style={styles.localSceneLabelText}>Local Scene</Text>
+                  <Text style={styles.localSceneDescription}>{CRITERIA_INFO.vibe.description}</Text>
+                </View>
               </View>
               <View style={[
                 styles.localSceneBadge,
@@ -378,8 +381,8 @@ export default function DetailScreen() {
                 neighborhood.vibe === 'quiet' && styles.localSceneBadgeQuiet,
               ]}>
                 <Text style={styles.localSceneBadgeText}>
-                  {neighborhood.vibe === 'happening' ? 'Active & Bustling' :
-                   neighborhood.vibe === 'quiet' ? 'Quiet & Peaceful' : 'Balanced'}
+                  {neighborhood.vibe === 'happening' ? 'Active' :
+                   neighborhood.vibe === 'quiet' ? 'Quiet' : 'Balanced'}
                 </Text>
               </View>
             </View>
@@ -819,25 +822,31 @@ const styles = StyleSheet.create({
   ratingsGrid: {
     gap: SPACING.sm,
   },
-  localSceneRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  localSceneCard: {
     backgroundColor: COLORS.white,
-    padding: SPACING.md,
+    padding: SPACING.lg,
     borderRadius: BORDER_RADIUS.md,
     marginTop: SPACING.sm,
     ...SHADOWS.small,
   },
-  localSceneLabel: {
+  localSceneHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
+    alignItems: 'flex-start',
+    marginBottom: SPACING.md,
+  },
+  localSceneLabelContainer: {
+    flex: 1,
+    marginLeft: SPACING.md,
   },
   localSceneLabelText: {
-    fontSize: FONT_SIZES.base,
+    fontSize: FONT_SIZES.lg,
     fontWeight: '600',
-    color: COLORS.gray700,
+    color: COLORS.gray900,
+  },
+  localSceneDescription: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray500,
+    marginTop: 2,
   },
   localSceneBadge: {
     backgroundColor: COLORS.gray100,
