@@ -6,6 +6,7 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constant
 interface RatingCardProps {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
+  description?: string;
   value: number;
   isEditing: boolean;
   isCustom?: boolean;
@@ -15,6 +16,7 @@ interface RatingCardProps {
 export default function RatingCard({
   icon,
   label,
+  description,
   value,
   isEditing,
   isCustom,
@@ -24,7 +26,10 @@ export default function RatingCard({
     <View style={styles.card}>
       <View style={styles.header}>
         <Ionicons name={icon} size={24} color={COLORS.primary} />
-        <Text style={styles.label}>{label}</Text>
+        <View style={styles.labelContainer}>
+          <Text style={styles.label}>{label}</Text>
+          {description && <Text style={styles.description}>{description}</Text>}
+        </View>
       </View>
 
       {isEditing ? (
@@ -84,11 +89,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.md,
   },
+  labelContainer: {
+    flex: 1,
+    marginLeft: SPACING.md,
+  },
   label: {
     fontSize: FONT_SIZES.lg,
     fontWeight: '600',
     color: COLORS.gray900,
-    marginLeft: SPACING.md,
+  },
+  description: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray500,
+    marginTop: 2,
   },
   stars: {
     flexDirection: 'row',

@@ -26,6 +26,7 @@ import StatusPickerModal from '../components/StatusPickerModal';
 import AffordabilityBadge from '../components/AffordabilityBadge';
 import RatingCard from '../components/RatingCard';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import { CRITERIA_INFO } from '../contexts/PreferencesContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
@@ -345,17 +346,18 @@ export default function DetailScreen() {
 
             <View style={styles.ratingsGrid}>
               {[
-                { key: 'safety', icon: 'shield-checkmark', label: 'Safety' },
-                { key: 'transit', icon: 'bus', label: 'Transit' },
-                { key: 'greenSpace', icon: 'leaf', label: 'Green Space' },
-                { key: 'nightlife', icon: 'moon', label: 'Nightlife' },
-                { key: 'familyFriendly', icon: 'home', label: 'Family' },
-                { key: 'dining', icon: 'restaurant', label: 'Dining' },
+                { key: 'safety', icon: 'shield-checkmark', label: 'Safety', description: CRITERIA_INFO.safety.description },
+                { key: 'transit', icon: 'bus', label: 'Transit', description: CRITERIA_INFO.transit.description },
+                { key: 'greenSpace', icon: 'leaf', label: 'Green Space', description: CRITERIA_INFO.greenSpace.description },
+                { key: 'nightlife', icon: 'moon', label: 'Nightlife', description: CRITERIA_INFO.nightlife.description },
+                { key: 'familyFriendly', icon: 'home', label: 'Family', description: CRITERIA_INFO.familyFriendly.description },
+                { key: 'dining', icon: 'restaurant', label: 'Dining', description: CRITERIA_INFO.dining.description },
               ].map((rating) => (
                 <RatingCard
                   key={rating.key}
                   icon={rating.icon as keyof typeof Ionicons.glyphMap}
                   label={rating.label}
+                  description={rating.description}
                   value={getEffectiveRating(rating.key as keyof typeof neighborhood) as number}
                   isEditing={isEditingRatings}
                   isCustom={!!currentUserRatings[rating.key as keyof typeof currentUserRatings]}

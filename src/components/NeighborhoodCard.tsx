@@ -133,21 +133,29 @@ export default function NeighborhoodCard({
             <Text style={styles.cardViewBorough}>{neighborhood.borough}</Text>
 
             <View style={styles.cardViewStats}>
-              <View style={styles.cardViewStat}>
-                <Ionicons name="cash-outline" size={14} color={COLORS.gray400} />
-                <AffordabilityBadge value={neighborhood.affordability} size="small" />
+              <View style={styles.cardViewStatIcon} title="Safety">
+                <Ionicons name="shield-checkmark" size={14} color={neighborhood.safety >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.safety >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.safety}</Text>
               </View>
-              <View style={styles.cardViewStat}>
-                <Ionicons name="shield-checkmark" size={14} color={COLORS.gray400} />
-                <Text style={styles.cardViewStatText}>{neighborhood.safety}</Text>
+              <View style={styles.cardViewStatIcon} title="Transit">
+                <Ionicons name="bus" size={14} color={neighborhood.transit >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.transit >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.transit}</Text>
               </View>
-              <View style={styles.cardViewStat}>
-                <Ionicons name="restaurant" size={14} color={COLORS.gray400} />
-                <Text style={styles.cardViewStatText}>{neighborhood.dining}</Text>
+              <View style={styles.cardViewStatIcon} title="Green Space">
+                <Ionicons name="leaf" size={14} color={neighborhood.greenSpace >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.greenSpace >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.greenSpace}</Text>
               </View>
-              <View style={styles.cardViewStat}>
-                <Ionicons name="people" size={14} color={COLORS.gray400} />
-                <Text style={styles.cardViewVibeText}>{neighborhood.vibe}</Text>
+              <View style={styles.cardViewStatIcon} title="Family">
+                <Ionicons name="home" size={14} color={neighborhood.familyFriendly >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.familyFriendly >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.familyFriendly}</Text>
+              </View>
+              <View style={styles.cardViewStatIcon} title="Dining">
+                <Ionicons name="restaurant" size={14} color={neighborhood.dining >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.dining >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.dining}</Text>
+              </View>
+              <View style={styles.cardViewStatIcon} title="Local Scene">
+                <Ionicons name="people" size={14} color={neighborhood.vibe === 'happening' ? COLORS.warning : COLORS.gray400} />
+                <Text style={styles.cardViewVibeShort}>{neighborhood.vibe === 'happening' ? '!' : neighborhood.vibe === 'quiet' ? '~' : '-'}</Text>
               </View>
             </View>
           </View>
@@ -525,12 +533,26 @@ const styles = StyleSheet.create({
   },
   cardViewStats: {
     flexDirection: 'row',
-    gap: SPACING.md,
+    justifyContent: 'space-between',
+    gap: SPACING.xs,
   },
   cardViewStat: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
+  },
+  cardViewStatIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  cardViewStatMini: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '600',
+    color: COLORS.gray400,
+  },
+  cardViewStatMiniGood: {
+    color: COLORS.success,
   },
   cardViewStatText: {
     fontSize: FONT_SIZES.sm,
@@ -542,6 +564,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.primary,
     textTransform: 'capitalize',
+  },
+  cardViewVibeShort: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '700',
+    color: COLORS.gray400,
   },
   cardViewActions: {
     flexDirection: 'row',
