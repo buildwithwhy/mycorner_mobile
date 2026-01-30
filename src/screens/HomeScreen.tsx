@@ -622,7 +622,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 6,
     flexShrink: 1,
-    marginRight: 12,
+    marginRight: 20,
   },
   controlPill: {
     flexDirection: 'row',
