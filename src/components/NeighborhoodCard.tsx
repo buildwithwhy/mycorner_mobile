@@ -12,6 +12,16 @@ import { getNeighborhoodImage } from '../assets/neighborhood-images';
 
 export type ViewMode = 'list' | 'card';
 
+// Convert vibe to numeric score for display consistency
+const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
+  switch (vibe) {
+    case 'happening': return 5;
+    case 'moderate': return 3;
+    case 'quiet': return 1;
+    default: return 3;
+  }
+};
+
 // Generate a consistent color based on borough name
 const getBoroughColor = (borough: string): string => {
   const colors = [
@@ -134,8 +144,7 @@ export default function NeighborhoodCard({
 
             <View style={styles.cardViewStats}>
               <View style={styles.cardViewStatIcon}>
-                <Ionicons name="cash-outline" size={14} color={neighborhood.affordability >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.affordability >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.affordability}</Text>
+                <AffordabilityBadge value={neighborhood.affordability} size="small" />
               </View>
               <View style={styles.cardViewStatIcon}>
                 <Ionicons name="shield-checkmark" size={14} color={neighborhood.safety >= 4 ? COLORS.success : COLORS.gray400} />
@@ -150,8 +159,8 @@ export default function NeighborhoodCard({
                 <Text style={[styles.cardViewStatMini, neighborhood.greenSpace >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.greenSpace}</Text>
               </View>
               <View style={styles.cardViewStatIcon}>
-                <Ionicons name="home" size={14} color={neighborhood.familyFriendly >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.familyFriendly >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.familyFriendly}</Text>
+                <Ionicons name="wine" size={14} color={neighborhood.nightlife >= 4 ? COLORS.success : COLORS.gray400} />
+                <Text style={[styles.cardViewStatMini, neighborhood.nightlife >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.nightlife}</Text>
               </View>
               <View style={styles.cardViewStatIcon}>
                 <Ionicons name="restaurant" size={14} color={neighborhood.dining >= 4 ? COLORS.success : COLORS.gray400} />
@@ -250,38 +259,29 @@ export default function NeighborhoodCard({
           ))}
         </View>
 
-        <View style={styles.stats}>
+        <View style={styles.statsRow}>
           <View style={styles.stat}>
-            <Ionicons name="cash-outline" size={16} color={COLORS.gray500} />
-            <AffordabilityBadge value={neighborhood.affordability} />
+            <AffordabilityBadge value={neighborhood.affordability} size="small" />
           </View>
           <View style={styles.stat}>
-            <Ionicons name="shield-checkmark" size={16} color={COLORS.gray500} />
-            <Text style={styles.statText}>{neighborhood.safety}/5</Text>
+            <Ionicons name="shield-checkmark" size={16} color={neighborhood.safety >= 4 ? COLORS.success : COLORS.gray400} />
+            <Text style={[styles.statText, neighborhood.safety >= 4 && styles.statTextGood]}>{neighborhood.safety}</Text>
           </View>
           <View style={styles.stat}>
-            <Ionicons name="bus" size={16} color={COLORS.gray500} />
-            <Text style={styles.statText}>{neighborhood.transit}/5</Text>
+            <Ionicons name="bus" size={16} color={neighborhood.transit >= 4 ? COLORS.success : COLORS.gray400} />
+            <Text style={[styles.statText, neighborhood.transit >= 4 && styles.statTextGood]}>{neighborhood.transit}</Text>
           </View>
           <View style={styles.stat}>
-            <Ionicons name="leaf" size={16} color={COLORS.gray500} />
-            <Text style={styles.statText}>{neighborhood.greenSpace}/5</Text>
-          </View>
-        </View>
-        <View style={styles.statsSecondRow}>
-          <View style={styles.stat}>
-            <Ionicons name="home" size={16} color={COLORS.gray500} />
-            <Text style={styles.statText}>{neighborhood.familyFriendly}/5</Text>
+            <Ionicons name="leaf" size={16} color={neighborhood.greenSpace >= 4 ? COLORS.success : COLORS.gray400} />
+            <Text style={[styles.statText, neighborhood.greenSpace >= 4 && styles.statTextGood]}>{neighborhood.greenSpace}</Text>
           </View>
           <View style={styles.stat}>
-            <Ionicons name="restaurant" size={16} color={COLORS.gray500} />
-            <Text style={styles.statText}>{neighborhood.dining}/5</Text>
+            <Ionicons name="wine" size={16} color={neighborhood.nightlife >= 4 ? COLORS.success : COLORS.gray400} />
+            <Text style={[styles.statText, neighborhood.nightlife >= 4 && styles.statTextGood]}>{neighborhood.nightlife}</Text>
           </View>
           <View style={styles.stat}>
-            <Ionicons name="people" size={16} color={COLORS.gray500} />
-            <Text style={styles.vibeText}>
-              {neighborhood.vibe === 'happening' ? 'Active' : neighborhood.vibe === 'quiet' ? 'Quiet' : 'Balanced'}
-            </Text>
+            <Ionicons name="restaurant" size={16} color={neighborhood.dining >= 4 ? COLORS.success : COLORS.gray400} />
+            <Text style={[styles.statText, neighborhood.dining >= 4 && styles.statTextGood]}>{neighborhood.dining}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -408,34 +408,26 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.accentDark,
   },
-  stats: {
+  statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingTop: SPACING.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.gray200,
   },
-  statsSecondRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    gap: SPACING.lg,
-    marginTop: SPACING.sm,
-  },
   stat: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    flex: 1,
   },
   statText: {
     fontSize: FONT_SIZES.md,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: COLORS.gray400,
   },
-  vibeText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '500',
-    color: COLORS.primary,
-    textTransform: 'capitalize',
+  statTextGood: {
+    color: COLORS.success,
   },
   cardActions: {
     flexDirection: 'row',
