@@ -27,6 +27,7 @@ import AffordabilityBadge from '../components/AffordabilityBadge';
 import RatingCard from '../components/RatingCard';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { CRITERIA_INFO } from '../contexts/PreferencesContext';
+import { shareNeighborhood } from '../utils/sharing';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
@@ -536,6 +537,18 @@ export default function DetailScreen() {
             <Text style={[styles.actionButtonText, isInComparison(neighborhood.id) && styles.actionButtonTextActive]}>
               {isInComparison(neighborhood.id) ? 'Comparing' : 'Compare'}
             </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => shareNeighborhood(neighborhood)}
+          >
+            <Ionicons
+              name="share-outline"
+              size={20}
+              color={COLORS.gray500}
+            />
+            <Text style={styles.actionButtonText}>Share</Text>
           </TouchableOpacity>
         </View>
 
