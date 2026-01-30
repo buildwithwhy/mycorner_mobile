@@ -15,14 +15,11 @@ const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const { comparison, status, getNeighborhoodsByStatus, destinations } = useApp();
+  const { destinations } = useApp();
   const { user, signOut } = useAuth();
   const { isPremium, getManageSubscriptionUrl } = useSubscription();
   const { tier } = useFeatureAccess();
   const { hasCustomPreferences } = usePreferences();
-
-  const shortlist = getNeighborhoodsByStatus('shortlist');
-  const visited = getNeighborhoodsByStatus('visited');
 
   const handleSignOut = () => {
     Alert.alert(
@@ -156,29 +153,6 @@ export default function ProfileScreen() {
               <Ionicons name="chevron-forward" size={24} color={COLORS.gray400} />
             </View>
           </TouchableOpacity>
-
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Ionicons name="bookmark" size={28} color={COLORS.primary} />
-              <Text style={styles.statNumber}>{Object.keys(status).length}</Text>
-              <Text style={styles.statLabel}>Saved Places</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Ionicons name="git-compare" size={28} color={COLORS.info} />
-              <Text style={styles.statNumber}>{comparison.length}</Text>
-              <Text style={styles.statLabel}>Comparing</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Ionicons name="star" size={28} color={COLORS.accent} />
-              <Text style={styles.statNumber}>{shortlist.length}</Text>
-              <Text style={styles.statLabel}>Shortlist</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Ionicons name="checkmark-circle" size={28} color={COLORS.success} />
-              <Text style={styles.statNumber}>{visited.length}</Text>
-              <Text style={styles.statLabel}>Visited</Text>
-            </View>
-          </View>
 
           <TouchableOpacity
             style={styles.preferencesCard}

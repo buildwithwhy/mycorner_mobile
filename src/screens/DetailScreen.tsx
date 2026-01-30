@@ -349,7 +349,8 @@ export default function DetailScreen() {
                 { key: 'transit', icon: 'bus', label: 'Transit' },
                 { key: 'greenSpace', icon: 'leaf', label: 'Green Space' },
                 { key: 'nightlife', icon: 'moon', label: 'Nightlife' },
-                { key: 'familyFriendly', icon: 'people', label: 'Family' },
+                { key: 'familyFriendly', icon: 'home', label: 'Family' },
+                { key: 'dining', icon: 'restaurant', label: 'Dining' },
               ].map((rating) => (
                 <RatingCard
                   key={rating.key}
@@ -361,6 +362,24 @@ export default function DetailScreen() {
                   onRatingChange={(value) => setUserRating(neighborhood.id, rating.key, value)}
                 />
               ))}
+            </View>
+
+            {/* Local Scene (Vibe) */}
+            <View style={styles.localSceneRow}>
+              <View style={styles.localSceneLabel}>
+                <Ionicons name="people" size={20} color={COLORS.primary} />
+                <Text style={styles.localSceneLabelText}>Local Scene</Text>
+              </View>
+              <View style={[
+                styles.localSceneBadge,
+                neighborhood.vibe === 'happening' && styles.localSceneBadgeHappening,
+                neighborhood.vibe === 'quiet' && styles.localSceneBadgeQuiet,
+              ]}>
+                <Text style={styles.localSceneBadgeText}>
+                  {neighborhood.vibe === 'happening' ? 'Active & Bustling' :
+                   neighborhood.vibe === 'quiet' ? 'Quiet & Peaceful' : 'Balanced'}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -797,6 +816,43 @@ const styles = StyleSheet.create({
   // Ratings
   ratingsGrid: {
     gap: SPACING.sm,
+  },
+  localSceneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.white,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginTop: SPACING.sm,
+    ...SHADOWS.small,
+  },
+  localSceneLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  localSceneLabelText: {
+    fontSize: FONT_SIZES.base,
+    fontWeight: '600',
+    color: COLORS.gray700,
+  },
+  localSceneBadge: {
+    backgroundColor: COLORS.gray100,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+  },
+  localSceneBadgeHappening: {
+    backgroundColor: COLORS.warningLight || '#FEF3C7',
+  },
+  localSceneBadgeQuiet: {
+    backgroundColor: COLORS.successLight || '#D1FAE5',
+  },
+  localSceneBadgeText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.gray700,
   },
 
   // Commute
