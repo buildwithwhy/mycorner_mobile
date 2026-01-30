@@ -70,8 +70,8 @@ export const CRITERIA_INFO: Record<ScoringCriterion, { label: string; icon: stri
     description: 'Restaurants, cafes, and food options',
   },
   vibe: {
-    label: 'Lively Vibe',
-    icon: 'sparkles',
+    label: 'Local Scene',
+    icon: 'people',
     description: 'Events, markets, and community activity',
   },
 };

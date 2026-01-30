@@ -243,9 +243,9 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
   },
   {
     id: 'vibe',
-    question: 'What kind of neighborhood atmosphere do you prefer?',
+    question: 'What kind of local scene do you prefer?',
     options: [
-      { label: 'Lively - events, markets, lots going on', weights: { vibe: 100, nightlife: 70 } },
+      { label: 'Active - events, markets, community activities', weights: { vibe: 100, nightlife: 70 } },
       { label: 'Balanced - some activity but not too busy', weights: { vibe: 50 } },
       { label: 'Quiet - peaceful and residential', weights: { vibe: 10, safety: 60 } },
       { label: 'No preference', weights: { vibe: 50 } },

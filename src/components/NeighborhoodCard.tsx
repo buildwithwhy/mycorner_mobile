@@ -142,8 +142,12 @@ export default function NeighborhoodCard({
                 <Text style={styles.cardViewStatText}>{neighborhood.safety}</Text>
               </View>
               <View style={styles.cardViewStat}>
-                <Ionicons name="bus" size={14} color={COLORS.gray400} />
-                <Text style={styles.cardViewStatText}>{neighborhood.transit}</Text>
+                <Ionicons name="restaurant" size={14} color={COLORS.gray400} />
+                <Text style={styles.cardViewStatText}>{neighborhood.dining}</Text>
+              </View>
+              <View style={styles.cardViewStat}>
+                <Ionicons name="people" size={14} color={COLORS.gray400} />
+                <Text style={styles.cardViewVibeText}>{neighborhood.vibe}</Text>
               </View>
             </View>
           </View>
@@ -255,8 +259,13 @@ export default function NeighborhoodCard({
           </View>
 
           <View style={styles.stat}>
-            <Ionicons name="leaf" size={16} color={COLORS.gray500} />
-            <Text style={styles.statText}>{neighborhood.greenSpace}/5</Text>
+            <Ionicons name="restaurant" size={16} color={COLORS.gray500} />
+            <Text style={styles.statText}>{neighborhood.dining}/5</Text>
+          </View>
+
+          <View style={styles.stat}>
+            <Ionicons name="people" size={16} color={COLORS.gray500} />
+            <Text style={styles.vibeText}>{neighborhood.vibe}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -400,6 +409,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.primary,
   },
+  vibeText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '500',
+    color: COLORS.primary,
+    textTransform: 'capitalize',
+  },
   cardActions: {
     flexDirection: 'row',
     gap: SPACING.sm,
@@ -521,6 +536,12 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     fontWeight: '600',
     color: COLORS.primary,
+  },
+  cardViewVibeText: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '500',
+    color: COLORS.primary,
+    textTransform: 'capitalize',
   },
   cardViewActions: {
     flexDirection: 'row',

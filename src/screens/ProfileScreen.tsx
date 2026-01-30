@@ -7,7 +7,7 @@ import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import { neighborhoods } from '../data/neighborhoods';
+import { usePreferences } from '../contexts/PreferencesContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || 'https://kallidao.com/productlab/mycorner/privacy';
@@ -19,12 +19,10 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const { isPremium, getManageSubscriptionUrl } = useSubscription();
   const { tier } = useFeatureAccess();
+  const { hasCustomPreferences } = usePreferences();
 
   const shortlist = getNeighborhoodsByStatus('shortlist');
-  const wantToVisit = getNeighborhoodsByStatus('want_to_visit');
   const visited = getNeighborhoodsByStatus('visited');
-  const livingHere = getNeighborhoodsByStatus('living_here');
-  const ruledOut = getNeighborhoodsByStatus('ruled_out');
 
   const handleSignOut = () => {
     Alert.alert(
@@ -108,49 +106,11 @@ export default function ProfileScreen() {
     );
   };
 
-  const renderStatusList = (
-    title: string,
-    icon: keyof typeof Ionicons.glyphMap,
-    color: string,
-    ids: string[]
-  ) => {
-    if (ids.length === 0) return null;
-
-    return (
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Ionicons name={icon} size={24} color={color} />
-          <Text style={styles.sectionTitle}>{title}</Text>
-          <Text style={styles.sectionCount}>{ids.length}</Text>
-        </View>
-        <View style={styles.list}>
-          {ids.map((id) => {
-            const neighborhood = neighborhoods.find((n) => n.id === id);
-            if (!neighborhood) return null;
-            return (
-              <TouchableOpacity
-                key={id}
-                style={styles.listItem}
-                onPress={() => navigation.navigate('Detail', { neighborhood })}
-              >
-                <View style={styles.listItemContent}>
-                  <Text style={styles.listItemName}>{neighborhood.name}</Text>
-                  <Text style={styles.listItemBorough}>{neighborhood.borough}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>My Lists</Text>
-        <Text style={styles.subtitle}>Track your neighborhood journey</Text>
+        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.subtitle}>Your account and preferences</Text>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -220,21 +180,25 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          {renderStatusList('Shortlist', 'star', COLORS.accent, shortlist)}
-          {renderStatusList('Want to Visit', 'bookmark', COLORS.info, wantToVisit)}
-          {renderStatusList('Visited', 'checkmark-circle', COLORS.primary, visited)}
-          {renderStatusList('Living Here', 'home', COLORS.success, livingHere)}
-          {renderStatusList('Ruled Out', 'close-circle', COLORS.error, ruledOut)}
-
-          {shortlist.length === 0 && wantToVisit.length === 0 && visited.length === 0 && livingHere.length === 0 && ruledOut.length === 0 && (
-            <View style={styles.emptyState}>
-              <Ionicons name="list-outline" size={64} color={COLORS.gray300} />
-              <Text style={styles.emptyTitle}>No lists yet</Text>
-              <Text style={styles.emptyText}>
-                Start exploring neighborhoods and set their status to organize your search
-              </Text>
+          <TouchableOpacity
+            style={styles.preferencesCard}
+            onPress={() => navigation.navigate('Preferences' as never)}
+          >
+            <View style={styles.preferencesHeader}>
+              <View style={styles.preferencesIconContainer}>
+                <Ionicons name="options" size={24} color={COLORS.primary} />
+              </View>
+              <View style={styles.preferencesTextContainer}>
+                <Text style={styles.preferencesTitle}>Match Preferences</Text>
+                <Text style={styles.preferencesSubtitle}>
+                  {hasCustomPreferences
+                    ? 'Your preferences are set'
+                    : 'Set what matters to you'}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={COLORS.gray400} />
             </View>
-          )}
+          </TouchableOpacity>
 
           <View style={styles.footer}>
             <TouchableOpacity
@@ -458,6 +422,39 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   destinationsSubtitle: {
+    fontSize: FONT_SIZES.md,
+    color: COLORS.gray500,
+  },
+  preferencesCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.lg,
+    ...SHADOWS.small,
+  },
+  preferencesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  preferencesIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  preferencesTextContainer: {
+    flex: 1,
+  },
+  preferencesTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '600',
+    color: COLORS.gray900,
+    marginBottom: 2,
+  },
+  preferencesSubtitle: {
     fontSize: FONT_SIZES.md,
     color: COLORS.gray500,
   },
