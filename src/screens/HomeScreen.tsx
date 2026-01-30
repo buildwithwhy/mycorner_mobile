@@ -3,10 +3,13 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, S
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Neighborhood } from '../data/neighborhoods';
-import { useApp, useCity, useNotesRatings } from '../contexts/AppContext';
+import { useApp, useCity, useNotesRatings, NeighborhoodStatus } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard, { ViewMode } from '../components/NeighborhoodCard';
+import SignInPromptModal from '../components/SignInPromptModal';
+import StatusPickerModal from '../components/StatusPickerModal';
 import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
 import { scoreAndSortNeighborhoods, calculateMatchPercentage, ScoredNeighborhood } from '../utils/personalizedScoring';
 
@@ -14,6 +17,7 @@ type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  const { session } = useAuth();
   const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useApp();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
   const { photos } = useNotesRatings();
@@ -27,6 +31,36 @@ export default function HomeScreen() {
   const [minAffordability, setMinAffordability] = useState(1);
   const [minSafety, setMinSafety] = useState(1);
   const [minTransit, setMinTransit] = useState(1);
+
+  // Lifted modal state - single instance for all cards
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [showStatusPicker, setShowStatusPicker] = useState(false);
+  const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState<string | null>(null);
+
+  // Get selected neighborhood for modal
+  const selectedNeighborhood = useMemo(() =>
+    selectedNeighborhoodId ? cityNeighborhoods.find(n => n.id === selectedNeighborhoodId) : null,
+    [selectedNeighborhoodId, cityNeighborhoods]
+  );
+
+  // Handler for "Add to Places" - checks auth and shows appropriate modal
+  const handleAddToPlaces = useCallback((neighborhoodId: string) => {
+    setSelectedNeighborhoodId(neighborhoodId);
+    if (!session) {
+      setShowSignInModal(true);
+    } else {
+      setShowStatusPicker(true);
+    }
+  }, [session]);
+
+  // Handler for status selection
+  const handleSetStatus = useCallback((newStatus: NeighborhoodStatus) => {
+    if (selectedNeighborhoodId) {
+      setNeighborhoodStatus(selectedNeighborhoodId, newStatus);
+    }
+    setShowStatusPicker(false);
+    setSelectedNeighborhoodId(null);
+  }, [selectedNeighborhoodId, setNeighborhoodStatus]);
 
   // Auto-switch to "Best Match" sort when user has custom preferences
   useEffect(() => {
@@ -116,15 +150,15 @@ export default function HomeScreen() {
         onPress={() => navigation.navigate('Detail', { neighborhood })}
         currentStatus={status[neighborhood.id] || null}
         isInComparison={comparison.includes(neighborhood.id)}
-        onSetStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
-        onToggleComparison={() => toggleComparison(neighborhood.id)}
+        onAddToPlaces={handleAddToPlaces}
+        onToggleComparison={() => handleToggleComparison(neighborhood.id)}
         viewMode={viewMode}
         photoCount={neighborhoodPhotos.length}
         firstPhotoUri={neighborhoodPhotos[0] || null}
         matchScore={matchScore}
       />
     );
-  }, [navigation, status, comparison, setNeighborhoodStatus, toggleComparison, viewMode, photos, hasCustomPreferences, matchPercentages]);
+  }, [navigation, status, comparison, handleAddToPlaces, handleToggleComparison, viewMode, photos, hasCustomPreferences, matchPercentages]);
 
   const keyExtractor = useCallback((item: Neighborhood) => item.id, []);
 
@@ -424,6 +458,27 @@ export default function HomeScreen() {
         visible={showCitySelectorModal || (showCityPicker && !hasSelectedCity)}
         onClose={() => setShowCitySelectorModal(false)}
         isFirstLaunch={!hasSelectedCity}
+      />
+
+      {/* Lifted modals - single instance for all cards */}
+      <SignInPromptModal
+        visible={showSignInModal}
+        onClose={() => {
+          setShowSignInModal(false);
+          setSelectedNeighborhoodId(null);
+        }}
+        featureName="saving places"
+      />
+
+      <StatusPickerModal
+        visible={showStatusPicker}
+        onClose={() => {
+          setShowStatusPicker(false);
+          setSelectedNeighborhoodId(null);
+        }}
+        currentStatus={selectedNeighborhoodId ? status[selectedNeighborhoodId] || null : null}
+        onSelectStatus={handleSetStatus}
+        neighborhoodName={selectedNeighborhood?.name || ''}
       />
     </View>
   );

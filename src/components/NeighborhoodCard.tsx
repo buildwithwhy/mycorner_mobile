@@ -1,46 +1,74 @@
-import React, { useState } from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
 import { NeighborhoodStatus } from '../contexts/AppContext';
 import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
-import { useAuth } from '../contexts/AuthContext';
-import SignInPromptModal from './SignInPromptModal';
-import StatusPickerModal from './StatusPickerModal';
 import AffordabilityBadge from './AffordabilityBadge';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
 
 export type ViewMode = 'list' | 'card';
 
-// Convert vibe to numeric score for display consistency
-const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
-  switch (vibe) {
-    case 'happening': return 5;
-    case 'moderate': return 3;
-    case 'quiet': return 1;
-    default: return 3;
-  }
+// Stats configuration - single source of truth for both views
+type StatConfig = {
+  key: keyof Neighborhood;
+  icon: keyof typeof Ionicons.glyphMap;
+  isAffordability?: boolean;
 };
 
-// Generate a consistent color based on borough name
-const getBoroughColor = (borough: string): string => {
-  const colors = [
-    '#5D8A8A', // primary teal
-    '#7BA3B8', // muted blue
-    '#9B8ABD', // muted purple
-    '#BD8A9B', // muted rose
-    '#D4956A', // soft amber
-    '#6AAB8E', // muted green
-    '#8B9DC3', // slate blue
-    '#C4A484', // tan
-  ];
+const STATS_CONFIG: StatConfig[] = [
+  { key: 'affordability', icon: 'cash-outline', isAffordability: true },
+  { key: 'safety', icon: 'shield-checkmark' },
+  { key: 'transit', icon: 'bus' },
+  { key: 'greenSpace', icon: 'leaf' },
+  { key: 'nightlife', icon: 'wine' },
+  { key: 'dining', icon: 'restaurant' },
+];
 
-  // Simple hash of borough name to pick a consistent color
+// Shared StatItem component to avoid duplication
+interface StatItemProps {
+  icon: keyof typeof Ionicons.glyphMap;
+  value: number;
+  size: 'small' | 'medium';
+  isAffordability?: boolean;
+}
+
+const StatItem = memo(({ icon, value, size, isAffordability }: StatItemProps) => {
+  const isGood = value >= 4;
+  const iconSize = size === 'small' ? 14 : 16;
+  const textStyle = size === 'small'
+    ? [styles.cardViewStatMini, isGood && styles.statTextGood]
+    : [styles.statText, isGood && styles.statTextGood];
+  const containerStyle = size === 'small' ? styles.cardViewStatIcon : styles.stat;
+
+  if (isAffordability) {
+    return (
+      <View style={containerStyle}>
+        <AffordabilityBadge value={value} size="small" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={containerStyle}>
+      <Ionicons name={icon} size={iconSize} color={isGood ? COLORS.success : COLORS.gray400} />
+      <Text style={textStyle}>{value}</Text>
+    </View>
+  );
+});
+
+// Generate a consistent color based on borough name
+const BOROUGH_COLORS = [
+  '#5D8A8A', '#7BA3B8', '#9B8ABD', '#BD8A9B',
+  '#D4956A', '#6AAB8E', '#8B9DC3', '#C4A484',
+];
+
+const getBoroughColor = (borough: string): string => {
   let hash = 0;
   for (let i = 0; i < borough.length; i++) {
     hash = borough.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return colors[Math.abs(hash) % colors.length];
+  return BOROUGH_COLORS[Math.abs(hash) % BOROUGH_COLORS.length];
 };
 
 interface NeighborhoodCardProps {
@@ -48,50 +76,57 @@ interface NeighborhoodCardProps {
   onPress: () => void;
   currentStatus: NeighborhoodStatus;
   isInComparison: boolean;
-  onSetStatus: (status: NeighborhoodStatus) => void;
   onToggleComparison: () => void;
+  onAddToPlaces: (neighborhoodId: string) => void; // Lifted modal handling to parent
   viewMode?: ViewMode;
   photoCount?: number;
   firstPhotoUri?: string | null;
-  matchScore?: number | null; // Personalized match percentage (0-100)
+  matchScore?: number | null;
 }
 
-const getStatusInfo = (status: NeighborhoodStatus) => {
-  if (status === 'shortlist') return { icon: 'star' as const, color: STATUS_COLORS.shortlist, label: 'Shortlist' };
-  if (status === 'want_to_visit') return { icon: 'bookmark' as const, color: STATUS_COLORS.want_to_visit, label: 'Want to Visit' };
-  if (status === 'visited') return { icon: 'checkmark-circle' as const, color: STATUS_COLORS.visited, label: 'Visited' };
-  if (status === 'living_here') return { icon: 'home' as const, color: STATUS_COLORS.living_here, label: 'Living Here' };
-  if (status === 'ruled_out') return { icon: 'close-circle' as const, color: STATUS_COLORS.ruled_out, label: 'Ruled Out' };
-  return null;
+// Status info lookup - moved outside component to avoid recreation
+const STATUS_INFO: Record<Exclude<NeighborhoodStatus, null>, { icon: keyof typeof Ionicons.glyphMap; color: string }> = {
+  shortlist: { icon: 'star', color: STATUS_COLORS.shortlist },
+  want_to_visit: { icon: 'bookmark', color: STATUS_COLORS.want_to_visit },
+  visited: { icon: 'checkmark-circle', color: STATUS_COLORS.visited },
+  living_here: { icon: 'home', color: STATUS_COLORS.living_here },
+  ruled_out: { icon: 'close-circle', color: STATUS_COLORS.ruled_out },
 };
 
-export default function NeighborhoodCard({
+function NeighborhoodCard({
   neighborhood,
   onPress,
   currentStatus,
   isInComparison,
-  onSetStatus,
   onToggleComparison,
+  onAddToPlaces,
   viewMode = 'list',
   photoCount = 0,
   firstPhotoUri = null,
   matchScore = null,
 }: NeighborhoodCardProps) {
-  const { session } = useAuth();
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const [showStatusPicker, setShowStatusPicker] = useState(false);
-
-  const statusInfo = getStatusInfo(currentStatus);
+  const statusInfo = currentStatus ? STATUS_INFO[currentStatus] : null;
   const hasPhotos = photoCount > 0;
   const boroughColor = getBoroughColor(neighborhood.borough);
 
-  const handleAddToPlaces = () => {
-    if (!session) {
-      setShowSignInModal(true);
-      return;
-    }
-    setShowStatusPicker(true);
-  };
+  const handleAddToPlaces = useCallback(() => {
+    onAddToPlaces(neighborhood.id);
+  }, [onAddToPlaces, neighborhood.id]);
+
+  // Render stats row - shared between both views
+  const renderStats = (size: 'small' | 'medium') => (
+    <View style={size === 'small' ? styles.cardViewStats : styles.statsRow}>
+      {STATS_CONFIG.map(({ key, icon, isAffordability }) => (
+        <StatItem
+          key={key}
+          icon={icon}
+          value={neighborhood[key as keyof Neighborhood] as number}
+          size={size}
+          isAffordability={isAffordability}
+        />
+      ))}
+    </View>
+  );
 
   // Card view renders with hero image
   if (viewMode === 'card') {
@@ -141,32 +176,7 @@ export default function NeighborhoodCard({
           <View style={styles.cardViewContent}>
             <Text style={styles.cardViewTitle}>{neighborhood.name}</Text>
             <Text style={styles.cardViewBorough}>{neighborhood.borough}</Text>
-
-            <View style={styles.cardViewStats}>
-              <View style={styles.cardViewStatIcon}>
-                <AffordabilityBadge value={neighborhood.affordability} size="small" />
-              </View>
-              <View style={styles.cardViewStatIcon}>
-                <Ionicons name="shield-checkmark" size={14} color={neighborhood.safety >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.safety >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.safety}</Text>
-              </View>
-              <View style={styles.cardViewStatIcon}>
-                <Ionicons name="bus" size={14} color={neighborhood.transit >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.transit >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.transit}</Text>
-              </View>
-              <View style={styles.cardViewStatIcon}>
-                <Ionicons name="leaf" size={14} color={neighborhood.greenSpace >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.greenSpace >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.greenSpace}</Text>
-              </View>
-              <View style={styles.cardViewStatIcon}>
-                <Ionicons name="wine" size={14} color={neighborhood.nightlife >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.nightlife >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.nightlife}</Text>
-              </View>
-              <View style={styles.cardViewStatIcon}>
-                <Ionicons name="restaurant" size={14} color={neighborhood.dining >= 4 ? COLORS.success : COLORS.gray400} />
-                <Text style={[styles.cardViewStatMini, neighborhood.dining >= 4 && styles.cardViewStatMiniGood]}>{neighborhood.dining}</Text>
-              </View>
-            </View>
+            {renderStats('small')}
           </View>
         </TouchableOpacity>
 
@@ -193,20 +203,6 @@ export default function NeighborhoodCard({
             />
           </TouchableOpacity>
         </View>
-
-        <SignInPromptModal
-          visible={showSignInModal}
-          onClose={() => setShowSignInModal(false)}
-          featureName="saving places"
-        />
-
-        <StatusPickerModal
-          visible={showStatusPicker}
-          onClose={() => setShowStatusPicker(false)}
-          currentStatus={currentStatus}
-          onSelectStatus={onSetStatus}
-          neighborhoodName={neighborhood.name}
-        />
       </View>
     );
   }
@@ -259,31 +255,7 @@ export default function NeighborhoodCard({
           ))}
         </View>
 
-        <View style={styles.statsRow}>
-          <View style={styles.stat}>
-            <AffordabilityBadge value={neighborhood.affordability} size="small" />
-          </View>
-          <View style={styles.stat}>
-            <Ionicons name="shield-checkmark" size={16} color={neighborhood.safety >= 4 ? COLORS.success : COLORS.gray400} />
-            <Text style={[styles.statText, neighborhood.safety >= 4 && styles.statTextGood]}>{neighborhood.safety}</Text>
-          </View>
-          <View style={styles.stat}>
-            <Ionicons name="bus" size={16} color={neighborhood.transit >= 4 ? COLORS.success : COLORS.gray400} />
-            <Text style={[styles.statText, neighborhood.transit >= 4 && styles.statTextGood]}>{neighborhood.transit}</Text>
-          </View>
-          <View style={styles.stat}>
-            <Ionicons name="leaf" size={16} color={neighborhood.greenSpace >= 4 ? COLORS.success : COLORS.gray400} />
-            <Text style={[styles.statText, neighborhood.greenSpace >= 4 && styles.statTextGood]}>{neighborhood.greenSpace}</Text>
-          </View>
-          <View style={styles.stat}>
-            <Ionicons name="wine" size={16} color={neighborhood.nightlife >= 4 ? COLORS.success : COLORS.gray400} />
-            <Text style={[styles.statText, neighborhood.nightlife >= 4 && styles.statTextGood]}>{neighborhood.nightlife}</Text>
-          </View>
-          <View style={styles.stat}>
-            <Ionicons name="restaurant" size={16} color={neighborhood.dining >= 4 ? COLORS.success : COLORS.gray400} />
-            <Text style={[styles.statText, neighborhood.dining >= 4 && styles.statTextGood]}>{neighborhood.dining}</Text>
-          </View>
-        </View>
+        {renderStats('medium')}
       </TouchableOpacity>
 
       <View style={styles.cardActions}>
@@ -308,23 +280,11 @@ export default function NeighborhoodCard({
           />
         </TouchableOpacity>
       </View>
-
-      <SignInPromptModal
-        visible={showSignInModal}
-        onClose={() => setShowSignInModal(false)}
-        featureName="saving places"
-      />
-
-      <StatusPickerModal
-        visible={showStatusPicker}
-        onClose={() => setShowStatusPicker(false)}
-        currentStatus={currentStatus}
-        onSelectStatus={onSetStatus}
-        neighborhoodName={neighborhood.name}
-      />
     </View>
   );
 }
+
+export default memo(NeighborhoodCard);
 
 const styles = StyleSheet.create({
   // === LIST VIEW STYLES ===
@@ -542,11 +502,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: SPACING.xs,
   },
-  cardViewStat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-  },
   cardViewStatIcon: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -555,25 +510,6 @@ const styles = StyleSheet.create({
   cardViewStatMini: {
     fontSize: FONT_SIZES.xs,
     fontWeight: '600',
-    color: COLORS.gray400,
-  },
-  cardViewStatMiniGood: {
-    color: COLORS.success,
-  },
-  cardViewStatText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '600',
-    color: COLORS.primary,
-  },
-  cardViewVibeText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: '500',
-    color: COLORS.primary,
-    textTransform: 'capitalize',
-  },
-  cardViewVibeShort: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: '700',
     color: COLORS.gray400,
   },
   cardViewActions: {
