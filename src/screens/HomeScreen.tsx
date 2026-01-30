@@ -216,37 +216,35 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.controls}>
-          <View style={styles.controlsLeft}>
-            <TouchableOpacity
-              style={[styles.controlPill, hasActiveFilters && styles.controlPillActive]}
-              onPress={() => setShowFilters(true)}
-            >
-              <Ionicons name="filter" size={16} color={hasActiveFilters ? COLORS.primary : COLORS.white} />
-              <Text style={[styles.controlPillText, hasActiveFilters && styles.controlPillTextActive]}>
-                Filter{hasActiveFilters ? ' •' : ''}
-              </Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.controlPill, hasActiveFilters && styles.controlPillActive]}
+            onPress={() => setShowFilters(true)}
+          >
+            <Ionicons name="filter" size={16} color={hasActiveFilters ? COLORS.primary : COLORS.white} />
+            <Text style={[styles.controlPillText, hasActiveFilters && styles.controlPillTextActive]}>
+              Filter{hasActiveFilters ? ' •' : ''}
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.controlPill, sortBy !== 'name' && styles.controlPillActive]}
-              onPress={() => setShowSortModal(true)}
-            >
-              <Ionicons name="swap-vertical" size={16} color={sortBy !== 'name' ? COLORS.primary : COLORS.white} />
-              <Text style={[styles.controlPillText, sortBy !== 'name' && styles.controlPillTextActive]}>
-                {sortBy === 'name' ? 'Sort' : sortBy === 'bestMatch' ? 'Best Match' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safest' : 'Transit'}
-              </Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.controlPill, sortBy !== 'name' && styles.controlPillActive]}
+            onPress={() => setShowSortModal(true)}
+          >
+            <Ionicons name="swap-vertical" size={16} color={sortBy !== 'name' ? COLORS.primary : COLORS.white} />
+            <Text style={[styles.controlPillText, sortBy !== 'name' && styles.controlPillTextActive]}>
+              {sortBy === 'name' ? 'Sort' : sortBy === 'bestMatch' ? 'Best Match' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safest' : 'Transit'}
+            </Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.matchPill, hasCustomPreferences && styles.matchPillActive]}
-              onPress={() => setShowMatchModal(true)}
-            >
-              <Ionicons name="sparkles" size={16} color={hasCustomPreferences ? COLORS.primary : COLORS.white} />
-              <Text style={[styles.controlPillText, hasCustomPreferences && styles.controlPillTextActive]}>
-                Match{hasCustomPreferences ? ' ✓' : ''}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.matchPill, hasCustomPreferences && styles.matchPillActive]}
+            onPress={() => setShowMatchModal(true)}
+          >
+            <Ionicons name="sparkles" size={16} color={hasCustomPreferences ? COLORS.primary : COLORS.white} />
+            <Text style={[styles.controlPillText, hasCustomPreferences && styles.controlPillTextActive]}>
+              Match{hasCustomPreferences ? ' ✓' : ''}
+            </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.viewToggle}
@@ -615,21 +613,16 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: 2,
-  },
-  controlsLeft: {
-    flexDirection: 'row',
-    gap: 6,
-    flexShrink: 1,
-    marginRight: 20,
+    gap: 8,
   },
   controlPill: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 4,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: 20,
     borderWidth: 1,
@@ -658,11 +651,13 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   matchPill: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 4,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     backgroundColor: COLORS.accent,
     borderRadius: 20,
     borderWidth: 1,
