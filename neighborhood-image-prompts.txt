@@ -1,0 +1,376 @@
+NEIGHBORHOOD IMAGE GENERATION PROMPTS
+=====================================
+
+Style: Soft watercolor with anime influence, cozy saturated colors
+Format: Square images, no text
+
+=====================================
+LONDON NEIGHBORHOODS (40)
+=====================================
+
+--- 1. Shoreditch ---
+Highlights: Tech hub, Street art, Nightlife, Hipster cafes
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A trendy urban street corner with colorful graffiti murals on brick walls, a cozy hipster cafe with warm light glowing from windows, string lights overhead, and creative professionals visible through the window with laptops.
+
+--- 2. Clapham ---
+Highlights: Clapham Common, Great transport, Family friendly, Good schools
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A sunny park common with families having picnics on green grass, children flying kites, a bandstand in the distance, mature trees providing dappled shade, and Victorian terraced houses lining the edges.
+
+--- 3. Brixton ---
+Highlights: Brixton Market, Live music, Caribbean culture, Diverse food
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A vibrant covered market scene with colorful Caribbean food stalls, tropical fruits displayed in wooden crates, reggae music notes floating in the air, warm string lights, and diverse happy shoppers browsing.
+
+--- 4. Camden ---
+Highlights: Camden Market, Live music, Regent's Canal, Alternative fashion
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A quirky canal-side market with eclectic stalls, a narrowboat decorated with flowers, alternative fashion displayed on vintage mannequins, and a cozy music venue with warm neon glow reflecting on the water.
+
+--- 5. Greenwich ---
+Highlights: Greenwich Park, Royal Observatory, Maritime Museum, Cutty Sark
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A hilltop park scene with the domed Royal Observatory on top, deer grazing on slopes, a historic tall ship with masts in the harbor below, and the river Thames winding through with classic architecture.
+
+--- 6. Notting Hill ---
+Highlights: Portobello Market, Colorful houses, Notting Hill Carnival, Upscale
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A charming street of pastel-colored Victorian townhouses in pink, blue, yellow and mint, antique market stalls with vintage treasures, flower boxes on windows, and elegant residents strolling with shopping bags.
+
+--- 7. Hackney Wick ---
+Highlights: Art studios, Breweries, Olympic Park nearby, Creative scene
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. Converted industrial warehouses with large windows showing artists at work, craft brewery with copper tanks visible, canal boats, and the Olympic stadium's distinctive roof visible in the background.
+
+--- 8. Richmond ---
+Highlights: Richmond Park, Deer, River Thames, Village feel
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A serene royal park with gentle deer grazing under ancient oak trees, wildflowers in meadows, a winding river Thames in the background, and quaint village buildings with warm chimneys in the distance.
+
+--- 9. Peckham ---
+Highlights: Peckham Rye, Rooftop bars, Art galleries, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A trendy rooftop bar scene at sunset with string lights, people enjoying drinks with city views, colorful street art on nearby buildings, and a park with mature trees visible below.
+
+--- 10. Wimbledon ---
+Highlights: Tennis, Wimbledon Common, Great schools, Village center
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A charming village scene with a grass tennis court, players in white, a windmill on the common in the background, cozy tea shops with striped awnings, and families walking along tree-lined paths.
+
+--- 11. Dalston ---
+Highlights: Nightlife, Live music, Turkish food, Ridley Road Market
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A lively street market scene with Turkish food stalls serving kebabs, warm glowing music venues, neon signs, diverse crowd enjoying the evening, and colorful produce displayed under market awnings.
+
+--- 12. Canary Wharf ---
+Highlights: Financial center, Modern apartments, Shopping malls, Riverside
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A modern riverside scene with gleaming skyscrapers reflecting in calm dock waters, sleek apartment buildings, waterfront cafes with warm lighting, and professionals enjoying evening walks along the promenade.
+
+--- 13. Dulwich ---
+Highlights: Dulwich Picture Gallery, Top schools, Village atmosphere, Parks
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A refined village scene with a classical picture gallery building, children in school uniforms walking past, leafy parks with mature trees, elegant Georgian houses, and families enjoying a peaceful afternoon.
+
+--- 14. Stratford ---
+Highlights: Olympic Park, Westfield, Excellent transport, Regenerated
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A modern regenerated area with the Olympic velodrome's distinctive curved roof, parklands with wildflower meadows, modern apartments, and families cycling along wide paths with fountains.
+
+--- 15. Islington ---
+Highlights: Upper Street, Antique markets, Restaurants, Georgian architecture
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An elegant Georgian street with white townhouses, antique shops displaying vintage treasures, cozy bistros with warm candlelit windows, and well-dressed couples browsing along the tree-lined pavement.
+
+--- 16. Wandsworth ---
+Highlights: Wandsworth Common, Riverside, Family friendly, Good value
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A peaceful common with families playing, dogs running freely, a gentle river path with joggers, Victorian terraced houses in warm brick, and a cozy pub with hanging flower baskets.
+
+--- 17. Hampstead ---
+Highlights: Hampstead Heath, Swimming ponds, Village feel, Literary history
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A wild heath landscape with a peaceful swimming pond surrounded by willows, rolling hills with London skyline distant, a quaint village high street with bookshops, and people reading on park benches.
+
+--- 18. Bethnal Green ---
+Highlights: Victoria Park, Columbia Road Market, Trendy cafes, Good transport
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A vibrant flower market with buckets of colorful blooms, plant-filled cafes with exposed brick, Victorian park with boating lake visible, and happy shoppers carrying wrapped bouquets.
+
+--- 19. Battersea ---
+Highlights: Battersea Park, Power Station, Riverside, New developments
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The iconic Battersea Power Station with its four white chimneys at sunset, riverside park with cherry blossoms, a pagoda temple, joggers along the Thames path, and modern apartment buildings.
+
+--- 20. Crouch End ---
+Highlights: Village atmosphere, Independent shops, Good schools, Community
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A cozy village high street with independent bookshops, artisan bakeries, a clock tower, families at outdoor cafe tables, bunting strung between Victorian buildings, and a warm community atmosphere.
+
+--- 21. Bermondsey ---
+Highlights: Maltby Street Market, Street food, Riverside, Converted warehouses
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A railway arch street food market with warm smoky grills, artisan vendors, converted warehouse lofts with industrial windows, and the Tower Bridge visible in the distance along the riverside.
+
+--- 22. Ealing ---
+Highlights: Ealing Common, Film studios, Good schools, Suburban feel
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A leafy suburban common with a vintage cinema marquee, families walking past Edwardian houses, children on swings in a playground, mature chestnut trees, and a cozy high street with local shops.
+
+--- 23. Putney ---
+Highlights: River Thames, Rowing, Putney Heath, Good transport
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A riverside scene with rowing boats gliding on the Thames, a historic bridge, rowers carrying sculls from boathouses, heathland with autumn colors in the background, and riverside pubs with terraces.
+
+--- 24. Kentish Town ---
+Highlights: Music venues, Independent shops, Good transport, Affordable Camden
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A lively neighborhood street with a cozy music venue glowing warmly, independent record shops, vintage clothing stores, young people chatting outside cafes, and Victorian terraces in warm evening light.
+
+--- 25. Balham ---
+Highlights: Nightlife, Restaurants, Good transport, Young professionals
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A buzzing high street at dusk with wine bars and restaurants spilling onto pavements, young professionals socializing, warm fairy lights, Victorian architecture, and a classic tube station entrance.
+
+--- 26. Hackney Central ---
+Highlights: Broadway Market, London Fields, Diverse, Creative scene
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A Saturday market scene with artisan food stalls, vintage finds, people lounging on London Fields with picnics, cyclists with baskets of produce, and creative murals on nearby buildings.
+
+--- 27. Fulham ---
+Highlights: Riverside, Fulham Palace, Parsons Green, Affluent
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An elegant riverside scene with a Tudor palace and gardens, swans on the Thames, well-dressed families walking dogs on the village green, and charming pubs with flower-covered facades.
+
+--- 28. Walthamstow ---
+Highlights: Walthamstow Market, Wetlands, Affordable, William Morris Gallery
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. Europe's longest street market with colorful fabric stalls, fresh produce, wetland reserve with herons and reeds in the background, an Arts and Crafts house museum, and diverse happy shoppers.
+
+--- 29. Kensington ---
+Highlights: Museums, Kensington Palace, High Street, Prestigious
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An elegant scene with grand museum buildings featuring ornate facades, Kensington Palace gardens with formal flower beds, upscale boutiques, and well-dressed visitors admiring the architecture.
+
+--- 30. Tooting ---
+Highlights: Tooting Market, Tooting Bec Lido, Curry houses, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A vibrant indoor market with diverse food stalls, colorful curry houses with warm glowing windows, an art deco outdoor swimming lido with happy swimmers, and a friendly diverse community atmosphere.
+
+--- 31. Angel ---
+Highlights: Upper Street, Restaurants, Shopping, Transport hub
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A bustling shopping street with elegant restaurants, antique arcades, trendy boutiques, couples dining at candlelit tables visible through windows, and a classic London Underground roundel sign.
+
+--- 32. Chiswick ---
+Highlights: Chiswick House, Riverside, Good schools, Leafy
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A Palladian villa with formal Italian gardens, riverside walks with weeping willows, leafy residential streets with elegant houses, families cycling, and a cozy high street with artisan shops.
+
+--- 33. Deptford ---
+Highlights: Deptford Market, Art scene, Affordable, Regenerating
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A traditional street market with eclectic stalls, artist studios in railway arches, street art murals, creative young people browsing, and a mix of historic buildings with new developments.
+
+--- 34. St John's Wood ---
+Highlights: Lord's Cricket, Exclusive, Regency architecture, Quiet
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An elegant tree-lined avenue with white Regency villas, the famous cricket ground pavilion, immaculate gardens, a quiet refined atmosphere, and well-dressed residents walking small dogs.
+
+--- 35. Stoke Newington ---
+Highlights: Clissold Park, Independent shops, Family friendly, Community feel
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A friendly village scene with a Victorian park featuring deer enclosure and aviaries, independent bookshops, families at cozy cafes, church spire in background, and community spirit.
+
+--- 36. Forest Hill ---
+Highlights: Horniman Museum, Gardens, Community, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A quirky museum with clock tower set in lush gardens, exotic animals in display, bandstand, families exploring nature trails, panoramic city views, and friendly neighborhood shops below.
+
+--- 37. Clapham North ---
+Highlights: Transport, Nightlife, Clapham Common, Young professionals
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A lively evening scene near the common with trendy bars and restaurants, young professionals socializing, tube station entrance, the green common at sunset, and Victorian terraces with warm lights.
+
+--- 38. Elephant & Castle ---
+Highlights: Transport hub, Regeneration, New developments, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A dynamic urban scene showing transformation, with modern tower developments alongside historic buildings, a busy transport interchange, new parks and public spaces, and diverse community life.
+
+--- 39. Marylebone ---
+Highlights: Marylebone High Street, Central, Regent's Park nearby, Upscale
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A charming village-like high street with upscale boutiques, artisan food shops, cozy cafes with outdoor seating, Regent's Park roses visible beyond, and elegant Georgian townhouses.
+
+--- 40. Crystal Palace ---
+Highlights: Crystal Palace Park, Dinosaur sculptures, Views, Community
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A whimsical park scene with Victorian dinosaur sculptures by a lake, children excitedly exploring, panoramic city views from the hilltop, community festival atmosphere, and the TV transmitter tower.
+
+
+=====================================
+NEW YORK NEIGHBORHOODS (30)
+=====================================
+
+--- 41. Upper West Side ---
+Highlights: Central Park, Lincoln Center, Natural History Museum, Riverside Park
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. Classic brownstones along tree-lined streets, Central Park's autumn foliage visible, the grand museum with its columned entrance, families strolling to Lincoln Center's fountain plaza at twilight.
+
+--- 42. Upper East Side ---
+Highlights: Museum Mile, Central Park, Madison Avenue, Prestigious schools
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An elegant avenue with grand museum facades, upscale boutiques with awnings, well-dressed families near Central Park's entrance, uniformed schoolchildren, and classic pre-war apartment buildings.
+
+--- 43. Greenwich Village ---
+Highlights: Washington Square Park, Jazz clubs, Historic charm, NYU campus
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The iconic arch in Washington Square Park surrounded by autumn trees, students with books, a cozy jazz club with warm neon sign, historic brownstones, and street musicians playing.
+
+--- 44. SoHo ---
+Highlights: Shopping, Cast-iron buildings, Art galleries, Fashion boutiques
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A cobblestone street with ornate cast-iron building facades, chic fashion boutiques with stylish window displays, art gallery openings with warm light, and fashionable shoppers with bags.
+
+--- 45. Tribeca ---
+Highlights: Converted lofts, Film festival, Hudson River Park, Fine dining
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. Industrial converted warehouse lofts with large windows glowing warmly, cobblestone streets, the Hudson River waterfront at sunset, upscale restaurants, and a film premiere atmosphere.
+
+--- 46. Chelsea ---
+Highlights: High Line, Art galleries, Chelsea Market, Hudson Yards
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The elevated High Line park with wildflowers and grasses, people strolling past art installations, gallery openings below, the market's industrial entrance, and modern towers in the distance.
+
+--- 47. East Village ---
+Highlights: Nightlife, Tompkins Square Park, Diverse food, Music history
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An eclectic street scene with dive bars glowing neon, a legendary music venue, diverse food carts, Tompkins Square Park with musicians jamming, and punk rock posters on lampposts.
+
+--- 48. Lower East Side ---
+Highlights: Nightlife, Vintage shops, Food scene, Tenement Museum
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A trendy street with vintage clothing shops, fire escape-covered tenement buildings, hip cocktail bars with warm glow, pickle barrels and bakery windows, and diverse nightlife crowds.
+
+--- 49. Harlem ---
+Highlights: Apollo Theater, Soul food, Jazz heritage, Brownstones
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The iconic Apollo Theater marquee glowing warmly, beautiful brownstone row houses, a soul food restaurant with steaming windows, jazz notes floating in the air, and community pride.
+
+--- 50. Hell's Kitchen ---
+Highlights: Restaurant Row, Broadway access, Hudson River Park, Diverse dining
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A bustling restaurant row with diverse cuisines, theater marquees glowing in the distance, the Hudson River waterfront at sunset, outdoor dining patios, and theatergoers heading to shows.
+
+--- 51. Williamsburg ---
+Highlights: Nightlife, Waterfront, Vintage shops, Art scene
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A hip waterfront scene with Manhattan skyline reflecting on the East River, converted warehouse venues, vintage shops with neon signs, rooftop bars, and creative young people socializing.
+
+--- 52. DUMBO ---
+Highlights: Manhattan views, Brooklyn Bridge Park, Tech hub, Cobblestone streets
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The iconic Manhattan Bridge framed between brick warehouses on cobblestone streets, Brooklyn Bridge Park carousel, stunning skyline views at golden hour, and tech workers at cafe laptops.
+
+--- 53. Brooklyn Heights ---
+Highlights: Brooklyn Promenade, Historic brownstones, Quiet, Manhattan access
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The famous promenade with romantic Manhattan skyline views, elegant brownstone townhouses with stoops, tree-lined quiet streets, families walking, and the Brooklyn Bridge in the distance.
+
+--- 54. Park Slope ---
+Highlights: Prospect Park, Great schools, Brownstones, Family friendly
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A tree-lined street of beautiful brownstones with stoops, Prospect Park's meadow with families picnicking, children at a playground, farmers market stalls, and a cozy neighborhood bookshop.
+
+--- 55. Greenpoint ---
+Highlights: Polish cuisine, Indie shops, McCarren Park, Waterfront
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A charming neighborhood street with Polish bakeries and pierogi shops, indie record stores, McCarren Park with people playing, waterfront views, and church spires in the skyline.
+
+--- 56. Bushwick ---
+Highlights: Street art, Nightlife, Art studios, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. Warehouse walls covered in vibrant street art murals, artist studios with large windows, warehouse party venues with glowing lights, and creative young artists carrying canvases.
+
+--- 57. Cobble Hill ---
+Highlights: Boutique shopping, Restaurants, Quiet, Family friendly
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A charming tree-lined street with brownstones, boutique shops with pretty window displays, intimate restaurants with candlelit tables visible, families with strollers, and quiet residential charm.
+
+--- 58. Fort Greene ---
+Highlights: BAM, Fort Greene Park, Brownstones, Cultural scene
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The BAM performing arts center with evening lights, Fort Greene Park's rolling hills and monument, beautiful brownstones, diverse cultural crowds heading to shows, and street musicians.
+
+--- 59. Bedford-Stuyvesant ---
+Highlights: Brownstones, Affordable, Growing scene, Historic
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A beautiful block of historic brownstones with ornate details and stoops, tree-lined streets, new cafes opening, community gardens, and neighbors chatting on their steps.
+
+--- 60. Crown Heights ---
+Highlights: Caribbean culture, Prospect Park, Diverse food, Brooklyn Museum
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A vibrant street with Caribbean restaurants and bakeries, the Brooklyn Museum's grand entrance, Prospect Park greenery, diverse families, and colorful murals celebrating culture.
+
+--- 61. Astoria ---
+Highlights: Diverse cuisine, Beer gardens, Astoria Park, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A lively beer garden scene with string lights, diverse restaurants serving Greek, Egyptian, and other cuisines, Astoria Park with the Hell Gate Bridge, and friendly neighborhood atmosphere.
+
+--- 62. Long Island City ---
+Highlights: MoMA PS1, Waterfront, Manhattan views, New developments
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A modern waterfront with stunning Manhattan skyline views, the PS1 contemporary art center, new glass towers, Gantry Plaza State Park's historic gantries, and sunset reflections.
+
+--- 63. Flushing ---
+Highlights: Asian cuisine, Flushing Meadows, Affordable, Cultural diversity
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A bustling Asian food paradise with dumpling shops, bubble tea stores, the Unisphere in Flushing Meadows Park, diverse families, temples, and authentic Chinese and Korean signage.
+
+--- 64. Jackson Heights ---
+Highlights: Diverse food, Affordable, Historic gardens, Cultural mix
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. An incredibly diverse street with Indian sari shops, Colombian bakeries, Tibetan momos, historic garden apartments, diverse families celebrating multiple cultures, and food carts with various cuisines.
+
+--- 65. Forest Hills ---
+Highlights: Forest Hills Gardens, Great schools, Safe, Tennis stadium
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The charming Tudor-style Forest Hills Gardens with half-timbered houses, the historic tennis stadium, tree-lined streets, families walking to excellent schools, and a peaceful suburban atmosphere.
+
+--- 66. South Bronx ---
+Highlights: Hip-hop history, Street art, Affordable, Yankees Stadium
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A vibrant scene celebrating hip-hop culture with boombox and breakdancing imagery, colorful murals, Yankees Stadium in the background, community gathering, and creative street energy.
+
+--- 67. Riverdale ---
+Highlights: Wave Hill, Suburban feel, Good schools, Van Cortlandt Park
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The beautiful Wave Hill gardens overlooking the Hudson River, leafy suburban streets with grand houses, Van Cortlandt Park's forests, families hiking, and a peaceful escape-from-the-city atmosphere.
+
+--- 68. Fordham ---
+Highlights: Bronx Zoo, Botanical Garden, University town, Affordable
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The grand Bronx Zoo entrance with families and children excited to see animals, the botanical garden's conservatory dome, Fordham University's Gothic campus, and a scholarly atmosphere.
+
+--- 69. St. George ---
+Highlights: Ferry views, Arts scene, Affordable, Snug Harbor
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. The Staten Island Ferry approaching with stunning Statue of Liberty and Manhattan skyline views, Snug Harbor's historic buildings and gardens, art galleries, and waterfront atmosphere.
+
+--- 70. Tottenville ---
+Highlights: Beach access, Conference House, Quiet, Suburban feel
+
+Soft watercolor illustration with subtle anime influence, cozy and warm saturated colors, clean composition with gentle edges, cute and inviting atmosphere. Square format, no text. A peaceful seaside community with beach access, the historic Conference House, quiet tree-lined residential streets, seagulls, coastal marshes, and families enjoying the shore at sunset.
+
+
+=====================================
+END OF PROMPTS
+=====================================
+
+Tips for generation:
+- Use DALL-E 3, Midjourney, or similar
+- Generate at 1:1 (square) aspect ratio
+- If results are inconsistent, try adding "illustration" or "2D art" to reinforce the style
+- Save files as: {neighborhood-name}.png (lowercase, hyphens)
+- Recommended size: 512x512 or 1024x1024 for app use

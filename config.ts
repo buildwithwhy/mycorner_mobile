@@ -9,6 +9,7 @@
 // Switch environments: APP_ENV=staging npx expo start
 
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 // Current environment
 export type AppEnvironment = 'development' | 'staging' | 'production';
@@ -19,8 +20,12 @@ export const isDevelopment = APP_ENV === 'development';
 export const isStaging = APP_ENV === 'staging';
 export const isProduction = APP_ENV === 'production';
 
-// Google Maps API Key
-export const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey || '';
+// Google Maps API Key (platform-specific)
+export const GOOGLE_MAPS_API_KEY = Platform.select({
+  ios: Constants.expoConfig?.extra?.googleMapsApiKeyIos || '',
+  android: Constants.expoConfig?.extra?.googleMapsApiKeyAndroid || '',
+  default: '',
+});
 
 // Supabase configuration
 export const SUPABASE_URL = Constants.expoConfig?.extra?.supabaseUrl || '';

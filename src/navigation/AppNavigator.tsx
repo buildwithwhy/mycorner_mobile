@@ -14,15 +14,13 @@ import SignUpScreen from '../screens/SignUpScreen';
 import PaywallScreen from '../screens/PaywallScreen';
 import PreferencesScreen from '../screens/PreferencesScreen';
 import MatcherScreen from '../screens/MatcherScreen';
-import MapMaintenanceScreen from '../screens/MapMaintenanceScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS } from '../constants/theme';
 
-// TODO: Re-enable after Google Maps API key is rotated
 // Lazy load heavy screens to reduce initial bundle parse time
-// const MapScreen = lazy(() => import('../screens/MapScreen'));
+const MapScreen = lazy(() => import('../screens/MapScreen'));
 const DetailScreen = lazy(() => import('../screens/DetailScreen'));
-// const DestinationsScreen = lazy(() => import('../screens/DestinationsScreen'));
+const DestinationsScreen = lazy(() => import('../screens/DestinationsScreen'));
 
 // Loading fallback component
 function ScreenLoader() {
@@ -34,14 +32,13 @@ function ScreenLoader() {
 }
 
 // Wrapper for lazy-loaded screens
-// TODO: Re-enable after Google Maps API key is rotated
-// function LazyMapScreen() {
-//   return (
-//     <Suspense fallback={<ScreenLoader />}>
-//       <MapScreen />
-//     </Suspense>
-//   );
-// }
+function LazyMapScreen() {
+  return (
+    <Suspense fallback={<ScreenLoader />}>
+      <MapScreen />
+    </Suspense>
+  );
+}
 
 function LazyDetailScreen() {
   return (
@@ -51,14 +48,13 @@ function LazyDetailScreen() {
   );
 }
 
-// TODO: Re-enable after Google Maps API key is rotated
-// function LazyDestinationsScreen() {
-//   return (
-//     <Suspense fallback={<ScreenLoader />}>
-//       <DestinationsScreen />
-//     </Suspense>
-//   );
-// }
+function LazyDestinationsScreen() {
+  return (
+    <Suspense fallback={<ScreenLoader />}>
+      <DestinationsScreen />
+    </Suspense>
+  );
+}
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -95,7 +91,7 @@ function TabNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Map" component={MapMaintenanceScreen} />
+      <Tab.Screen name="Map" component={LazyMapScreen} />
       <Tab.Screen name="MyPlaces" component={MyPlacesScreen} options={{ title: 'My Places' }} />
       <Tab.Screen name="Compare" component={CompareScreen} />
       <Tab.Screen name="Profile" component={ProfileTabScreen} />
@@ -119,7 +115,7 @@ export default function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen name="Detail" component={LazyDetailScreen} />
-        <Stack.Screen name="Destinations" component={MapMaintenanceScreen} />
+        <Stack.Screen name="Destinations" component={LazyDestinationsScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen

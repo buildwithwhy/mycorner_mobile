@@ -49,7 +49,7 @@ module.exports = {
       bundleIdentifier: currentEnv.bundleIdentifier,
       config: {
         usesNonExemptEncryption: false,
-        googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+        // iOS uses Apple Maps for display, but needs Google API key for Places/Geocoding
       },
     },
     android: {
@@ -62,7 +62,7 @@ module.exports = {
       predictiveBackGestureEnabled: false,
       config: {
         googleMaps: {
-          apiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+          apiKey: process.env.GOOGLE_MAPS_API_KEY_ANDROID || '',
         },
       },
     },
@@ -85,8 +85,9 @@ module.exports = {
       // Current environment
       appEnv: APP_ENV,
 
-      // Environment variables exposed to the app via expo-constants
-      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || '',
+      // Google Maps API keys (separate for iOS and Android)
+      googleMapsApiKeyIos: process.env.GOOGLE_MAPS_API_KEY_IOS || '',
+      googleMapsApiKeyAndroid: process.env.GOOGLE_MAPS_API_KEY_ANDROID || '',
 
       // Supabase configuration
       supabaseUrl: process.env.SUPABASE_URL || '',
