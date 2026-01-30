@@ -31,6 +31,7 @@ export default function HomeScreen() {
   const [minAffordability, setMinAffordability] = useState(1);
   const [minSafety, setMinSafety] = useState(1);
   const [minTransit, setMinTransit] = useState(1);
+  const [showMatchModal, setShowMatchModal] = useState(false);
 
   // Lifted modal state - single instance for all cards
   const [showSignInModal, setShowSignInModal] = useState(false);
@@ -164,40 +165,30 @@ export default function HomeScreen() {
 
   const ListHeader = useMemo(() => (
     <View>
-      {/* Personalization card - adapts based on whether user has set preferences */}
-      <TouchableOpacity
-        style={[styles.personalizeCard, hasCustomPreferences && styles.personalizeCardActive]}
-        onPress={() => navigation.navigate(hasCustomPreferences ? 'Preferences' as never : 'Matcher' as never)}
-      >
-        <View style={[styles.personalizeIcon, hasCustomPreferences && styles.personalizeIconActive]}>
-          <Ionicons
-            name={hasCustomPreferences ? 'sparkles' : 'search'}
-            size={22}
-            color={hasCustomPreferences ? COLORS.white : COLORS.primary}
-          />
-        </View>
-        <View style={styles.personalizeContent}>
-          <Text style={styles.personalizeTitle}>
-            {hasCustomPreferences ? 'Personalized for You' : 'Find Your Perfect Match'}
-          </Text>
-          <Text style={styles.personalizeSubtitle}>
-            {hasCustomPreferences
-              ? 'Sorted by your preferences • Tap to adjust'
-              : 'Answer a few questions to get personalized results'}
-          </Text>
-        </View>
-        <Ionicons
-          name={hasCustomPreferences ? 'options-outline' : 'chevron-forward'}
-          size={20}
-          color={hasCustomPreferences ? COLORS.primary : COLORS.gray400}
-        />
-      </TouchableOpacity>
+      {/* Prominent card for first-time users - opens match modal */}
+      {!hasCustomPreferences && (
+        <TouchableOpacity
+          style={styles.personalizeCard}
+          onPress={() => setShowMatchModal(true)}
+        >
+          <View style={styles.personalizeIcon}>
+            <Ionicons name="sparkles" size={22} color={COLORS.primary} />
+          </View>
+          <View style={styles.personalizeContent}>
+            <Text style={styles.personalizeTitle}>Find Your Perfect Match</Text>
+            <Text style={styles.personalizeSubtitle}>
+              Take a quiz, describe what you want, or set your preferences
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+        </TouchableOpacity>
+      )}
 
       <Text style={styles.resultCount}>
         {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
       </Text>
     </View>
-  ), [filteredNeighborhoods.length, hasCustomPreferences, navigation]);
+  ), [filteredNeighborhoods.length, hasCustomPreferences]);
 
   return (
     <View style={styles.container}>
@@ -243,6 +234,16 @@ export default function HomeScreen() {
               <Ionicons name="swap-vertical" size={16} color={sortBy !== 'name' ? COLORS.primary : COLORS.white} />
               <Text style={[styles.controlPillText, sortBy !== 'name' && styles.controlPillTextActive]}>
                 {sortBy === 'name' ? 'Sort' : sortBy === 'bestMatch' ? 'Best Match' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safest' : 'Transit'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.matchPill, hasCustomPreferences && styles.matchPillActive]}
+              onPress={() => setShowMatchModal(true)}
+            >
+              <Ionicons name="sparkles" size={16} color={hasCustomPreferences ? COLORS.primary : COLORS.white} />
+              <Text style={[styles.controlPillText, hasCustomPreferences && styles.controlPillTextActive]}>
+                Match{hasCustomPreferences ? ' ✓' : ''}
               </Text>
             </TouchableOpacity>
           </View>
@@ -482,6 +483,86 @@ export default function HomeScreen() {
         onSelectStatus={handleSetStatus}
         neighborhoodName={selectedNeighborhood?.name || ''}
       />
+
+      {/* Match Modal - personalization options */}
+      <Modal visible={showMatchModal} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.matchModalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Find Your Match</Text>
+              <TouchableOpacity onPress={() => setShowMatchModal(false)}>
+                <Ionicons name="close" size={24} color={COLORS.gray500} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.matchOptions}>
+              <TouchableOpacity
+                style={styles.matchOption}
+                onPress={() => {
+                  setShowMatchModal(false);
+                  navigation.navigate('Matcher' as never);
+                }}
+              >
+                <View style={[styles.matchOptionIcon, { backgroundColor: COLORS.primaryLight }]}>
+                  <Ionicons name="clipboard-outline" size={24} color={COLORS.primary} />
+                </View>
+                <View style={styles.matchOptionContent}>
+                  <Text style={styles.matchOptionTitle}>Take the Quiz</Text>
+                  <Text style={styles.matchOptionDescription}>
+                    Answer a few quick questions about your lifestyle
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.matchOption}
+                onPress={() => {
+                  setShowMatchModal(false);
+                  navigation.navigate('Matcher' as never);
+                }}
+              >
+                <View style={[styles.matchOptionIcon, { backgroundColor: '#EEF2FF' }]}>
+                  <Ionicons name="chatbubble-outline" size={24} color="#6366F1" />
+                </View>
+                <View style={styles.matchOptionContent}>
+                  <Text style={styles.matchOptionTitle}>Describe What You Want</Text>
+                  <Text style={styles.matchOptionDescription}>
+                    Tell us in your own words what matters to you
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.matchOption}
+                onPress={() => {
+                  setShowMatchModal(false);
+                  navigation.navigate('Preferences' as never);
+                }}
+              >
+                <View style={[styles.matchOptionIcon, { backgroundColor: '#FEF3C7' }]}>
+                  <Ionicons name="options-outline" size={24} color="#D97706" />
+                </View>
+                <View style={styles.matchOptionContent}>
+                  <Text style={styles.matchOptionTitle}>Adjust Weights</Text>
+                  <Text style={styles.matchOptionDescription}>
+                    Fine-tune how important each factor is to you
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+              </TouchableOpacity>
+            </View>
+
+            {hasCustomPreferences && (
+              <View style={styles.matchStatus}>
+                <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
+                <Text style={styles.matchStatusText}>Your preferences are active</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -573,6 +654,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.25)',
   },
+  matchPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: COLORS.accent,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.accent,
+  },
+  matchPillActive: {
+    backgroundColor: COLORS.white,
+    borderColor: COLORS.white,
+  },
   content: {
     padding: SPACING.lg,
   },
@@ -587,10 +683,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gray200,
     ...SHADOWS.small,
   },
-  personalizeCardActive: {
-    backgroundColor: COLORS.primaryLight,
-    borderColor: COLORS.primary + '30',
-  },
   personalizeIcon: {
     width: 44,
     height: 44,
@@ -599,9 +691,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
-  },
-  personalizeIconActive: {
-    backgroundColor: COLORS.primary,
   },
   personalizeContent: {
     flex: 1,
@@ -752,5 +841,60 @@ const styles = StyleSheet.create({
   sortOptionDescription: {
     fontSize: FONT_SIZES.md,
     color: COLORS.gray500,
+  },
+
+  // Match Modal Styles
+  matchModalContent: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingBottom: 34, // Safe area
+  },
+  matchOptions: {
+    padding: 16,
+  },
+  matchOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: COLORS.gray50,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  matchOptionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  matchOptionContent: {
+    flex: 1,
+  },
+  matchOptionTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '600',
+    color: COLORS.gray900,
+    marginBottom: 2,
+  },
+  matchOptionDescription: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray500,
+    lineHeight: 18,
+  },
+  matchStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.gray100,
+  },
+  matchStatusText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '500',
+    color: COLORS.success,
   },
 });
