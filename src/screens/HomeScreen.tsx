@@ -164,24 +164,35 @@ export default function HomeScreen() {
 
   const ListHeader = useMemo(() => (
     <View>
-      {/* Matcher promo card - show when user hasn't set preferences */}
-      {!hasCustomPreferences && (
-        <TouchableOpacity
-          style={styles.matcherPromoCard}
-          onPress={() => navigation.navigate('Matcher' as never)}
-        >
-          <View style={styles.matcherPromoIcon}>
-            <Ionicons name="search" size={24} color={COLORS.primary} />
-          </View>
-          <View style={styles.matcherPromoContent}>
-            <Text style={styles.matcherPromoTitle}>Find Your Perfect Match</Text>
-            <Text style={styles.matcherPromoSubtitle}>
-              Answer a few questions or describe what you're looking for
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
-        </TouchableOpacity>
-      )}
+      {/* Personalization card - adapts based on whether user has set preferences */}
+      <TouchableOpacity
+        style={[styles.personalizeCard, hasCustomPreferences && styles.personalizeCardActive]}
+        onPress={() => navigation.navigate(hasCustomPreferences ? 'Preferences' as never : 'Matcher' as never)}
+      >
+        <View style={[styles.personalizeIcon, hasCustomPreferences && styles.personalizeIconActive]}>
+          <Ionicons
+            name={hasCustomPreferences ? 'sparkles' : 'search'}
+            size={22}
+            color={hasCustomPreferences ? COLORS.white : COLORS.primary}
+          />
+        </View>
+        <View style={styles.personalizeContent}>
+          <Text style={styles.personalizeTitle}>
+            {hasCustomPreferences ? 'Personalized for You' : 'Find Your Perfect Match'}
+          </Text>
+          <Text style={styles.personalizeSubtitle}>
+            {hasCustomPreferences
+              ? 'Sorted by your preferences • Tap to adjust'
+              : 'Answer a few questions to get personalized results'}
+          </Text>
+        </View>
+        <Ionicons
+          name={hasCustomPreferences ? 'options-outline' : 'chevron-forward'}
+          size={20}
+          color={hasCustomPreferences ? COLORS.primary : COLORS.gray400}
+        />
+      </TouchableOpacity>
+
       <Text style={styles.resultCount}>
         {filteredNeighborhoods.length} neighborhood{filteredNeighborhoods.length !== 1 ? 's' : ''} found
       </Text>
@@ -214,39 +225,30 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.controls}>
-          <TouchableOpacity
-            style={[styles.controlButton, hasActiveFilters && styles.controlButtonActive]}
-            onPress={() => setShowFilters(true)}
-          >
-            <Ionicons name="filter" size={18} color={hasActiveFilters ? COLORS.primary : COLORS.gray500} />
-            <Text style={[styles.controlButtonText, hasActiveFilters && styles.controlButtonTextActive]}>
-              Filters {hasActiveFilters && '•'}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.controlsLeft}>
+            <TouchableOpacity
+              style={[styles.controlPill, hasActiveFilters && styles.controlPillActive]}
+              onPress={() => setShowFilters(true)}
+            >
+              <Ionicons name="filter" size={16} color={hasActiveFilters ? COLORS.primary : COLORS.white} />
+              <Text style={[styles.controlPillText, hasActiveFilters && styles.controlPillTextActive]}>
+                Filter{hasActiveFilters ? ' •' : ''}
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.controlButton} onPress={() => setShowSortModal(true)}>
-            <Ionicons name="swap-vertical" size={18} color={sortBy === 'bestMatch' ? COLORS.primary : "#6b7280"} />
-            <Text style={[styles.controlButtonText, sortBy === 'bestMatch' && styles.controlButtonTextActive]}>
-              {sortBy === 'name' ? 'Name' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safety' : sortBy === 'transit' ? 'Transit' : 'Best Match'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.matcherButton}
-            onPress={() => navigation.navigate('Matcher' as never)}
-          >
-            <Ionicons name="sparkles" size={18} color={COLORS.white} />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.controlPill, sortBy !== 'name' && styles.controlPillActive]}
+              onPress={() => setShowSortModal(true)}
+            >
+              <Ionicons name="swap-vertical" size={16} color={sortBy !== 'name' ? COLORS.primary : COLORS.white} />
+              <Text style={[styles.controlPillText, sortBy !== 'name' && styles.controlPillTextActive]}>
+                {sortBy === 'name' ? 'Sort' : sortBy === 'bestMatch' ? 'Best Match' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safest' : 'Transit'}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
-            style={[styles.preferencesButton, hasCustomPreferences && styles.preferencesButtonActive]}
-            onPress={() => navigation.navigate('Preferences' as never)}
-          >
-            <Ionicons name="options" size={18} color={hasCustomPreferences ? COLORS.primary : COLORS.white} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.viewToggleButton}
+            style={styles.viewToggle}
             onPress={() => setViewMode(viewMode === 'list' ? 'card' : 'list')}
           >
             <Ionicons
@@ -531,94 +533,88 @@ const styles = StyleSheet.create({
   },
   controls: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  controlsLeft: {
+    flexDirection: 'row',
     gap: 8,
   },
-  controlButton: {
-    flex: 1,
+  controlPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 6,
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
-  controlButtonActive: {
+  controlPillActive: {
     backgroundColor: COLORS.white,
+    borderColor: COLORS.white,
   },
-  controlButtonText: {
+  controlPillText: {
     fontSize: 13,
     fontWeight: '600',
     color: COLORS.white,
   },
-  controlButtonTextActive: {
+  controlPillTextActive: {
     color: COLORS.primary,
   },
-  viewToggleButton: {
+  viewToggle: {
     width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-  },
-  matcherButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.accent,
-    borderRadius: 8,
-  },
-  preferencesButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-  },
-  preferencesButtonActive: {
-    backgroundColor: COLORS.white,
-  },
-  scrollView: {
-    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   content: {
     padding: SPACING.lg,
   },
-  matcherPromoCard: {
+  personalizeCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.white,
     padding: SPACING.md,
     borderRadius: BORDER_RADIUS.lg,
     marginBottom: SPACING.md,
     borderWidth: 1,
-    borderColor: COLORS.primaryBorder || COLORS.primary + '30',
+    borderColor: COLORS.gray200,
+    ...SHADOWS.small,
   },
-  matcherPromoIcon: {
+  personalizeCardActive: {
+    backgroundColor: COLORS.primaryLight,
+    borderColor: COLORS.primary + '30',
+  },
+  personalizeIcon: {
     width: 44,
     height: 44,
-    borderRadius: BORDER_RADIUS.md,
-    backgroundColor: COLORS.white,
+    borderRadius: 22,
+    backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
   },
-  matcherPromoContent: {
+  personalizeIconActive: {
+    backgroundColor: COLORS.primary,
+  },
+  personalizeContent: {
     flex: 1,
   },
-  matcherPromoTitle: {
+  personalizeTitle: {
     fontSize: FONT_SIZES.base,
     fontWeight: '700',
-    color: COLORS.primary,
+    color: COLORS.gray900,
     marginBottom: 2,
   },
-  matcherPromoSubtitle: {
+  personalizeSubtitle: {
     fontSize: FONT_SIZES.sm,
-    color: COLORS.gray600 || COLORS.gray500,
+    color: COLORS.gray500,
   },
   resultCount: {
     fontSize: FONT_SIZES.base,
