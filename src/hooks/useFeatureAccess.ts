@@ -1,126 +1,97 @@
 // useFeatureAccess Hook
-// Provides easy access to feature gating based on user's auth and subscription status
+// Simple hook for checking feature access based on subscription status
 
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import {
-  UserTier,
-  FeatureId,
-  isFeatureAvailable,
-  getFeatureLimit,
-  hasExceededLimit,
-  getComparisonLimit,
-  FEATURES,
-} from '../utils/features';
+import { FeatureKey, FEATURES, UserTier, getComparisonLimit } from '../config/subscriptions';
 
-// TEMPORARY: Set to true to unlock all premium features for testing
-// Set to false before production release
-const DEV_UNLOCK_ALL_FEATURES = true;
-
-interface FeatureAccessResult {
-  // Current user tier
+interface UseFeatureAccessReturn {
+  // Status
+  isProUser: boolean;
+  isPremium: boolean; // Alias for isProUser
+  isLoggedIn: boolean;
   tier: UserTier;
 
-  // Check if a feature is available
-  canAccess: (featureId: FeatureId) => boolean;
-
-  // Get the limit for a feature (null if unlimited)
-  getLimit: (featureId: FeatureId) => number | null;
-
-  // Check if a limit has been exceeded
-  isLimitExceeded: (featureId: FeatureId, currentCount: number) => boolean;
-
-  // Convenience properties
-  isPremium: boolean;
-  isLoggedIn: boolean;
+  // Limits
   comparisonLimit: number;
 
-  // Check if user needs to sign in for a feature
-  requiresSignIn: (featureId: FeatureId) => boolean;
+  // Feature checks
+  canAccess: (feature: FeatureKey) => boolean;
+  getLimit: (feature: FeatureKey) => number | null;
+  isLimitExceeded: (feature: FeatureKey, currentCount: number) => boolean;
 
-  // Check if user needs to upgrade for a feature
-  requiresUpgrade: (featureId: FeatureId) => boolean;
+  // Requirement checks
+  requiresLogin: (feature: FeatureKey) => boolean;
+  requiresUpgrade: (feature: FeatureKey) => boolean;
 }
 
-export const useFeatureAccess = (): FeatureAccessResult => {
+export function useFeatureAccess(): UseFeatureAccessReturn {
   const { user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { isProUser, canAccessFeature, getLimit } = useSubscription();
+
+  const isLoggedIn = !!user;
 
   // Determine user tier
   const tier: UserTier = useMemo(() => {
-    // TEMPORARY: Unlock all features for testing
-    if (DEV_UNLOCK_ALL_FEATURES) return 'premium';
-
     if (!user) return 'anonymous';
-    if (isPremium) return 'premium';
+    if (isProUser) return 'premium';
     return 'free';
-  }, [user, isPremium]);
+  }, [user, isProUser]);
 
-  // Check if a feature is available
-  const canAccess = useCallback(
-    (featureId: FeatureId): boolean => {
-      return isFeatureAvailable(featureId, tier);
-    },
-    [tier]
-  );
+  // Get comparison limit for current tier
+  const comparisonLimit = useMemo(() => getComparisonLimit(tier), [tier]);
 
-  // Get the limit for a feature
-  const getLimit = useCallback(
-    (featureId: FeatureId): number | null => {
-      return getFeatureLimit(featureId, tier);
-    },
-    [tier]
-  );
+  // Check if user can access a feature
+  const canAccess = useCallback((feature: FeatureKey): boolean => {
+    const featureDef = FEATURES[feature];
+    if (!featureDef) return false;
 
-  // Check if a limit has been exceeded
-  const isLimitExceeded = useCallback(
-    (featureId: FeatureId, currentCount: number): boolean => {
-      return hasExceededLimit(featureId, tier, currentCount);
-    },
-    [tier]
-  );
+    // Some features require login (like save_places, add_notes)
+    // These are defined as not requiring pro but needing an account
+    if (feature === 'save_places' || feature === 'add_notes' || feature === 'add_photos') {
+      return isLoggedIn;
+    }
 
-  // Check if user needs to sign in for a feature
-  const requiresSignIn = useCallback(
-    (featureId: FeatureId): boolean => {
-      if (user) return false; // Already signed in
-      const feature = FEATURES[featureId];
-      if (!feature) return false;
-      // Requires sign in if anonymous can't access but free can
-      return feature.access.anonymous === false && feature.access.free !== false;
-    },
-    [user]
-  );
+    return canAccessFeature(feature);
+  }, [isLoggedIn, canAccessFeature]);
 
-  // Check if user needs to upgrade for a feature
-  const requiresUpgrade = useCallback(
-    (featureId: FeatureId): boolean => {
-      if (isPremium) return false; // Already premium
-      const feature = FEATURES[featureId];
-      if (!feature) return false;
-      // Requires upgrade if current tier can't access but premium can
-      return !isFeatureAvailable(featureId, tier) && feature.access.premium !== false;
-    },
-    [tier, isPremium]
-  );
+  // Check if limit is exceeded for a feature
+  const isLimitExceeded = useCallback((feature: FeatureKey, currentCount: number): boolean => {
+    const limit = getLimit(feature);
+    if (limit === null) return false; // No limit
+    return currentCount >= limit;
+  }, [getLimit]);
 
-  // Comparison limit for current tier
-  const comparisonLimit = useMemo(() => {
-    return getComparisonLimit(tier);
-  }, [tier]);
+  // Check if feature requires login
+  const requiresLogin = useCallback((feature: FeatureKey): boolean => {
+    if (isLoggedIn) return false;
+
+    // Features that need login but not pro
+    const loginRequired = ['save_places', 'add_notes', 'add_photos'];
+    return loginRequired.includes(feature);
+  }, [isLoggedIn]);
+
+  // Check if feature requires upgrade
+  const requiresUpgrade = useCallback((feature: FeatureKey): boolean => {
+    if (isProUser) return false;
+
+    const featureDef = FEATURES[feature];
+    return featureDef?.requiresPro ?? false;
+  }, [isProUser]);
 
   return {
+    isProUser,
+    isPremium: isProUser, // Alias
+    isLoggedIn,
     tier,
+    comparisonLimit,
     canAccess,
     getLimit,
     isLimitExceeded,
-    isPremium: DEV_UNLOCK_ALL_FEATURES || isPremium,
-    isLoggedIn: !!user,
-    comparisonLimit,
-    requiresSignIn,
+    requiresLogin,
     requiresUpgrade,
   };
-};
+}
 
 export default useFeatureAccess;

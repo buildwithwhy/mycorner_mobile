@@ -4,59 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
 import { NeighborhoodStatus } from '../contexts/AppContext';
 import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
-import AffordabilityBadge from './AffordabilityBadge';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
 import { shareNeighborhood } from '../utils/sharing';
+import NeighborhoodStats from './NeighborhoodStats';
 
 export type ViewMode = 'list' | 'card';
-
-// Stats configuration - single source of truth for both views
-type StatConfig = {
-  key: keyof Neighborhood;
-  icon: keyof typeof Ionicons.glyphMap;
-  isAffordability?: boolean;
-};
-
-const STATS_CONFIG: StatConfig[] = [
-  { key: 'affordability', icon: 'cash-outline', isAffordability: true },
-  { key: 'safety', icon: 'shield-checkmark' },
-  { key: 'transit', icon: 'bus' },
-  { key: 'greenSpace', icon: 'leaf' },
-  { key: 'nightlife', icon: 'wine' },
-  { key: 'dining', icon: 'restaurant' },
-];
-
-// Shared StatItem component to avoid duplication
-interface StatItemProps {
-  icon: keyof typeof Ionicons.glyphMap;
-  value: number;
-  size: 'small' | 'medium';
-  isAffordability?: boolean;
-}
-
-const StatItem = memo(({ icon, value, size, isAffordability }: StatItemProps) => {
-  const isGood = value >= 4;
-  const iconSize = size === 'small' ? 14 : 16;
-  const textStyle = size === 'small'
-    ? [styles.cardViewStatMini, isGood && styles.statTextGood]
-    : [styles.statText, isGood && styles.statTextGood];
-  const containerStyle = size === 'small' ? styles.cardViewStatIcon : styles.stat;
-
-  if (isAffordability) {
-    return (
-      <View style={containerStyle}>
-        <AffordabilityBadge value={value} size="small" />
-      </View>
-    );
-  }
-
-  return (
-    <View style={containerStyle}>
-      <Ionicons name={icon} size={iconSize} color={isGood ? COLORS.success : COLORS.gray400} />
-      <Text style={textStyle}>{value}</Text>
-    </View>
-  );
-});
 
 // Generate a consistent color based on borough name
 const BOROUGH_COLORS = [
@@ -118,21 +70,6 @@ function NeighborhoodCard({
     shareNeighborhood(neighborhood);
   }, [neighborhood]);
 
-  // Render stats row - shared between both views
-  const renderStats = (size: 'small' | 'medium') => (
-    <View style={size === 'small' ? styles.cardViewStats : styles.statsRow}>
-      {STATS_CONFIG.map(({ key, icon, isAffordability }) => (
-        <StatItem
-          key={key}
-          icon={icon}
-          value={neighborhood[key as keyof Neighborhood] as number}
-          size={size}
-          isAffordability={isAffordability}
-        />
-      ))}
-    </View>
-  );
-
   // Card view renders with hero image
   if (viewMode === 'card') {
     return (
@@ -181,7 +118,7 @@ function NeighborhoodCard({
           <View style={styles.cardViewContent}>
             <Text style={styles.cardViewTitle}>{neighborhood.name}</Text>
             <Text style={styles.cardViewBorough}>{neighborhood.borough}</Text>
-            {renderStats('small')}
+            <NeighborhoodStats neighborhood={neighborhood} variant="compact" />
           </View>
         </TouchableOpacity>
 
@@ -270,7 +207,9 @@ function NeighborhoodCard({
           ))}
         </View>
 
-        {renderStats('medium')}
+        <View style={styles.statsRow}>
+          <NeighborhoodStats neighborhood={neighborhood} variant="standard" />
+        </View>
       </TouchableOpacity>
 
       <View style={styles.cardActions}>
@@ -394,25 +333,9 @@ const styles = StyleSheet.create({
     color: COLORS.accentDark,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     paddingTop: SPACING.md,
     borderTopWidth: 1,
     borderTopColor: COLORS.gray200,
-  },
-  stat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    flex: 1,
-  },
-  statText: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: '600',
-    color: COLORS.gray400,
-  },
-  statTextGood: {
-    color: COLORS.success,
   },
   cardActions: {
     flexDirection: 'row',
@@ -521,21 +444,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     color: COLORS.gray500,
     marginBottom: SPACING.sm,
-  },
-  cardViewStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: SPACING.xs,
-  },
-  cardViewStatIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  cardViewStatMini: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: '600',
-    color: COLORS.gray400,
   },
   cardViewActions: {
     flexDirection: 'row',

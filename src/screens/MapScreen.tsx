@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
-import AffordabilityBadge from '../components/AffordabilityBadge';
+import NeighborhoodStats from '../components/NeighborhoodStats';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 
@@ -63,6 +63,7 @@ export default function MapScreen() {
         {cityNeighborhoods.map((neighborhood) => {
           const coords = getNeighborhoodCoordinates(neighborhood.id);
           const isSelected = selectedNeighborhood === neighborhood.id;
+          const statusInfo = getStatusInfo(neighborhood.id);
 
           return (
             <Marker
@@ -72,8 +73,16 @@ export default function MapScreen() {
               description={neighborhood.borough}
               onPress={() => setSelectedNeighborhood(neighborhood.id)}
             >
-              <View style={[styles.marker, isSelected && styles.markerSelected]}>
-                <Ionicons name="location" size={24} color={isSelected ? COLORS.primary : COLORS.gray500} />
+              <View style={[
+                styles.marker,
+                isSelected && styles.markerSelected,
+                statusInfo && { borderWidth: 3, borderColor: statusInfo.color },
+              ]}>
+                {statusInfo ? (
+                  <Ionicons name={statusInfo.icon} size={20} color={statusInfo.color} />
+                ) : (
+                  <Ionicons name="location" size={24} color={isSelected ? COLORS.primary : COLORS.gray500} />
+                )}
               </View>
             </Marker>
           );
@@ -138,22 +147,7 @@ export default function MapScreen() {
                 </Text>
 
                 <View style={styles.infoStats}>
-                  <View style={styles.infoStat}>
-                    <Ionicons name="cash-outline" size={16} color="#6b7280" />
-                    <AffordabilityBadge value={neighborhood.affordability} />
-                  </View>
-                  <View style={styles.infoStat}>
-                    <Ionicons name="shield-checkmark" size={16} color="#6b7280" />
-                    <Text style={styles.infoStatText}>{neighborhood.safety}/5</Text>
-                  </View>
-                  <View style={styles.infoStat}>
-                    <Ionicons name="bus" size={16} color="#6b7280" />
-                    <Text style={styles.infoStatText}>{neighborhood.transit}/5</Text>
-                  </View>
-                  <View style={styles.infoStat}>
-                    <Ionicons name="leaf" size={16} color="#6b7280" />
-                    <Text style={styles.infoStatText}>{neighborhood.greenSpace}/5</Text>
-                  </View>
+                  <NeighborhoodStats neighborhood={neighborhood} variant="compact" />
                 </View>
 
                 {destinations.length > 0 && (
@@ -219,6 +213,15 @@ export default function MapScreen() {
           })()}
         </View>
       )}
+
+      {/* FAB to add/manage destinations */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('Destinations' as never)}
+      >
+        <Ionicons name="location" size={24} color={COLORS.white} />
+        <Text style={styles.fabText}>Destinations</Text>
+      </TouchableOpacity>
 
       <SignInPromptModal
         visible={showSignInModal}
@@ -334,22 +337,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   infoStats: {
-    flexDirection: 'row',
-    gap: 16,
     marginBottom: 16,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
-  },
-  infoStat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  infoStatText: {
-    fontSize: FONT_SIZES.md,
-    fontWeight: '600',
-    color: COLORS.primary,
   },
   commuteSection: {
     marginTop: 12,
@@ -421,5 +412,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: 'white',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: BORDER_RADIUS.round,
+    ...SHADOWS.medium,
+  },
+  fabText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.base,
+    fontWeight: '600',
   },
 });

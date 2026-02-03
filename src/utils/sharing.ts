@@ -1,5 +1,6 @@
 import { Share, Platform } from 'react-native';
 import { Neighborhood } from '../data/neighborhoods';
+import logger from './logger';
 
 /**
  * Format neighborhood data into a shareable message
@@ -57,7 +58,7 @@ export async function shareNeighborhood(neighborhood: Neighborhood): Promise<boo
 
     return result.action === Share.sharedAction;
   } catch (error) {
-    console.error('Error sharing neighborhood:', error);
+    logger.error('Error sharing neighborhood:', error);
     return false;
   }
 }
@@ -81,7 +82,7 @@ export async function shareComparison(neighborhoods: Neighborhood[]): Promise<bo
     const result = await Share.share({ message });
     return result.action === Share.sharedAction;
   } catch (error) {
-    console.error('Error sharing comparison:', error);
+    logger.error('Error sharing comparison:', error);
     return false;
   }
 }

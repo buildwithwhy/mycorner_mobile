@@ -1,41 +1,39 @@
 // FeatureGate Component
 // Conditionally renders content based on feature access
-// Shows sign-in prompt or upgrade prompt when access is denied
 
 import React, { ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import { FeatureId, FEATURES, getUpgradeMessage } from '../utils/features';
+import { FeatureKey, FEATURES } from '../config/subscriptions';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 
+// ============================================================================
+// MAIN FEATURE GATE
+// ============================================================================
+
 interface FeatureGateProps {
-  feature: FeatureId;
+  feature: FeatureKey;
   children: ReactNode;
-  // What to render when access is denied (defaults to built-in prompt)
   fallback?: ReactNode;
-  // Callback when sign-in is needed
-  onSignInRequired?: () => void;
-  // Callback when upgrade is needed (shows paywall)
+  onLoginRequired?: () => void;
   onUpgradeRequired?: () => void;
-  // If true, renders children but disabled/locked
-  renderLocked?: boolean;
+  // If true, shows blurred/locked version instead of replacing
+  showLocked?: boolean;
 }
 
-export const FeatureGate: React.FC<FeatureGateProps> = ({
+export function FeatureGate({
   feature,
   children,
   fallback,
-  onSignInRequired,
+  onLoginRequired,
   onUpgradeRequired,
-  renderLocked = false,
-}) => {
-  const { canAccess, requiresSignIn, requiresUpgrade } = useFeatureAccess();
-
-  const hasAccess = canAccess(feature);
+  showLocked = false,
+}: FeatureGateProps) {
+  const { canAccess, requiresLogin, requiresUpgrade } = useFeatureAccess();
 
   // Has access - render children
-  if (hasAccess) {
+  if (canAccess(feature)) {
     return <>{children}</>;
   }
 
@@ -44,8 +42,8 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
     return <>{fallback}</>;
   }
 
-  // Render locked version if requested
-  if (renderLocked) {
+  // Show locked overlay
+  if (showLocked) {
     return (
       <View style={styles.lockedContainer}>
         <View style={styles.lockedOverlay}>
@@ -56,36 +54,29 @@ export const FeatureGate: React.FC<FeatureGateProps> = ({
     );
   }
 
-  // Determine which prompt to show
-  if (requiresSignIn(feature)) {
-    return (
-      <SignInPrompt
-        feature={feature}
-        onSignIn={onSignInRequired}
-      />
-    );
+  // Show login prompt
+  if (requiresLogin(feature)) {
+    return <LoginPrompt feature={feature} onPress={onLoginRequired} />;
   }
 
+  // Show upgrade prompt
   if (requiresUpgrade(feature)) {
-    return (
-      <UpgradePrompt
-        feature={feature}
-        onUpgrade={onUpgradeRequired}
-      />
-    );
+    return <UpgradePrompt feature={feature} onPress={onUpgradeRequired} />;
   }
 
-  // Feature not available at all
   return null;
-};
-
-// Sign-in prompt component
-interface SignInPromptProps {
-  feature: FeatureId;
-  onSignIn?: () => void;
 }
 
-const SignInPrompt: React.FC<SignInPromptProps> = ({ feature, onSignIn }) => {
+// ============================================================================
+// LOGIN PROMPT
+// ============================================================================
+
+interface LoginPromptProps {
+  feature: FeatureKey;
+  onPress?: () => void;
+}
+
+function LoginPrompt({ feature, onPress }: LoginPromptProps) {
   const featureConfig = FEATURES[feature];
 
   return (
@@ -95,108 +86,133 @@ const SignInPrompt: React.FC<SignInPromptProps> = ({ feature, onSignIn }) => {
       <Text style={styles.promptMessage}>
         Sign in to {featureConfig?.name.toLowerCase() || 'use this feature'}.
       </Text>
-      {onSignIn && (
-        <TouchableOpacity style={styles.promptButton} onPress={onSignIn}>
-          <Text style={styles.promptButtonText}>Sign In</Text>
+      {onPress && (
+        <TouchableOpacity style={styles.primaryButton} onPress={onPress}>
+          <Text style={styles.primaryButtonText}>Sign In</Text>
         </TouchableOpacity>
       )}
     </View>
   );
-};
-
-// Upgrade prompt component
-interface UpgradePromptProps {
-  feature: FeatureId;
-  onUpgrade?: () => void;
 }
 
-const UpgradePrompt: React.FC<UpgradePromptProps> = ({ feature, onUpgrade }) => {
+// ============================================================================
+// UPGRADE PROMPT
+// ============================================================================
+
+interface UpgradePromptProps {
+  feature: FeatureKey;
+  onPress?: () => void;
+}
+
+function UpgradePrompt({ feature, onPress }: UpgradePromptProps) {
   const featureConfig = FEATURES[feature];
 
   return (
     <View style={styles.promptContainer}>
-      <View style={styles.premiumBadge}>
+      <View style={styles.proBadge}>
         <Ionicons name="star" size={24} color={COLORS.white} />
       </View>
       <Text style={styles.promptTitle}>{featureConfig?.name || 'Premium Feature'}</Text>
       <Text style={styles.promptMessage}>
-        {featureConfig?.description || 'This is a premium feature.'}
+        {featureConfig?.description || 'This is a Premium feature.'}
       </Text>
-      {onUpgrade && (
-        <TouchableOpacity style={styles.upgradeButton} onPress={onUpgrade}>
+      {onPress && (
+        <TouchableOpacity style={styles.upgradeButton} onPress={onPress}>
           <Ionicons name="star" size={16} color={COLORS.white} />
           <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
         </TouchableOpacity>
       )}
     </View>
   );
-};
+}
 
-// Inline upgrade prompt (for showing within existing UI)
-interface InlineUpgradePromptProps {
-  feature: FeatureId;
-  onUpgrade?: () => void;
+// ============================================================================
+// INLINE UPGRADE PROMPT (for embedding in existing UI)
+// ============================================================================
+
+interface InlineUpgradeProps {
+  feature: FeatureKey;
+  onPress?: () => void;
   compact?: boolean;
 }
 
-export const InlineUpgradePrompt: React.FC<InlineUpgradePromptProps> = ({
-  feature,
-  onUpgrade,
-  compact = false,
-}) => {
+export function InlineUpgradePrompt({ feature, onPress, compact = false }: InlineUpgradeProps) {
   const featureConfig = FEATURES[feature];
 
   if (compact) {
     return (
-      <TouchableOpacity style={styles.inlinePromptCompact} onPress={onUpgrade}>
+      <TouchableOpacity style={styles.inlineCompact} onPress={onPress}>
         <Ionicons name="lock-closed" size={14} color={COLORS.primary} />
-        <Text style={styles.inlinePromptCompactText}>Premium</Text>
+        <Text style={styles.inlineCompactText}>Premium</Text>
       </TouchableOpacity>
     );
   }
 
   return (
-    <TouchableOpacity style={styles.inlinePrompt} onPress={onUpgrade}>
+    <TouchableOpacity style={styles.inlineFull} onPress={onPress}>
       <Ionicons name="star" size={16} color={COLORS.primary} />
-      <Text style={styles.inlinePromptText}>
+      <Text style={styles.inlineFullText}>
         {featureConfig?.name || 'Premium Feature'} - Upgrade to unlock
       </Text>
       <Ionicons name="chevron-forward" size={16} color={COLORS.primary} />
     </TouchableOpacity>
   );
-};
+}
 
-// Limit reached prompt
-interface LimitReachedPromptProps {
-  feature: FeatureId;
+// ============================================================================
+// LIMIT REACHED PROMPT
+// ============================================================================
+
+interface LimitReachedProps {
+  feature: FeatureKey;
   currentCount: number;
   limit: number;
   onUpgrade?: () => void;
 }
 
-export const LimitReachedPrompt: React.FC<LimitReachedPromptProps> = ({
+export function LimitReachedPrompt({
   feature,
   currentCount,
   limit,
   onUpgrade,
-}) => {
+}: LimitReachedProps) {
+  const featureConfig = FEATURES[feature];
+
   return (
     <View style={styles.limitPrompt}>
-      <Ionicons name="alert-circle" size={20} color={COLORS.accent} />
-      <Text style={styles.limitPromptText}>
-        You've reached the limit of {limit} for{' '}
-        {FEATURES[feature]?.name.toLowerCase() || 'this feature'}
+      <Ionicons name="alert-circle" size={20} color={COLORS.warning} />
+      <Text style={styles.limitText}>
+        You've used {currentCount} of {limit}{' '}
+        {featureConfig?.name.toLowerCase() || 'items'}
       </Text>
       {onUpgrade && (
         <TouchableOpacity onPress={onUpgrade}>
-          <Text style={styles.limitPromptLink}>Upgrade</Text>
+          <Text style={styles.limitLink}>Upgrade</Text>
         </TouchableOpacity>
       )}
     </View>
   );
-};
+}
+
+// ============================================================================
+// PRO BADGE (for showing on UI elements)
+// ============================================================================
+
+export function PremiumBadge() {
+  return (
+    <View style={styles.proBadgeSmall}>
+      <Ionicons name="star" size={10} color={COLORS.white} />
+      <Text style={styles.proBadgeSmallText}>PREMIUM</Text>
+    </View>
+  );
+}
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
+  // Locked overlay
   lockedContainer: {
     position: 'relative',
     overflow: 'hidden',
@@ -211,6 +227,8 @@ const styles = StyleSheet.create({
   lockedContent: {
     opacity: 0.5,
   },
+
+  // Prompt container
   promptContainer: {
     alignItems: 'center',
     padding: SPACING.xl,
@@ -218,19 +236,11 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     margin: SPACING.md,
   },
-  premiumBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SPACING.md,
-  },
   promptTitle: {
     fontSize: FONT_SIZES.xl,
     fontWeight: '700',
     color: COLORS.gray900,
+    marginTop: SPACING.md,
     marginBottom: SPACING.sm,
     textAlign: 'center',
   },
@@ -241,13 +251,15 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
     lineHeight: 20,
   },
-  promptButton: {
+
+  // Buttons
+  primaryButton: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.md,
     borderRadius: BORDER_RADIUS.lg,
   },
-  promptButtonText: {
+  primaryButtonText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.base,
     fontWeight: '600',
@@ -267,24 +279,33 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.base,
     fontWeight: '600',
   },
-  inlinePrompt: {
+
+  // Premium badge
+  proBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  proBadgeSmall: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.sm,
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.primaryBorder,
+    gap: 2,
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: BORDER_RADIUS.sm,
   },
-  inlinePromptText: {
-    flex: 1,
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.primary,
-    fontWeight: '500',
+  proBadgeSmallText: {
+    color: COLORS.white,
+    fontSize: 9,
+    fontWeight: '700',
   },
-  inlinePromptCompact: {
+
+  // Inline prompts
+  inlineCompact: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
@@ -293,27 +314,46 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: BORDER_RADIUS.sm,
   },
-  inlinePromptCompactText: {
+  inlineCompactText: {
     fontSize: FONT_SIZES.xs,
     color: COLORS.primary,
     fontWeight: '600',
   },
+  inlineFull: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.primary + '30',
+  },
+  inlineFullText: {
+    flex: 1,
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+
+  // Limit prompt
   limitPrompt: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-    backgroundColor: COLORS.accentLight,
+    backgroundColor: COLORS.warning + '15',
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
     margin: SPACING.md,
   },
-  limitPromptText: {
+  limitText: {
     flex: 1,
     fontSize: FONT_SIZES.sm,
     color: COLORS.gray700,
   },
-  limitPromptLink: {
+  limitLink: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.primary,
     fontWeight: '600',

@@ -9,13 +9,7 @@ import {
   getSession,
 } from '../services/supabase';
 import { setUser as setSentryUser } from '../services/sentry';
-import {
-  identifyUser,
-  resetUser,
-  trackSignIn,
-  trackSignUp,
-  trackSignOut,
-} from '../services/analytics';
+import { usePostHog } from 'posthog-react-native';
 
 interface AuthContextType {
   session: Session | null;
@@ -49,6 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const posthog = usePostHog();
 
   useEffect(() => {
     // Check for existing session
@@ -86,8 +81,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(data.session);
       setUser(data.session.user);
       // Track successful sign in
-      trackSignIn('email');
-      identifyUser(data.session.user.id, { email: data.session.user.email });
+      posthog?.capture('user_signed_in', { method: 'email' });
+      posthog?.identify(data.session.user.id, { email: data.session.user.email ?? '' });
     }
     return { error };
   };
@@ -98,8 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(data.session);
       setUser(data.session.user);
       // Track successful sign up
-      trackSignUp('email');
-      identifyUser(data.session.user.id, { email: data.session.user.email, name: fullName });
+      posthog?.capture('user_signed_up', { method: 'email' });
+      posthog?.identify(data.session.user.id, { email: data.session.user.email ?? '', name: fullName });
     }
     return { error };
   };
@@ -111,8 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     // Track sign out before clearing session
-    trackSignOut();
-    resetUser();
+    posthog?.capture('user_signed_out');
+    posthog?.reset();
 
     await supabaseSignOut();
     setSession(null);

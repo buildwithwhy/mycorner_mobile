@@ -43,3 +43,4 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+posthog-wizard-installation-error-*.log

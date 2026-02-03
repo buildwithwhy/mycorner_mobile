@@ -201,6 +201,34 @@ export const updatePassword = async (newPassword: string) => {
   return { data, error };
 };
 
+// Delete user account and all associated data
+export const deleteUserAccount = async (userId: string) => {
+  try {
+    // Delete all user data from each table
+    const tables = [
+      'user_favorites',
+      'user_comparison',
+      'user_neighborhood_status',
+      'user_neighborhood_notes',
+      'user_neighborhood_ratings',
+      'user_destinations',
+      'user_photos',
+    ];
+
+    for (const table of tables) {
+      await supabase.from(table).delete().eq('user_id', userId);
+    }
+
+    // Sign out the user (this also clears their session)
+    await supabase.auth.signOut();
+
+    return { error: null };
+  } catch (error) {
+    logger.error('Error deleting user account:', error);
+    return { error };
+  }
+};
+
 /**
  * User Data Services
  */

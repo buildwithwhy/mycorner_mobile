@@ -1,187 +1,243 @@
 // Subscription Context
-// Provides subscription state and methods throughout the app
+// Provides subscription state throughout the app
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { CustomerInfo, PurchasesPackage, PurchasesOffering } from 'react-native-purchases';
-
-// TEMPORARY: Set to true to unlock all premium features for testing
-// Must match the flag in useFeatureAccess.ts
-// Set to false before production release
-const DEV_UNLOCK_ALL_FEATURES = true;
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import { PurchasesPackage, PurchasesOffering } from 'react-native-purchases';
+import { useAuth } from './AuthContext';
+import logger from '../utils/logger';
 import {
-  initSubscriptions,
-  isRevenueCatConfigured,
+  initializePurchases,
+  isPurchasesAvailable,
   loginUser,
   logoutUser,
-  getCustomerInfo,
-  isPremium as checkIsPremium,
+  checkIsProUser,
   getOfferings,
   purchasePackage,
   restorePurchases,
   getManagementUrl,
-  ENTITLEMENTS,
-} from '../services/subscriptions';
-import { useAuth } from './AuthContext';
-import { trackSubscriptionStarted, trackSubscriptionCancelled } from '../services/analytics';
+  PurchaseResult,
+} from '../services/purchases';
+import {
+  FeatureKey,
+  FEATURES,
+  DEV_MODE,
+  getFeatureLimit,
+} from '../config/subscriptions';
 
-interface SubscriptionContextType {
-  // State
-  isPremium: boolean;
+// ============================================================================
+// TYPES
+// ============================================================================
+
+interface SubscriptionContextValue {
+  // Status
+  isProUser: boolean;
+  isPremium: boolean; // Alias for isProUser
   isLoading: boolean;
-  customerInfo: CustomerInfo | null;
+  isAvailable: boolean; // Whether IAP is configured and available
+
+  // Offerings
   offerings: PurchasesOffering | null;
 
   // Actions
-  purchase: (pkg: PurchasesPackage) => Promise<{ success: boolean; error?: string }>;
-  restore: () => Promise<{ success: boolean; error?: string }>;
+  purchase: (pkg: PurchasesPackage) => Promise<PurchaseResult>;
+  restore: () => Promise<PurchaseResult>;
   refreshStatus: () => Promise<void>;
-  getManageSubscriptionUrl: () => Promise<string | null>;
+  getManageUrl: () => Promise<string | null>;
+  getManageSubscriptionUrl: () => Promise<string | null>; // Alias
+
+  // Feature access helpers
+  canAccessFeature: (feature: FeatureKey) => boolean;
+  getLimit: (feature: FeatureKey) => number | null;
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType>({
-  isPremium: false,
-  isLoading: true,
-  customerInfo: null,
-  offerings: null,
-  purchase: async () => ({ success: false }),
-  restore: async () => ({ success: false }),
-  refreshStatus: async () => {},
-  getManageSubscriptionUrl: async () => null,
-});
+// ============================================================================
+// CONTEXT
+// ============================================================================
 
-export const useSubscription = () => {
+const SubscriptionContext = createContext<SubscriptionContextValue | null>(null);
+
+// ============================================================================
+// HOOK
+// ============================================================================
+
+export function useSubscription(): SubscriptionContextValue {
   const context = useContext(SubscriptionContext);
   if (!context) {
-    throw new Error('useSubscription must be used within a SubscriptionProvider');
+    throw new Error('useSubscription must be used within SubscriptionProvider');
   }
   return context;
-};
+}
 
-export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// ============================================================================
+// PROVIDER
+// ============================================================================
+
+interface SubscriptionProviderProps {
+  children: React.ReactNode;
+}
+
+export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
   const { user } = useAuth();
-  const [isPremium, setIsPremium] = useState(false);
+
+  // State
+  const [isProUser, setIsProUser] = useState(DEV_MODE.BYPASS_SUBSCRIPTION);
   const [isLoading, setIsLoading] = useState(true);
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
+  const [isAvailable, setIsAvailable] = useState(false);
   const [offerings, setOfferings] = useState<PurchasesOffering | null>(null);
   const [initialized, setInitialized] = useState(false);
 
-  // Initialize RevenueCat on mount
+  // Initialize on mount
   useEffect(() => {
     const init = async () => {
-      await initSubscriptions();
+      const success = await initializePurchases();
+      setIsAvailable(success);
       setInitialized(true);
-      // If not configured, set loading to false immediately
-      if (!isRevenueCatConfigured()) {
+
+      if (!success) {
+        // If not available, stop loading
         setIsLoading(false);
       }
     };
     init();
   }, []);
 
-  // Handle user auth changes
+  // Handle auth changes
   useEffect(() => {
     if (!initialized) return;
 
-    // Skip if RevenueCat is not configured
-    if (!isRevenueCatConfigured()) {
-      setIsLoading(false);
-      return;
-    }
+    const handleAuthChange = async () => {
+      if (!isPurchasesAvailable()) {
+        setIsLoading(false);
+        return;
+      }
 
-    const handleAuth = async () => {
       setIsLoading(true);
 
       if (user) {
-        // Login to RevenueCat with user ID
         await loginUser(user.id);
       } else {
-        // Logout from RevenueCat
         await logoutUser();
       }
 
-      // Refresh subscription status
-      await refreshStatus();
+      // Refresh status after auth change
+      await refreshStatusInternal();
       setIsLoading(false);
     };
 
-    handleAuth();
+    handleAuthChange();
   }, [user, initialized]);
 
-  // Refresh subscription status
-  const refreshStatus = useCallback(async () => {
-    // Skip if RevenueCat is not configured
-    if (!isRevenueCatConfigured()) {
-      return;
-    }
+  // Internal refresh function
+  const refreshStatusInternal = async () => {
+    if (!isPurchasesAvailable()) return;
 
     try {
-      const [info, premium, currentOfferings] = await Promise.all([
-        getCustomerInfo(),
-        checkIsPremium(),
+      const [isPro, currentOfferings] = await Promise.all([
+        checkIsProUser(),
         getOfferings(),
       ]);
 
-      setCustomerInfo(info);
-      setIsPremium(premium);
+      setIsProUser(isPro);
       setOfferings(currentOfferings);
     } catch (error) {
-      console.error('[SubscriptionContext] Failed to refresh status:', error);
+      logger.error('[SubscriptionContext] Refresh failed:', error);
     }
+  };
+
+  // Public refresh function
+  const refreshStatus = useCallback(async () => {
+    setIsLoading(true);
+    await refreshStatusInternal();
+    setIsLoading(false);
   }, []);
 
-  // Purchase a package
-  const purchase = useCallback(
-    async (pkg: PurchasesPackage): Promise<{ success: boolean; error?: string }> => {
-      setIsLoading(true);
-
-      const result = await purchasePackage(pkg);
-
-      if (result.success && result.customerInfo) {
-        setCustomerInfo(result.customerInfo);
-        setIsPremium(!!result.customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM]);
-
-        // Track subscription started
-        const price = pkg.product.price;
-        const plan = pkg.identifier.includes('yearly') ? 'yearly' : 'monthly';
-        trackSubscriptionStarted(plan, price);
-      }
-
-      setIsLoading(false);
-      return { success: result.success, error: result.error };
-    },
-    []
-  );
-
-  // Restore purchases
-  const restore = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+  // Purchase handler
+  const purchase = useCallback(async (pkg: PurchasesPackage): Promise<PurchaseResult> => {
     setIsLoading(true);
+    const result = await purchasePackage(pkg);
 
-    const result = await restorePurchases();
-
-    if (result.success && result.customerInfo) {
-      setCustomerInfo(result.customerInfo);
-      setIsPremium(!!result.customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM]);
+    if (result.success) {
+      setIsProUser(true);
     }
 
     setIsLoading(false);
-    return { success: result.success, error: result.error };
+    return result;
   }, []);
 
-  // Get subscription management URL
-  const getManageSubscriptionUrl = useCallback(async (): Promise<string | null> => {
+  // Restore handler
+  const restore = useCallback(async (): Promise<PurchaseResult> => {
+    setIsLoading(true);
+    const result = await restorePurchases();
+
+    if (result.success) {
+      setIsProUser(true);
+    }
+
+    setIsLoading(false);
+    return result;
+  }, []);
+
+  // Get management URL
+  const getManageUrl = useCallback(async (): Promise<string | null> => {
     return getManagementUrl();
   }, []);
 
-  const value: SubscriptionContextType = {
-    isPremium: DEV_UNLOCK_ALL_FEATURES || isPremium,
+  // Feature access check
+  const canAccessFeature = useCallback((feature: FeatureKey): boolean => {
+    const featureDef = FEATURES[feature];
+    if (!featureDef) return false;
+
+    // If feature doesn't require pro, everyone can access
+    if (!featureDef.requiresPro) return true;
+
+    // Otherwise, need to be pro
+    return isProUser;
+  }, [isProUser]);
+
+  // Get feature limit
+  const getLimit = useCallback((feature: FeatureKey): number | null => {
+    return getFeatureLimit(feature, isProUser);
+  }, [isProUser]);
+
+  // Memoize context value
+  const value = useMemo<SubscriptionContextValue>(() => ({
+    isProUser,
+    isPremium: isProUser, // Alias
     isLoading,
-    customerInfo,
+    isAvailable,
     offerings,
     purchase,
     restore,
     refreshStatus,
-    getManageSubscriptionUrl,
-  };
+    getManageUrl,
+    getManageSubscriptionUrl: getManageUrl, // Alias
+    canAccessFeature,
+    getLimit,
+  }), [
+    isProUser,
+    isLoading,
+    isAvailable,
+    offerings,
+    purchase,
+    restore,
+    refreshStatus,
+    getManageUrl,
+    canAccessFeature,
+    getLimit,
+  ]);
 
-  return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
-};
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
+}
+
+export default SubscriptionProvider;

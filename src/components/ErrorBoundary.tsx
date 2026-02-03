@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { captureException } from '../services/sentry';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS } from '../constants/theme';
+import logger from '../utils/logger';
 
 interface Props {
   children: ReactNode;
@@ -34,10 +35,8 @@ class ErrorBoundary extends Component<Props, State> {
     });
 
     // Also log to console in development
-    if (__DEV__) {
-      console.error('ErrorBoundary caught an error:', error);
-      console.error('Component stack:', errorInfo.componentStack);
-    }
+    logger.error('ErrorBoundary caught an error:', error);
+    logger.error('Component stack:', errorInfo.componentStack);
   }
 
   handleRetry = (): void => {

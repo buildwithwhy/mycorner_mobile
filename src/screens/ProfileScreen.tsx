@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { usePreferences } from '../contexts/PreferencesContext';
+import { deleteUserAccount } from '../services/supabase';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || 'https://kallidao.com/productlab/mycorner/privacy';
@@ -20,6 +21,7 @@ export default function ProfileScreen() {
   const { isPremium, getManageSubscriptionUrl } = useSubscription();
   const { tier } = useFeatureAccess();
   const { hasCustomPreferences } = usePreferences();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -45,6 +47,45 @@ export default function ProfileScreen() {
     } else {
       Alert.alert('Unable to open', 'Could not open subscription management. Please try again later.');
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This will permanently delete all your data including saved places, notes, photos, and preferences. This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: () => confirmDeleteAccount(),
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(
+      'Final Confirmation',
+      'Type DELETE to confirm you want to permanently delete your account and all data.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Everything',
+          style: 'destructive',
+          onPress: async () => {
+            if (!user) return;
+            setIsDeleting(true);
+            const { error } = await deleteUserAccount(user.id);
+            setIsDeleting(false);
+            if (error) {
+              Alert.alert('Error', 'Failed to delete account. Please try again or contact support.');
+            }
+            // User will be signed out automatically by deleteUserAccount
+          },
+        },
+      ]
+    );
   };
 
   const renderPremiumCard = () => {
@@ -182,6 +223,24 @@ export default function ProfileScreen() {
               <Ionicons name="shield-checkmark-outline" size={16} color={COLORS.gray400} />
               <Text style={styles.footerLinkText}>Privacy Policy</Text>
             </TouchableOpacity>
+
+            {user && (
+              <TouchableOpacity
+                style={styles.deleteAccountButton}
+                onPress={handleDeleteAccount}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <ActivityIndicator size="small" color={COLORS.error} />
+                ) : (
+                  <>
+                    <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+                    <Text style={styles.deleteAccountText}>Delete Account</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
+
             <Text style={styles.footerVersion}>Version {APP_VERSION}</Text>
           </View>
         </View>
@@ -542,6 +601,17 @@ const styles = StyleSheet.create({
   footerLinkText: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.gray400,
+  },
+  deleteAccountButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    paddingVertical: SPACING.sm,
+    marginTop: SPACING.md,
+  },
+  deleteAccountText: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.error,
   },
   footerVersion: {
     fontSize: FONT_SIZES.sm,

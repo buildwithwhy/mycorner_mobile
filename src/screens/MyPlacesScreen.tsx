@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, SectionList } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useApp, NeighborhoodStatus, useCity } from '../contexts/AppContext';
@@ -8,7 +8,7 @@ import { Neighborhood } from '../data/neighborhoods';
 import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { Heading, Subheading, Body, Caption } from '../components/Typography';
 import { Button, EmptyState } from '../components';
-import AffordabilityBadge from '../components/AffordabilityBadge';
+import NeighborhoodStats from '../components/NeighborhoodStats';
 
 interface StatusSection {
   status: NeighborhoodStatus;
@@ -16,14 +16,15 @@ interface StatusSection {
   icon: keyof typeof Ionicons.glyphMap;
   color: string;
   data: Neighborhood[];
+  defaultCollapsed?: boolean;
 }
 
-const STATUS_CONFIG: { status: NonNullable<NeighborhoodStatus>; title: string; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
+const STATUS_CONFIG: { status: NonNullable<NeighborhoodStatus>; title: string; icon: keyof typeof Ionicons.glyphMap; color: string; defaultCollapsed?: boolean }[] = [
   { status: 'shortlist', title: 'Shortlist', icon: 'star', color: STATUS_COLORS.shortlist },
   { status: 'want_to_visit', title: 'Want to Visit', icon: 'bookmark', color: STATUS_COLORS.want_to_visit },
   { status: 'visited', title: 'Visited', icon: 'checkmark-circle', color: STATUS_COLORS.visited },
   { status: 'living_here', title: 'Living Here', icon: 'home', color: STATUS_COLORS.living_here },
-  { status: 'ruled_out', title: 'Ruled Out', icon: 'close-circle', color: STATUS_COLORS.ruled_out },
+  { status: 'ruled_out', title: 'Ruled Out', icon: 'close-circle', color: STATUS_COLORS.ruled_out, defaultCollapsed: true },
 ];
 
 export default function MyPlacesScreen() {
@@ -32,11 +33,34 @@ export default function MyPlacesScreen() {
   const { status, comparison, toggleComparison } = useApp();
   const { cityNeighborhoods, selectedCity } = useCity();
 
+  // Track which sections are collapsed
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => {
+    const initialCollapsed = new Set<string>();
+    STATUS_CONFIG.forEach(config => {
+      if (config.defaultCollapsed) {
+        initialCollapsed.add(config.status);
+      }
+    });
+    return initialCollapsed;
+  });
+
+  const toggleSection = (sectionStatus: string) => {
+    setCollapsedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(sectionStatus)) {
+        next.delete(sectionStatus);
+      } else {
+        next.add(sectionStatus);
+      }
+      return next;
+    });
+  };
+
   // Group neighborhoods by status (filtered by current city)
   const sections = useMemo(() => {
     const result: StatusSection[] = [];
 
-    STATUS_CONFIG.forEach(({ status: statusValue, title, icon, color }) => {
+    STATUS_CONFIG.forEach(({ status: statusValue, title, icon, color, defaultCollapsed }) => {
       const neighborhoodIds = Object.entries(status)
         .filter(([_, s]) => s === statusValue)
         .map(([id]) => id);
@@ -51,6 +75,7 @@ export default function MyPlacesScreen() {
           icon,
           color,
           data: neighborhoodsInSection,
+          defaultCollapsed,
         });
       }
     });
@@ -96,65 +121,71 @@ export default function MyPlacesScreen() {
       </View>
 
       {sections.length > 0 ? (
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.id}
-          stickySectionHeadersEnabled={false}
-          contentContainerStyle={styles.listContent}
-          renderSectionHeader={({ section }) => (
-            <View style={styles.sectionHeader}>
-              <View style={[styles.sectionIconContainer, { backgroundColor: `${section.color}20` }]}>
-                <Ionicons name={section.icon} size={18} color={section.color} />
-              </View>
-              <Subheading style={styles.sectionTitle}>{section.title}</Subheading>
-              <Caption color={COLORS.gray400}>{section.data.length}</Caption>
-            </View>
-          )}
-          renderItem={({ item: neighborhood, section }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('Detail', { neighborhood })}
-              activeOpacity={0.7}
-            >
-              <View style={styles.cardContent}>
-                <View style={styles.cardHeader}>
-                  <View style={styles.cardTitleContainer}>
-                    <Body style={styles.cardTitle}>{neighborhood.name}</Body>
-                    <Caption color={COLORS.gray500}>{neighborhood.borough}</Caption>
-                  </View>
-                  <View style={[styles.statusIndicator, { backgroundColor: section.color }]} />
-                </View>
+        <ScrollView contentContainerStyle={styles.listContent}>
+          {sections.map((section) => {
+            const isCollapsed = collapsedSections.has(section.status as string);
 
-                <View style={styles.cardStats}>
-                  <View style={styles.stat}>
-                    <Ionicons name="cash-outline" size={14} color={COLORS.gray400} />
-                    <AffordabilityBadge value={neighborhood.affordability} size="small" />
+            return (
+              <View key={section.status}>
+                {/* Collapsible Section Header */}
+                <TouchableOpacity
+                  style={styles.sectionHeader}
+                  onPress={() => toggleSection(section.status as string)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[styles.sectionIconContainer, { backgroundColor: `${section.color}20` }]}>
+                    <Ionicons name={section.icon} size={18} color={section.color} />
                   </View>
-                  <View style={styles.stat}>
-                    <Ionicons name="shield-checkmark" size={14} color={COLORS.gray400} />
-                    <Caption style={styles.statText}>{neighborhood.safety}/5</Caption>
-                  </View>
-                  <View style={styles.stat}>
-                    <Ionicons name="bus" size={14} color={COLORS.gray400} />
-                    <Caption style={styles.statText}>{neighborhood.transit}/5</Caption>
-                  </View>
-                </View>
-              </View>
+                  <Subheading style={styles.sectionTitle}>{section.title}</Subheading>
+                  <Caption color={COLORS.gray400} style={styles.sectionCount}>
+                    {section.data.length}
+                  </Caption>
+                  <Ionicons
+                    name={isCollapsed ? 'chevron-down' : 'chevron-up'}
+                    size={20}
+                    color={COLORS.gray400}
+                  />
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.compareButton, comparison.includes(neighborhood.id) && styles.compareButtonActive]}
-                onPress={() => toggleComparison(neighborhood.id)}
-              >
-                <Ionicons
-                  name={comparison.includes(neighborhood.id) ? 'git-compare' : 'git-compare-outline'}
-                  size={18}
-                  color={comparison.includes(neighborhood.id) ? COLORS.primary : COLORS.gray400}
-                />
-              </TouchableOpacity>
-            </TouchableOpacity>
-          )}
-          renderSectionFooter={() => <View style={styles.sectionFooter} />}
-        />
+                {/* Section Items */}
+                {!isCollapsed && section.data.map((neighborhood) => (
+                  <TouchableOpacity
+                    key={neighborhood.id}
+                    style={styles.card}
+                    onPress={() => navigation.navigate('Detail', { neighborhood })}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.cardContent}>
+                      <View style={styles.cardHeader}>
+                        <View style={styles.cardTitleContainer}>
+                          <Body style={styles.cardTitle}>{neighborhood.name}</Body>
+                          <Caption color={COLORS.gray500}>{neighborhood.borough}</Caption>
+                        </View>
+                        <View style={[styles.statusIndicator, { backgroundColor: section.color }]} />
+                      </View>
+
+                      <NeighborhoodStats neighborhood={neighborhood} variant="compact" />
+                    </View>
+
+                    <TouchableOpacity
+                      style={[styles.compareButton, comparison.includes(neighborhood.id) && styles.compareButtonActive]}
+                      onPress={() => toggleComparison(neighborhood.id)}
+                    >
+                      <Ionicons
+                        name={comparison.includes(neighborhood.id) ? 'git-compare' : 'git-compare-outline'}
+                        size={18}
+                        color={comparison.includes(neighborhood.id) ? COLORS.primary : COLORS.gray400}
+                      />
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                ))}
+
+                {/* Section Footer */}
+                <View style={styles.sectionFooter} />
+              </View>
+            );
+          })}
+        </ScrollView>
       ) : (
         <View style={styles.emptyContainer}>
           <EmptyState
@@ -207,6 +238,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     flex: 1,
   },
+  sectionCount: {
+    marginRight: SPACING.sm,
+  },
   sectionFooter: {
     height: SPACING.md,
   },
@@ -242,19 +276,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginLeft: SPACING.sm,
     marginTop: 6,
-  },
-  cardStats: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-  },
-  stat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  statText: {
-    fontWeight: '600',
-    color: COLORS.primary,
   },
   compareButton: {
     padding: SPACING.md,

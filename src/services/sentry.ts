@@ -3,14 +3,13 @@
 
 import * as Sentry from '@sentry/react-native';
 import { SENTRY_DSN, APP_ENV, isProduction, isDevelopment } from '../../config';
+import logger from '../utils/logger';
 
 // Initialize Sentry - call this early in app startup
 export const initSentry = (): void => {
   // Only initialize if DSN is configured
   if (!SENTRY_DSN) {
-    if (isDevelopment) {
-      console.log('[Sentry] DSN not configured, skipping initialization');
-    }
+    logger.log('[Sentry] DSN not configured, skipping initialization');
     return;
   }
 
@@ -35,9 +34,7 @@ export const initSentry = (): void => {
     },
   });
 
-  if (isDevelopment) {
-    console.log('[Sentry] Initialized for environment:', APP_ENV);
-  }
+  logger.log('[Sentry] Initialized for environment:', APP_ENV);
 };
 
 // Capture an exception manually

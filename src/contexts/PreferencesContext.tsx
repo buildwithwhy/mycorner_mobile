@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import logger from '../utils/logger';
 
 const STORAGE_KEY = '@mycorner_preferences';
 
@@ -104,7 +105,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
         setPreferences({ ...DEFAULT_PREFERENCES, ...parsed });
       }
     } catch (error) {
-      console.error('[Preferences] Failed to load preferences:', error);
+      logger.error('[Preferences] Failed to load preferences:', error);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +115,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
     } catch (error) {
-      console.error('[Preferences] Failed to save preferences:', error);
+      logger.error('[Preferences] Failed to save preferences:', error);
     }
   };
 

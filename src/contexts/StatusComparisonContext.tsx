@@ -8,7 +8,7 @@ import {
   getUserNeighborhoodStatuses,
 } from '../services/supabase';
 import { useSyncToSupabase, useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
-import { getComparisonLimit, UserTier } from '../utils/features';
+import { getComparisonLimit, UserTier } from '../config/subscriptions';
 import logger from '../utils/logger';
 
 export type NeighborhoodStatus = 'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out' | null;
@@ -39,7 +39,8 @@ const StatusComparisonContext = createContext<StatusComparisonContextType | unde
 
 export function StatusComparisonProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { isProUser } = useSubscription();
+  const isPremium = isProUser; // Alias for backwards compatibility
   const [status, setStatus] = useState<Record<string, NeighborhoodStatus>>({});
   const [comparison, setComparison] = useState<string[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);

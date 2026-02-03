@@ -12,6 +12,8 @@ import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
 import { scoreAndSortNeighborhoods, calculateMatchPercentage, ScoredNeighborhood } from '../utils/personalizedScoring';
+import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import { PremiumBadge } from '../components/FeatureGate';
 
 type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
 
@@ -22,6 +24,7 @@ export default function HomeScreen() {
   const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
   const { photos } = useNotesRatings();
   const { preferences, hasCustomPreferences } = usePreferences();
+  const { canAccess, requiresUpgrade } = useFeatureAccess();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
@@ -63,12 +66,16 @@ export default function HomeScreen() {
     setSelectedNeighborhoodId(null);
   }, [selectedNeighborhoodId, setNeighborhoodStatus]);
 
-  // Auto-switch to "Best Match" sort when user has custom preferences
+  // Auto-switch to "Best Match" sort when premium user has custom preferences
   useEffect(() => {
-    if (hasCustomPreferences && sortBy === 'name') {
+    if (hasCustomPreferences && sortBy === 'name' && canAccess('personalized_scores')) {
       setSortBy('bestMatch');
     }
-  }, [hasCustomPreferences]);
+    // Reset to 'name' if non-premium user somehow has bestMatch selected
+    if (sortBy === 'bestMatch' && !canAccess('personalized_scores')) {
+      setSortBy('name');
+    }
+  }, [hasCustomPreferences, canAccess, sortBy]);
 
   // Handle comparison toggle with limit feedback
   const handleToggleComparison = useCallback((id: string) => {
@@ -365,18 +372,27 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.sortOptions}>
+              {/* Best Match - soft gated for non-premium */}
               <TouchableOpacity
                 style={[styles.sortOption, sortBy === 'bestMatch' && styles.sortOptionActive]}
                 onPress={() => {
-                  setSortBy('bestMatch');
-                  setShowSortModal(false);
+                  if (requiresUpgrade('personalized_scores')) {
+                    setShowSortModal(false);
+                    navigation.navigate('Paywall' as never, { source: 'best_match_sort' } as never);
+                  } else {
+                    setSortBy('bestMatch');
+                    setShowSortModal(false);
+                  }
                 }}
               >
                 <Ionicons name="heart" size={24} color={sortBy === 'bestMatch' ? COLORS.primary : COLORS.gray500} />
                 <View style={styles.sortOptionText}>
-                  <Text style={[styles.sortOptionTitle, sortBy === 'bestMatch' && styles.sortOptionTitleActive]}>
-                    Best Match
-                  </Text>
+                  <View style={styles.sortOptionTitleRow}>
+                    <Text style={[styles.sortOptionTitle, sortBy === 'bestMatch' && styles.sortOptionTitleActive]}>
+                      Best Match
+                    </Text>
+                    {requiresUpgrade('personalized_scores') && <PremiumBadge />}
+                  </View>
                   <Text style={styles.sortOptionDescription}>Based on your preferences</Text>
                 </View>
                 {sortBy === 'bestMatch' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
@@ -498,14 +514,21 @@ export default function HomeScreen() {
                 style={styles.matchOption}
                 onPress={() => {
                   setShowMatchModal(false);
-                  navigation.navigate('Matcher' as never);
+                  if (requiresUpgrade('ai_matcher')) {
+                    navigation.navigate('Paywall' as never, { source: 'quiz' } as never);
+                  } else {
+                    navigation.navigate('Matcher' as never);
+                  }
                 }}
               >
                 <View style={[styles.matchOptionIcon, { backgroundColor: COLORS.primaryLight }]}>
                   <Ionicons name="clipboard-outline" size={24} color={COLORS.primary} />
                 </View>
                 <View style={styles.matchOptionContent}>
-                  <Text style={styles.matchOptionTitle}>Take the Quiz</Text>
+                  <View style={styles.matchOptionTitleRow}>
+                    <Text style={styles.matchOptionTitle}>Take the Quiz</Text>
+                    {requiresUpgrade('ai_matcher') && <PremiumBadge />}
+                  </View>
                   <Text style={styles.matchOptionDescription}>
                     Answer a few quick questions about your lifestyle
                   </Text>
@@ -517,14 +540,21 @@ export default function HomeScreen() {
                 style={styles.matchOption}
                 onPress={() => {
                   setShowMatchModal(false);
-                  navigation.navigate('Matcher' as never);
+                  if (requiresUpgrade('ai_matcher')) {
+                    navigation.navigate('Paywall' as never, { source: 'ai_describe' } as never);
+                  } else {
+                    navigation.navigate('Matcher' as never);
+                  }
                 }}
               >
                 <View style={[styles.matchOptionIcon, { backgroundColor: '#EEF2FF' }]}>
                   <Ionicons name="chatbubble-outline" size={24} color="#6366F1" />
                 </View>
                 <View style={styles.matchOptionContent}>
-                  <Text style={styles.matchOptionTitle}>Describe What You Want</Text>
+                  <View style={styles.matchOptionTitleRow}>
+                    <Text style={styles.matchOptionTitle}>Describe What You Want</Text>
+                    {requiresUpgrade('ai_matcher') && <PremiumBadge />}
+                  </View>
                   <Text style={styles.matchOptionDescription}>
                     Tell us in your own words what matters to you
                   </Text>
@@ -536,14 +566,21 @@ export default function HomeScreen() {
                 style={styles.matchOption}
                 onPress={() => {
                   setShowMatchModal(false);
-                  navigation.navigate('Preferences' as never);
+                  if (requiresUpgrade('personalized_scores')) {
+                    navigation.navigate('Paywall' as never, { source: 'preferences' } as never);
+                  } else {
+                    navigation.navigate('Preferences' as never);
+                  }
                 }}
               >
                 <View style={[styles.matchOptionIcon, { backgroundColor: '#FEF3C7' }]}>
                   <Ionicons name="options-outline" size={24} color="#D97706" />
                 </View>
                 <View style={styles.matchOptionContent}>
-                  <Text style={styles.matchOptionTitle}>Adjust Weights</Text>
+                  <View style={styles.matchOptionTitleRow}>
+                    <Text style={styles.matchOptionTitle}>Adjust Weights</Text>
+                    {requiresUpgrade('personalized_scores') && <PremiumBadge />}
+                  </View>
                   <Text style={styles.matchOptionDescription}>
                     Fine-tune how important each factor is to you
                   </Text>
@@ -827,6 +864,11 @@ const styles = StyleSheet.create({
   sortOptionText: {
     flex: 1,
   },
+  sortOptionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
   sortOptionTitle: {
     fontSize: FONT_SIZES.lg,
     fontWeight: '600',
@@ -869,6 +911,11 @@ const styles = StyleSheet.create({
   },
   matchOptionContent: {
     flex: 1,
+  },
+  matchOptionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
   },
   matchOptionTitle: {
     fontSize: FONT_SIZES.lg,

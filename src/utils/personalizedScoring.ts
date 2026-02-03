@@ -169,3 +169,61 @@ export const getTopCriteria = (
 
   return criteria.sort((a, b) => b.score - a.score).slice(0, count);
 };
+
+// Criterion labels for display
+const CRITERION_LABELS: Record<string, string> = {
+  safety: 'Safety',
+  affordability: 'Affordability',
+  transit: 'Transit',
+  greenSpace: 'Green Space',
+  nightlife: 'Nightlife',
+  familyFriendly: 'Family Friendly',
+  dining: 'Dining',
+  vibe: 'Local Scene',
+};
+
+// Get match reasons - explains why this neighborhood matches user preferences
+export interface MatchReason {
+  criterion: string;
+  label: string;
+  score: number;
+  userWeight: number;
+  isStrength: boolean; // true if neighborhood scores well in high-priority area
+}
+
+export const getMatchReasons = (
+  neighborhood: Neighborhood,
+  preferences: ScoringPreferences,
+  maxReasons: number = 3
+): MatchReason[] => {
+  const criteriaScores = {
+    safety: neighborhood.safety,
+    affordability: neighborhood.affordability,
+    transit: neighborhood.transit,
+    greenSpace: neighborhood.greenSpace,
+    nightlife: neighborhood.nightlife,
+    familyFriendly: neighborhood.familyFriendly,
+    dining: neighborhood.dining,
+    vibe: vibeToScore(neighborhood.vibe),
+  };
+
+  // Calculate contribution of each criterion (weight * score)
+  const contributions = Object.entries(criteriaScores).map(([key, score]) => {
+    const weight = preferences[key as keyof ScoringPreferences];
+    return {
+      criterion: key,
+      label: CRITERION_LABELS[key] || key,
+      score,
+      userWeight: weight,
+      contribution: (weight / 100) * (score / 5), // Normalized contribution
+      isStrength: score >= 4 && weight >= 50, // High score in important area
+    };
+  });
+
+  // Sort by contribution (weight * score) to find most impactful matches
+  const sorted = contributions
+    .filter(c => c.userWeight > 30) // Only include criteria user cares about
+    .sort((a, b) => b.contribution - a.contribution);
+
+  return sorted.slice(0, maxReasons);
+};

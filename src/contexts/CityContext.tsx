@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cities, City, getCityById, DEFAULT_CITY_ID } from '../data/cities';
 import { getNeighborhoodsByCity, Neighborhood } from '../data/neighborhoods';
+import logger from '../utils/logger';
 
 const STORAGE_KEY_CITY = '@mycorner_selected_city';
 const STORAGE_KEY_HAS_SELECTED = '@mycorner_has_selected_city';
@@ -64,7 +65,7 @@ export function CityProvider({ children }: CityProviderProps) {
         setHasSelectedCity(true);
       }
     } catch (error) {
-      console.error('Error loading city preference:', error);
+      logger.error('Error loading city preference:', error);
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +74,7 @@ export function CityProvider({ children }: CityProviderProps) {
   const setSelectedCity = useCallback(async (cityId: string) => {
     const city = getCityById(cityId);
     if (!city) {
-      console.warn(`City with id ${cityId} not found`);
+      logger.warn(`City with id ${cityId} not found`);
       return;
     }
 
@@ -83,7 +84,7 @@ export function CityProvider({ children }: CityProviderProps) {
     try {
       await AsyncStorage.setItem(STORAGE_KEY_CITY, cityId);
     } catch (error) {
-      console.error('Error saving city preference:', error);
+      logger.error('Error saving city preference:', error);
     }
   }, []);
 
@@ -93,7 +94,7 @@ export function CityProvider({ children }: CityProviderProps) {
       setHasSelectedCity(true);
       setShowCityPicker(false);
     } catch (error) {
-      console.error('Error confirming city selection:', error);
+      logger.error('Error confirming city selection:', error);
     }
   }, []);
 

@@ -45,10 +45,11 @@
     "production": {
       "extends": "base",
       "distribution": "store",
+      "environment": "production",
       "env": {
-        "APP_ENV": "production"
-      },
-      "autoIncrement": true
+        "APP_ENV": "production",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      }
     },
     "development-simulator": {
       "developmentClient": true,

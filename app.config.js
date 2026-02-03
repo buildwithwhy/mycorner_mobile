@@ -47,6 +47,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: currentEnv.bundleIdentifier,
+      buildNumber: "3",
       config: {
         usesNonExemptEncryption: false,
         // iOS uses Apple Maps for display, but needs Google API key for Places/Geocoding
@@ -54,6 +55,7 @@ module.exports = {
     },
     android: {
       package: currentEnv.package,
+      versionCode: 1,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
@@ -72,14 +74,14 @@ module.exports = {
     plugins: [
       "expo-font",
       "expo-splash-screen",
-      // Sentry plugin disabled until configured - uncomment when ready:
-      // [
-      //   "@sentry/react-native/expo",
-      //   {
-      //     organization: process.env.SENTRY_ORG,
-      //     project: process.env.SENTRY_PROJECT,
-      //   }
-      // ]
+      // Sentry error tracking (enabled when SENTRY_DSN is configured)
+      [
+        "@sentry/react-native/expo",
+        {
+          organization: process.env.SENTRY_ORG || "your-org",
+          project: process.env.SENTRY_PROJECT || "mycorner",
+        }
+      ]
     ],
     extra: {
       // Current environment

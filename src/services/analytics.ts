@@ -1,110 +1,36 @@
 // Analytics Service
 // Tracks user behavior using PostHog
+// PostHog is initialized via PostHogProvider in App.tsx
 
-import PostHog from 'posthog-react-native';
-import {
-  POSTHOG_API_KEY,
-  POSTHOG_HOST,
-  ENABLE_ANALYTICS,
-  APP_ENV,
-  isDevelopment,
-} from '../../config';
+import { usePostHog } from 'posthog-react-native';
 
-let posthog: PostHog | null = null;
-
-// Initialize PostHog - call this early in app startup
-export const initAnalytics = async (): Promise<void> => {
-  // Only initialize if analytics is enabled and API key is configured
-  if (!ENABLE_ANALYTICS || !POSTHOG_API_KEY) {
-    if (isDevelopment) {
-      console.log('[Analytics] Disabled or not configured, skipping initialization');
-    }
-    return;
-  }
-
-  try {
-    posthog = new PostHog(POSTHOG_API_KEY, {
-      host: POSTHOG_HOST,
-      // Don't capture in development unless explicitly enabled
-      disabled: !ENABLE_ANALYTICS,
-    });
-
-    // Register super properties that apply to all events
-    posthog.register({
-      app_env: APP_ENV,
-      platform: 'mobile',
-    });
-
-    if (isDevelopment) {
-      console.log('[Analytics] PostHog initialized');
-    }
-  } catch (error) {
-    console.error('[Analytics] Failed to initialize PostHog:', error);
-  }
-};
-
-// Identify user (call after login)
-export const identifyUser = (
-  userId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  properties?: Record<string, any>
-): void => {
-  if (!posthog) return;
-
-  posthog.identify(userId, properties);
-};
-
-// Reset user identity (call on logout)
-export const resetUser = (): void => {
-  if (!posthog) return;
-
-  posthog.reset();
-};
-
-// Track a custom event
-export const trackEvent = (
-  eventName: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  properties?: Record<string, any>
-): void => {
-  if (!posthog) return;
-
-  posthog.capture(eventName, properties);
-};
-
-// Track screen view
-export const trackScreen = (
-  screenName: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  properties?: Record<string, any>
-): void => {
-  if (!posthog) return;
-
-  posthog.screen(screenName, properties);
-};
+// ===== Hook for components =====
+export { usePostHog };
 
 // ===== Pre-defined Event Helpers =====
+// These are meant to be used with the usePostHog hook in components
 
 // User actions
-export const trackSignUp = (method: 'email' | 'google'): void => {
-  trackEvent('user_signed_up', { method });
+export const trackSignUp = (posthog: ReturnType<typeof usePostHog>, method: 'email' | 'google'): void => {
+  posthog?.capture('user_signed_up', { method });
 };
 
-export const trackSignIn = (method: 'email' | 'google'): void => {
-  trackEvent('user_signed_in', { method });
+export const trackSignIn = (posthog: ReturnType<typeof usePostHog>, method: 'email' | 'google'): void => {
+  posthog?.capture('user_signed_in', { method });
 };
 
-export const trackSignOut = (): void => {
-  trackEvent('user_signed_out');
+export const trackSignOut = (posthog: ReturnType<typeof usePostHog>): void => {
+  posthog?.capture('user_signed_out');
 };
 
 // Neighborhood interactions
 export const trackNeighborhoodView = (
+  posthog: ReturnType<typeof usePostHog>,
   neighborhoodId: string,
   neighborhoodName: string,
   cityId: string
 ): void => {
-  trackEvent('neighborhood_viewed', {
+  posthog?.capture('neighborhood_viewed', {
     neighborhood_id: neighborhoodId,
     neighborhood_name: neighborhoodName,
     city_id: cityId,
@@ -112,116 +38,130 @@ export const trackNeighborhoodView = (
 };
 
 export const trackNeighborhoodStatusChange = (
+  posthog: ReturnType<typeof usePostHog>,
   neighborhoodId: string,
   status: string,
   previousStatus: string | null
 ): void => {
-  trackEvent('neighborhood_status_changed', {
+  posthog?.capture('neighborhood_status_changed', {
     neighborhood_id: neighborhoodId,
     new_status: status,
     previous_status: previousStatus,
   });
 };
 
-export const trackNeighborhoodCompare = (neighborhoodIds: string[]): void => {
-  trackEvent('neighborhoods_compared', {
+export const trackNeighborhoodCompare = (
+  posthog: ReturnType<typeof usePostHog>,
+  neighborhoodIds: string[]
+): void => {
+  posthog?.capture('neighborhoods_compared', {
     neighborhood_count: neighborhoodIds.length,
     neighborhood_ids: neighborhoodIds,
   });
 };
 
-export const trackNeighborhoodNote = (neighborhoodId: string, action: 'added' | 'updated'): void => {
-  trackEvent('neighborhood_note_' + action, {
+export const trackNeighborhoodNote = (
+  posthog: ReturnType<typeof usePostHog>,
+  neighborhoodId: string,
+  action: 'added' | 'updated'
+): void => {
+  posthog?.capture('neighborhood_note_' + action, {
     neighborhood_id: neighborhoodId,
   });
 };
 
-export const trackPhotoAdded = (neighborhoodId: string): void => {
-  trackEvent('photo_added', {
+export const trackPhotoAdded = (
+  posthog: ReturnType<typeof usePostHog>,
+  neighborhoodId: string
+): void => {
+  posthog?.capture('photo_added', {
     neighborhood_id: neighborhoodId,
   });
 };
 
 // Search & filter
-export const trackSearch = (query: string, resultCount: number): void => {
-  trackEvent('search_performed', {
+export const trackSearch = (
+  posthog: ReturnType<typeof usePostHog>,
+  query: string,
+  resultCount: number
+): void => {
+  posthog?.capture('search_performed', {
     query_length: query.length,
     result_count: resultCount,
   });
 };
 
-export const trackFilterApplied = (filterName: string, filterValue: unknown): void => {
-  trackEvent('filter_applied', {
+export const trackFilterApplied = (
+  posthog: ReturnType<typeof usePostHog>,
+  filterName: string,
+  filterValue: string | number | boolean
+): void => {
+  posthog?.capture('filter_applied', {
     filter_name: filterName,
     filter_value: filterValue,
   });
 };
 
 // City switching
-export const trackCitySwitch = (fromCity: string, toCity: string): void => {
-  trackEvent('city_switched', {
+export const trackCitySwitch = (
+  posthog: ReturnType<typeof usePostHog>,
+  fromCity: string,
+  toCity: string
+): void => {
+  posthog?.capture('city_switched', {
     from_city: fromCity,
     to_city: toCity,
   });
 };
 
 // Feature usage
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const trackFeatureUsed = (featureName: string, properties?: Record<string, any>): void => {
-  trackEvent('feature_used', {
+export const trackFeatureUsed = (
+  posthog: ReturnType<typeof usePostHog>,
+  featureName: string,
+  properties?: Record<string, string | number | boolean>
+): void => {
+  posthog?.capture('feature_used', {
     feature_name: featureName,
     ...properties,
   });
 };
 
-// Subscription events (for paid tier)
-export const trackSubscriptionStarted = (plan: string, price: number): void => {
-  trackEvent('subscription_started', {
+// Subscription events
+export const trackSubscriptionStarted = (
+  posthog: ReturnType<typeof usePostHog>,
+  plan: string,
+  price: number
+): void => {
+  posthog?.capture('subscription_started', {
     plan,
     price,
   });
 };
 
-export const trackSubscriptionCancelled = (plan: string, reason?: string): void => {
-  trackEvent('subscription_cancelled', {
+export const trackSubscriptionCancelled = (
+  posthog: ReturnType<typeof usePostHog>,
+  plan: string,
+  reason?: string
+): void => {
+  posthog?.capture('subscription_cancelled', {
     plan,
-    reason,
+    reason: reason ?? '',
   });
 };
 
-export const trackPaywallViewed = (source: string): void => {
-  trackEvent('paywall_viewed', {
+export const trackPaywallViewed = (
+  posthog: ReturnType<typeof usePostHog>,
+  source: string
+): void => {
+  posthog?.capture('paywall_viewed', {
     source,
   });
 };
 
-// Shutdown analytics (call on app close if needed)
-export const shutdownAnalytics = async (): Promise<void> => {
-  if (posthog) {
-    await posthog.flush();
-  }
-};
-
-export default {
-  initAnalytics,
-  identifyUser,
-  resetUser,
-  trackEvent,
-  trackScreen,
-  trackSignUp,
-  trackSignIn,
-  trackSignOut,
-  trackNeighborhoodView,
-  trackNeighborhoodStatusChange,
-  trackNeighborhoodCompare,
-  trackNeighborhoodNote,
-  trackPhotoAdded,
-  trackSearch,
-  trackFilterApplied,
-  trackCitySwitch,
-  trackFeatureUsed,
-  trackSubscriptionStarted,
-  trackSubscriptionCancelled,
-  trackPaywallViewed,
-  shutdownAnalytics,
+export const trackScreen = (
+  posthog: ReturnType<typeof usePostHog>,
+  screenName: string,
+  properties?: Record<string, string | number | boolean>
+): void => {
+  posthog?.screen(screenName, properties);
 };

@@ -11,75 +11,97 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PurchasesPackage } from 'react-native-purchases';
+import { PurchasesPackage, PACKAGE_TYPE } from 'react-native-purchases';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useAuth } from '../contexts/AuthContext';
-import { trackPaywallViewed } from '../services/analytics';
+import { getPremiumFeatures, PRODUCTS } from '../config/subscriptions';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { PRIVACY_POLICY_URL, TERMS_OF_SERVICE_URL } from '../../config';
+
+// ============================================================================
+// PACKAGE TYPE HELPERS
+// Uses RevenueCat's native package types for reliable detection
+// ============================================================================
+
+type PackageInfo = {
+  type: 'monthly' | 'yearly' | 'lifetime' | 'other';
+  label: string;
+  periodLabel: string;
+};
+
+const getPackageInfo = (pkg: PurchasesPackage): PackageInfo => {
+  // First try RevenueCat's native package type (most reliable)
+  switch (pkg.packageType) {
+    case PACKAGE_TYPE.MONTHLY:
+      return { type: 'monthly', label: 'Monthly', periodLabel: '/month' };
+    case PACKAGE_TYPE.ANNUAL:
+      return { type: 'yearly', label: 'Yearly', periodLabel: '/year' };
+    case PACKAGE_TYPE.LIFETIME:
+      return { type: 'lifetime', label: 'Lifetime', periodLabel: '' };
+    default:
+      // Fallback to identifier matching for custom packages or test mode
+      const id = pkg.identifier.toLowerCase();
+      if (id.includes('year') || id.includes('annual')) {
+        return { type: 'yearly', label: 'Yearly', periodLabel: '/year' };
+      }
+      if (id.includes('lifetime')) {
+        return { type: 'lifetime', label: 'Lifetime', periodLabel: '' };
+      }
+      // Default to monthly
+      return { type: 'monthly', label: 'Monthly', periodLabel: '/month' };
+  }
+};
+
+// ============================================================================
+// TYPES
+// ============================================================================
 
 type PaywallRouteParams = {
   Paywall: {
     source?: string;
+    feature?: string;
   };
 };
 
 interface PaywallScreenProps {
   onClose?: () => void;
-  source?: string; // Where the paywall was triggered from
+  source?: string;
 }
 
-// Premium features to display
-const PREMIUM_FEATURES = [
-  {
-    icon: 'sparkles' as const,
-    title: 'AI Neighborhood Matcher',
-    description: 'Get personalized recommendations based on your lifestyle',
-  },
-  {
-    icon: 'car' as const,
-    title: 'Commute Calculator',
-    description: 'See travel times from each neighborhood to your work',
-  },
-  {
-    icon: 'options' as const,
-    title: 'Personalized Scoring',
-    description: 'Weight what matters to you and get custom scores',
-  },
-  {
-    icon: 'git-compare' as const,
-    title: 'Unlimited Comparisons',
-    description: 'Compare as many neighborhoods as you want side by side',
-  },
-  {
-    icon: 'people' as const,
-    title: 'Shared Lists',
-    description: 'Collaborate with your partner on finding the perfect place',
-  },
-  {
-    icon: 'document-text' as const,
-    title: 'Export Reports',
-    description: 'Download PDF reports of your neighborhood comparisons',
-  },
-];
+// ============================================================================
+// PREMIUM FEATURES DISPLAY
+// ============================================================================
+
+const FEATURE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  'AI Neighborhood Matcher': 'sparkles',
+  'Unlimited Comparisons': 'git-compare',
+  'Personalized Scoring': 'options',
+  'Unlimited Destinations': 'location',
+};
+
+// ============================================================================
+// COMPONENT
+// ============================================================================
 
 export default function PaywallScreen({ onClose, source: propSource }: PaywallScreenProps) {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<PaywallRouteParams, 'Paywall'>>();
   const { user } = useAuth();
-  const { offerings, isPremium, isLoading, purchase, restore } = useSubscription();
+  const { offerings, isProUser, isLoading, isAvailable, purchase, restore } = useSubscription();
+
   const [selectedPackage, setSelectedPackage] = useState<PurchasesPackage | null>(null);
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
-  // Get source from props or route params
   const source = propSource || route.params?.source || 'unknown';
+  const proFeatures = getPremiumFeatures();
 
-  // Handle close - use provided callback or navigation
+  // Handle close
   const handleClose = () => {
     if (onClose) {
       onClose();
@@ -88,31 +110,29 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
     }
   };
 
-  // Track paywall view
-  useEffect(() => {
-    trackPaywallViewed(source);
-  }, [source]);
-
-  // Set default selected package to yearly (better value)
+  // Set default package to yearly (best value)
   useEffect(() => {
     if (offerings?.availablePackages) {
-      const yearlyPkg = offerings.availablePackages.find((pkg) =>
-        pkg.identifier.toLowerCase().includes('year')
+      const yearly = offerings.availablePackages.find(
+        (pkg) => getPackageInfo(pkg).type === 'yearly'
       );
-      const monthlyPkg = offerings.availablePackages.find((pkg) =>
-        pkg.identifier.toLowerCase().includes('month')
+      const monthly = offerings.availablePackages.find(
+        (pkg) => getPackageInfo(pkg).type === 'monthly'
       );
-      setSelectedPackage(yearlyPkg || monthlyPkg || offerings.availablePackages[0]);
+      setSelectedPackage(yearly || monthly || offerings.availablePackages[0]);
     }
   }, [offerings]);
 
+  // Handle purchase
   const handlePurchase = async () => {
     if (!selectedPackage) return;
 
     if (!user) {
-      Alert.alert('Sign In Required', 'Please sign in to subscribe to premium.', [
-        { text: 'OK' },
-      ]);
+      Alert.alert(
+        'Sign In Required',
+        'Please sign in to subscribe to Premium.',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
@@ -121,51 +141,58 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
     setPurchasing(false);
 
     if (result.success) {
-      Alert.alert('Welcome to Premium!', 'You now have access to all premium features.', [
-        { text: 'OK', onPress: handleClose },
-      ]);
-    } else if (result.error && result.error !== 'Purchase cancelled') {
+      Alert.alert(
+        'Welcome to Premium!',
+        'You now have access to all Premium features.',
+        [{ text: 'OK', onPress: handleClose }]
+      );
+    } else if (result.error && !result.cancelled) {
       Alert.alert('Purchase Failed', result.error);
     }
   };
 
+  // Handle restore
   const handleRestore = async () => {
     setRestoring(true);
     const result = await restore();
     setRestoring(false);
 
     if (result.success) {
-      Alert.alert('Restored!', 'Your premium subscription has been restored.', [
-        { text: 'OK', onPress: handleClose },
-      ]);
+      Alert.alert(
+        'Restored!',
+        'Your Premium subscription has been restored.',
+        [{ text: 'OK', onPress: handleClose }]
+      );
     } else {
-      Alert.alert('No Subscription Found', result.error || 'No active subscription to restore.');
+      Alert.alert(
+        'No Subscription Found',
+        result.error || 'No active subscription to restore.'
+      );
     }
   };
 
-  const getYearlySavings = () => {
+  // Calculate yearly savings compared to monthly
+  const getYearlySavings = (): number | null => {
     if (!offerings?.availablePackages) return null;
 
-    const monthly = offerings.availablePackages.find((pkg) =>
-      pkg.identifier.toLowerCase().includes('month')
+    const monthly = offerings.availablePackages.find(
+      (pkg) => getPackageInfo(pkg).type === 'monthly'
     );
-    const yearly = offerings.availablePackages.find((pkg) =>
-      pkg.identifier.toLowerCase().includes('year')
+    const yearly = offerings.availablePackages.find(
+      (pkg) => getPackageInfo(pkg).type === 'yearly'
     );
 
     if (!monthly || !yearly) return null;
 
     const monthlyAnnual = monthly.product.price * 12;
     const yearlyCost = yearly.product.price;
-    const savings = Math.round(((monthlyAnnual - yearlyCost) / monthlyAnnual) * 100);
-
-    return savings;
+    return Math.round(((monthlyAnnual - yearlyCost) / monthlyAnnual) * 100);
   };
 
   const yearlySavings = getYearlySavings();
 
-  // If already premium, show success state
-  if (isPremium) {
+  // Already pro - show success
+  if (isProUser) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -177,7 +204,7 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
           <Ionicons name="checkmark-circle" size={80} color={COLORS.success} />
           <Text style={styles.successTitle}>You're Premium!</Text>
           <Text style={styles.successMessage}>
-            You have access to all premium features. Enjoy!
+            You have access to all Premium features. Enjoy!
           </Text>
           <TouchableOpacity style={styles.primaryButton} onPress={handleClose}>
             <Text style={styles.primaryButtonText}>Continue</Text>
@@ -197,41 +224,54 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Title Section */}
+        {/* Title */}
         <View style={styles.titleSection}>
-          <View style={styles.premiumBadge}>
+          <View style={styles.proBadge}>
             <Ionicons name="star" size={20} color={COLORS.white} />
-            <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+            <Text style={styles.proBadgeText}>PREMIUM</Text>
           </View>
-          <Text style={styles.title}>Unlock Your Perfect Neighborhood</Text>
+          <Text style={styles.title}>Find Your Perfect Neighborhood</Text>
           <Text style={styles.subtitle}>
-            Get personalized recommendations and powerful tools to find your ideal place to live
+            Get personalized recommendations and powerful tools to find your ideal place
           </Text>
         </View>
 
-        {/* Features List */}
+        {/* Features */}
         <View style={styles.featuresSection}>
-          {PREMIUM_FEATURES.map((feature, index) => (
+          {proFeatures.map((feature, index) => (
             <View key={index} style={styles.featureItem}>
               <View style={styles.featureIcon}>
-                <Ionicons name={feature.icon} size={24} color={COLORS.primary} />
+                <Ionicons
+                  name={FEATURE_ICONS[feature.name] || 'checkmark'}
+                  size={24}
+                  color={COLORS.primary}
+                />
               </View>
               <View style={styles.featureText}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
+                <Text style={styles.featureTitle}>{feature.name}</Text>
                 <Text style={styles.featureDescription}>{feature.description}</Text>
               </View>
             </View>
           ))}
         </View>
 
-        {/* Pricing Options */}
+        {/* Pricing */}
         {isLoading ? (
           <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
+        ) : !isAvailable ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>
+              Subscriptions are not available in this build.
+              {__DEV__ && '\n\nDev mode: All features unlocked for testing.'}
+            </Text>
+          </View>
         ) : offerings?.availablePackages ? (
           <View style={styles.pricingSection}>
             {offerings.availablePackages.map((pkg) => {
               const isSelected = selectedPackage?.identifier === pkg.identifier;
-              const isYearly = pkg.identifier.toLowerCase().includes('year');
+              const pkgInfo = getPackageInfo(pkg);
+              const isYearly = pkgInfo.type === 'yearly';
+              const isLifetime = pkgInfo.type === 'lifetime';
 
               return (
                 <TouchableOpacity
@@ -244,24 +284,30 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
                       <Text style={styles.savingsText}>Save {yearlySavings}%</Text>
                     </View>
                   )}
+                  {isLifetime && (
+                    <View style={[styles.savingsBadge, styles.lifetimeBadge]}>
+                      <Text style={styles.savingsText}>Best Value</Text>
+                    </View>
+                  )}
                   <View style={styles.pricingContent}>
-                    <View style={styles.radioOuter}>
+                    <View style={[styles.radio, isSelected && styles.radioSelected]}>
                       {isSelected && <View style={styles.radioInner} />}
                     </View>
                     <View style={styles.pricingDetails}>
-                      <Text style={styles.pricingTitle}>
-                        {isYearly ? 'Yearly' : 'Monthly'}
-                      </Text>
+                      <Text style={styles.pricingTitle}>{pkgInfo.label}</Text>
                       <Text style={styles.pricingPrice}>
                         {pkg.product.priceString}
-                        <Text style={styles.pricingPeriod}>
-                          /{isYearly ? 'year' : 'month'}
-                        </Text>
+                        {pkgInfo.periodLabel && (
+                          <Text style={styles.pricingPeriod}>{pkgInfo.periodLabel}</Text>
+                        )}
                       </Text>
                       {isYearly && (
                         <Text style={styles.pricingSubtext}>
-                          Just {(pkg.product.price / 12).toFixed(2)}/month
+                          Just {pkg.product.currencyCode} {(pkg.product.price / 12).toFixed(2)}/month
                         </Text>
+                      )}
+                      {isLifetime && (
+                        <Text style={styles.pricingSubtext}>One-time purchase, forever yours</Text>
                       )}
                     </View>
                   </View>
@@ -281,52 +327,64 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
         <TouchableOpacity
           style={[
             styles.primaryButton,
-            (!selectedPackage || purchasing) && styles.primaryButtonDisabled,
+            (!selectedPackage || purchasing || !isAvailable) && styles.primaryButtonDisabled,
           ]}
           onPress={handlePurchase}
-          disabled={!selectedPackage || purchasing}
+          disabled={!selectedPackage || purchasing || !isAvailable}
         >
           {purchasing ? (
             <ActivityIndicator color={COLORS.white} />
           ) : (
             <Text style={styles.primaryButtonText}>
-              Start Premium
+              {isAvailable ? 'Start Premium' : 'Not Available'}
             </Text>
           )}
         </TouchableOpacity>
 
-        {/* Restore Button */}
-        <TouchableOpacity
-          style={styles.restoreButton}
-          onPress={handleRestore}
-          disabled={restoring}
-        >
-          {restoring ? (
-            <ActivityIndicator color={COLORS.primary} />
-          ) : (
-            <Text style={styles.restoreButtonText}>Restore Purchases</Text>
-          )}
-        </TouchableOpacity>
+        {/* Restore */}
+        {isAvailable && (
+          <TouchableOpacity
+            style={styles.restoreButton}
+            onPress={handleRestore}
+            disabled={restoring}
+          >
+            {restoring ? (
+              <ActivityIndicator color={COLORS.primary} />
+            ) : (
+              <Text style={styles.restoreButtonText}>Restore Purchases</Text>
+            )}
+          </TouchableOpacity>
+        )}
 
-        {/* Legal Links */}
+        {/* Legal */}
         <View style={styles.legalSection}>
-          <TouchableOpacity onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL)}>
-            <Text style={styles.legalLink}>Terms of Service</Text>
-          </TouchableOpacity>
-          <Text style={styles.legalDivider}>|</Text>
-          <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
-            <Text style={styles.legalLink}>Privacy Policy</Text>
-          </TouchableOpacity>
+          {TERMS_OF_SERVICE_URL && (
+            <>
+              <TouchableOpacity onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL)}>
+                <Text style={styles.legalLink}>Terms of Service</Text>
+              </TouchableOpacity>
+              <Text style={styles.legalDivider}>|</Text>
+            </>
+          )}
+          {PRIVACY_POLICY_URL && (
+            <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+              <Text style={styles.legalLink}>Privacy Policy</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <Text style={styles.disclaimer}>
-          Payment will be charged to your App Store account. Subscription automatically renews
-          unless canceled at least 24 hours before the end of the current period.
+          Payment will be charged to your {Platform.OS === 'ios' ? 'Apple ID' : 'Google Play'} account.
+          Subscription automatically renews unless canceled at least 24 hours before the end of the current period.
         </Text>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
   container: {
@@ -345,11 +403,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: SPACING.lg,
   },
+
+  // Title
   titleSection: {
     alignItems: 'center',
     marginBottom: SPACING.xl,
   },
-  premiumBadge: {
+  proBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
@@ -359,14 +419,14 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.round,
     marginBottom: SPACING.md,
   },
-  premiumBadgeText: {
+  proBadgeText: {
     color: COLORS.white,
     fontWeight: '700',
     fontSize: FONT_SIZES.sm,
     letterSpacing: 1,
   },
   title: {
-    fontSize: FONT_SIZES.xxxl,
+    fontSize: FONT_SIZES.xxl,
     fontWeight: '700',
     color: COLORS.gray900,
     textAlign: 'center',
@@ -378,6 +438,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
+
+  // Features
   featuresSection: {
     marginBottom: SPACING.xl,
   },
@@ -409,6 +471,8 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
     lineHeight: 18,
   },
+
+  // Pricing
   pricingSection: {
     marginBottom: SPACING.lg,
     gap: SPACING.md,
@@ -439,11 +503,14 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     fontWeight: '700',
   },
+  lifetimeBadge: {
+    backgroundColor: COLORS.primary,
+  },
   pricingContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  radioOuter: {
+  radio: {
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -452,6 +519,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.md,
+  },
+  radioSelected: {
+    borderColor: COLORS.primary,
   },
   radioInner: {
     width: 12,
@@ -481,6 +551,8 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     color: COLORS.gray500,
   },
+
+  // Loading/Error
   loader: {
     marginVertical: SPACING.xl,
   },
@@ -494,6 +566,8 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
     textAlign: 'center',
   },
+
+  // Buttons
   primaryButton: {
     backgroundColor: COLORS.primary,
     paddingVertical: SPACING.md,
@@ -519,6 +593,8 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.base,
     fontWeight: '600',
   },
+
+  // Legal
   legalSection: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -541,6 +617,8 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginBottom: SPACING.xl,
   },
+
+  // Success
   successContainer: {
     flex: 1,
     alignItems: 'center',
