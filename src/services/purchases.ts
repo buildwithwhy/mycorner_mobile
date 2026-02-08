@@ -211,7 +211,10 @@ export const getSubscriptionState = async (): Promise<SubscriptionState> => {
  * Get available subscription offerings
  */
 export const getOfferings = async (): Promise<PurchasesOffering | null> => {
-  if (!isInitialized) return null;
+  if (!isInitialized) {
+    logger.log('[Purchases] getOfferings: not initialized');
+    return null;
+  }
 
   try {
     const offerings = await Purchases.getOfferings();

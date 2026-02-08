@@ -14,13 +14,12 @@ export const PRODUCTS = {
   // Subscription product IDs - same on both platforms for simplicity
   MONTHLY: 'mycorner_premium_monthly',
   YEARLY: 'mycorner_premium_yearly',
-  LIFETIME: 'mycorner_premium_lifetime',
 } as const;
 
 export type ProductId = typeof PRODUCTS[keyof typeof PRODUCTS];
 
 // All product IDs as array (for fetching)
-export const ALL_PRODUCT_IDS: ProductId[] = [PRODUCTS.MONTHLY, PRODUCTS.YEARLY, PRODUCTS.LIFETIME];
+export const ALL_PRODUCT_IDS: ProductId[] = [PRODUCTS.MONTHLY, PRODUCTS.YEARLY];
 
 // ============================================================================
 // ENTITLEMENT CONFIGURATION
@@ -48,11 +47,6 @@ export const FALLBACK_PRICING = {
     price: Platform.OS === 'ios' ? 39.99 : 39.99,
     currency: Platform.OS === 'ios' ? 'USD' : 'USD',
     period: 'year' as const,
-  },
-  [PRODUCTS.LIFETIME]: {
-    price: Platform.OS === 'ios' ? 99.99 : 99.99,
-    currency: Platform.OS === 'ios' ? 'USD' : 'USD',
-    period: 'lifetime' as const,
   },
 };
 

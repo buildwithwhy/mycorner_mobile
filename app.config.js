@@ -47,7 +47,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: currentEnv.bundleIdentifier,
-      buildNumber: "3",
+      buildNumber: "7",
       config: {
         usesNonExemptEncryption: false,
         // iOS uses Apple Maps for display, but needs Google API key for Places/Geocoding
@@ -74,6 +74,12 @@ module.exports = {
     plugins: [
       "expo-font",
       "expo-splash-screen",
+      [
+        "expo-location",
+        {
+          locationWhenInUsePermission: "MyCorner uses your location to show where you are on the map relative to neighborhoods you're exploring.",
+        }
+      ],
       // Sentry error tracking (enabled when SENTRY_DSN is configured)
       [
         "@sentry/react-native/expo",
