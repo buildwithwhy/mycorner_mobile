@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+
+// Pre-defined arrays to avoid recreation on each render
+const RATING_VALUES = [1, 2, 3, 4, 5] as const;
+const STAR_INDICES = [0, 1, 2, 3, 4] as const;
 
 interface RatingCardProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -13,7 +17,7 @@ interface RatingCardProps {
   onRatingChange: (value: number) => void;
 }
 
-export default function RatingCard({
+function RatingCard({
   icon,
   label,
   description,
@@ -34,7 +38,7 @@ export default function RatingCard({
 
       {isEditing ? (
         <View style={styles.editContainer}>
-          {[1, 2, 3, 4, 5].map((rating) => (
+          {RATING_VALUES.map((rating) => (
             <TouchableOpacity
               key={rating}
               style={[
@@ -57,7 +61,7 @@ export default function RatingCard({
       ) : (
         <>
           <View style={styles.stars}>
-            {[...Array(5)].map((_, i) => (
+            {STAR_INDICES.map((i) => (
               <Ionicons
                 key={i}
                 name={i < value ? 'star' : 'star-outline'}
@@ -75,6 +79,8 @@ export default function RatingCard({
     </View>
   );
 }
+
+export default memo(RatingCard);
 
 const styles = StyleSheet.create({
   card: {

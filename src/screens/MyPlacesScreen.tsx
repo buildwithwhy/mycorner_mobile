@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useApp, NeighborhoodStatus, useCity } from '../contexts/AppContext';
+import { useStatusComparison, NeighborhoodStatus, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Neighborhood } from '../data/neighborhoods';
 import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
@@ -30,7 +30,7 @@ const STATUS_CONFIG: { status: NonNullable<NeighborhoodStatus>; title: string; i
 export default function MyPlacesScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
-  const { status, comparison, toggleComparison } = useApp();
+  const { status, comparison, toggleComparison } = useStatusComparison();
   const { cityNeighborhoods, selectedCity } = useCity();
 
   // Track which sections are collapsed

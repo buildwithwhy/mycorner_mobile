@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
+import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useApp, useCity } from '../contexts/AppContext';
+import { useStatusComparison, useDestinations, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
@@ -15,12 +16,30 @@ import StatusPickerModal from '../components/StatusPickerModal';
 export default function MapScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
-  const { destinations, status, setNeighborhoodStatus, comparison, toggleComparison } = useApp();
+  const { status, setNeighborhoodStatus, comparison, toggleComparison } = useStatusComparison();
+  const { cityDestinations: destinations } = useDestinations();
   const { selectedCity, cityNeighborhoods } = useCity();
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [showStatusPicker, setShowStatusPicker] = useState(false);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
+
+  // Request location permission and get initial location
+  useEffect(() => {
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        setLocationPermission(true);
+        const location = await Location.getCurrentPositionAsync({});
+        setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+      }
+    })();
+  }, []);
 
   // Animate to new city region when city changes
   useEffect(() => {
@@ -30,9 +49,73 @@ export default function MapScreen() {
     }
   }, [selectedCity.id]);
 
+  // Memoize neighborhood coordinates to avoid recalculating on every render
+  const neighborhoodCoords = useMemo(() => {
+    const coords: Record<string, { latitude: number; longitude: number }> = {};
+    cityNeighborhoods.forEach((n) => {
+      coords[n.id] = getNeighborhoodCoordinates(n.id);
+    });
+    return coords;
+  }, [cityNeighborhoods]);
+
+  // Memoize the selected neighborhood object
+  const selectedNeighborhoodData = useMemo(
+    () => selectedNeighborhood ? cityNeighborhoods.find((n) => n.id === selectedNeighborhood) : null,
+    [selectedNeighborhood, cityNeighborhoods]
+  );
+
+  // Memoize commute calculations for selected neighborhood
+  const commuteData = useMemo(() => {
+    if (!selectedNeighborhoodData) return [];
+    const coords = neighborhoodCoords[selectedNeighborhoodData.id];
+    if (!coords) return [];
+
+    return destinations.map((destination, index) => {
+      const distance = calculateDistance(
+        coords.latitude,
+        coords.longitude,
+        destination.latitude,
+        destination.longitude
+      );
+      const transportMode = destination.transportMode || 'transit';
+      const time = estimateCommuteTime(distance, transportMode);
+      const modeInfo = getTransportModeInfo(transportMode);
+
+      return {
+        destination,
+        distance,
+        time,
+        modeInfo,
+        color: DESTINATION_COLORS[index % DESTINATION_COLORS.length],
+      };
+    });
+  }, [selectedNeighborhoodData, neighborhoodCoords, destinations]);
+
+  // Center map on user's location
+  const centerOnUserLocation = async () => {
+    if (!locationPermission) {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
+      setLocationPermission(true);
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    setUserLocation({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    });
+
+    mapRef.current?.animateToRegion({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.02,
+      longitudeDelta: 0.02,
+    }, 500);
+  };
+
   const currentStatus = selectedNeighborhood ? status[selectedNeighborhood] || null : null;
 
-  const getStatusInfo = (neighborhoodId: string) => {
+  const getStatusInfo = useCallback((neighborhoodId: string) => {
     const s = status[neighborhoodId];
     if (s === 'shortlist') return { icon: 'star' as const, color: STATUS_COLORS.shortlist };
     if (s === 'want_to_visit') return { icon: 'bookmark' as const, color: STATUS_COLORS.want_to_visit };
@@ -40,15 +123,15 @@ export default function MapScreen() {
     if (s === 'living_here') return { icon: 'home' as const, color: STATUS_COLORS.living_here };
     if (s === 'ruled_out') return { icon: 'close-circle' as const, color: STATUS_COLORS.ruled_out };
     return null;
-  };
+  }, [status]);
 
-  const handleSavePress = () => {
+  const handleSavePress = useCallback(() => {
     if (!session) {
       setShowSignInModal(true);
       return;
     }
     setShowStatusPicker(true);
-  };
+  }, [session]);
 
   return (
     <View style={styles.container}>
@@ -59,9 +142,10 @@ export default function MapScreen() {
         initialRegion={selectedCity.region}
         showsUserLocation
         showsMyLocationButton
+        mapPadding={{ top: 120, right: 0, bottom: 0, left: 0 }}
       >
         {cityNeighborhoods.map((neighborhood) => {
-          const coords = getNeighborhoodCoordinates(neighborhood.id);
+          const coords = neighborhoodCoords[neighborhood.id];
           const isSelected = selectedNeighborhood === neighborhood.id;
           const statusInfo = getStatusInfo(neighborhood.id);
 
@@ -103,125 +187,106 @@ export default function MapScreen() {
         ))}
 
         {/* Lines from selected neighborhood to destinations */}
-        {selectedNeighborhood && destinations.map((destination, index) => {
-          const neighborhoodCoords = getNeighborhoodCoordinates(selectedNeighborhood);
-          return (
-            <Polyline
-              key={`line-${destination.id}`}
-              coordinates={[
-                neighborhoodCoords,
-                { latitude: destination.latitude, longitude: destination.longitude },
-              ]}
-              strokeColor={DESTINATION_COLORS[index % DESTINATION_COLORS.length]}
-              strokeWidth={2}
-              lineDashPattern={[5, 5]}
-            />
-          );
-        })}
+        {selectedNeighborhood && neighborhoodCoords[selectedNeighborhood] && destinations.map((destination, index) => (
+          <Polyline
+            key={`line-${destination.id}`}
+            coordinates={[
+              neighborhoodCoords[selectedNeighborhood],
+              { latitude: destination.latitude, longitude: destination.longitude },
+            ]}
+            strokeColor={DESTINATION_COLORS[index % DESTINATION_COLORS.length]}
+            strokeWidth={2}
+            lineDashPattern={[5, 5]}
+          />
+        ))}
       </MapView>
 
       <View style={styles.header}>
         <Text style={styles.title}>Map</Text>
+        <TouchableOpacity
+          style={styles.destinationsButton}
+          onPress={() => navigation.navigate('Destinations' as never)}
+        >
+          <Ionicons name="location" size={20} color={COLORS.primary} />
+          <Text style={styles.destinationsButtonText}>Destinations</Text>
+        </TouchableOpacity>
       </View>
 
-      {selectedNeighborhood && (
+      {/* My Location Button */}
+      <TouchableOpacity
+        style={styles.myLocationButton}
+        onPress={centerOnUserLocation}
+      >
+        <Ionicons name="locate" size={24} color={COLORS.primary} />
+      </TouchableOpacity>
+
+      {selectedNeighborhoodData && (
         <View style={styles.infoCard}>
-          {(() => {
-            const neighborhood = cityNeighborhoods.find((n) => n.id === selectedNeighborhood);
-            if (!neighborhood) return null;
+          <View style={styles.infoHeader}>
+            <View style={styles.infoTitleContainer}>
+              <Text style={styles.infoTitle}>{selectedNeighborhoodData.name}</Text>
+              <Text style={styles.infoBorough}>{selectedNeighborhoodData.borough}</Text>
+            </View>
+            <TouchableOpacity onPress={() => setSelectedNeighborhood(null)}>
+              <Ionicons name="close" size={24} color="#6b7280" />
+            </TouchableOpacity>
+          </View>
 
-            return (
-              <>
-                <View style={styles.infoHeader}>
-                  <View style={styles.infoTitleContainer}>
-                    <Text style={styles.infoTitle}>{neighborhood.name}</Text>
-                    <Text style={styles.infoBorough}>{neighborhood.borough}</Text>
+          <Text style={styles.infoDescription} numberOfLines={2}>
+            {selectedNeighborhoodData.description}
+          </Text>
+
+          <View style={styles.infoStats}>
+            <NeighborhoodStats neighborhood={selectedNeighborhoodData} variant="compact" />
+          </View>
+
+          {commuteData.length > 0 && (
+            <View style={styles.commuteSection}>
+              <Text style={styles.commuteSectionTitle}>Commute Times</Text>
+              {commuteData.map((commute) => (
+                <View key={commute.destination.id} style={styles.commuteItem}>
+                  <View style={[styles.commuteIcon, { backgroundColor: commute.color }]}>
+                    <Ionicons name={commute.modeInfo.icon as keyof typeof Ionicons.glyphMap} size={12} color="white" />
                   </View>
-                  <TouchableOpacity onPress={() => setSelectedNeighborhood(null)}>
-                    <Ionicons name="close" size={24} color="#6b7280" />
-                  </TouchableOpacity>
+                  <Text style={styles.commuteLabel}>{commute.destination.label}</Text>
+                  <Text style={styles.commuteTime}>{commute.time}</Text>
                 </View>
+              ))}
+            </View>
+          )}
 
-                <Text style={styles.infoDescription} numberOfLines={2}>
-                  {neighborhood.description}
-                </Text>
+          <View style={styles.quickActions}>
+            <TouchableOpacity
+              style={[styles.quickActionButton, currentStatus && styles.quickActionButtonActive]}
+              onPress={handleSavePress}
+            >
+              <Ionicons
+                name={currentStatus ? 'bookmark' : 'bookmark-outline'}
+                size={20}
+                color={currentStatus ? COLORS.primary : COLORS.gray500}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.quickActionButton, comparison.includes(selectedNeighborhoodData.id) && styles.quickActionButtonActive]}
+              onPress={() => toggleComparison(selectedNeighborhoodData.id)}
+            >
+              <Ionicons
+                name={comparison.includes(selectedNeighborhoodData.id) ? 'git-compare' : 'git-compare-outline'}
+                size={20}
+                color={comparison.includes(selectedNeighborhoodData.id) ? COLORS.primary : COLORS.gray500}
+              />
+            </TouchableOpacity>
+          </View>
 
-                <View style={styles.infoStats}>
-                  <NeighborhoodStats neighborhood={neighborhood} variant="compact" />
-                </View>
-
-                {destinations.length > 0 && (
-                  <View style={styles.commuteSection}>
-                    <Text style={styles.commuteSectionTitle}>Commute Times</Text>
-                    {destinations.map((destination, index) => {
-                      const neighborhoodCoords = getNeighborhoodCoordinates(neighborhood.id);
-                      const distance = calculateDistance(
-                        neighborhoodCoords.latitude,
-                        neighborhoodCoords.longitude,
-                        destination.latitude,
-                        destination.longitude
-                      );
-                      const transportMode = destination.transportMode || 'transit';
-                      const time = estimateCommuteTime(distance, transportMode);
-                      const modeInfo = getTransportModeInfo(transportMode);
-
-                      return (
-                        <View key={destination.id} style={styles.commuteItem}>
-                          <View style={[styles.commuteIcon, { backgroundColor: DESTINATION_COLORS[index % DESTINATION_COLORS.length] }]}>
-                            <Ionicons name={modeInfo.icon as keyof typeof Ionicons.glyphMap} size={12} color="white" />
-                          </View>
-                          <Text style={styles.commuteLabel}>{destination.label}</Text>
-                          <Text style={styles.commuteTime}>{time}</Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                )}
-
-                <View style={styles.quickActions}>
-                  <TouchableOpacity
-                    style={[styles.quickActionButton, currentStatus && styles.quickActionButtonActive]}
-                    onPress={handleSavePress}
-                  >
-                    <Ionicons
-                      name={currentStatus ? 'bookmark' : 'bookmark-outline'}
-                      size={20}
-                      color={currentStatus ? COLORS.primary : COLORS.gray500}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.quickActionButton, comparison.includes(neighborhood.id) && styles.quickActionButtonActive]}
-                    onPress={() => toggleComparison(neighborhood.id)}
-                  >
-                    <Ionicons
-                      name={comparison.includes(neighborhood.id) ? 'git-compare' : 'git-compare-outline'}
-                      size={20}
-                      color={comparison.includes(neighborhood.id) ? COLORS.primary : COLORS.gray500}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.viewDetailsButton}
-                  onPress={() => navigation.navigate('Detail', { neighborhood })}
-                >
-                  <Text style={styles.viewDetailsButtonText}>View Details</Text>
-                  <Ionicons name="arrow-forward" size={16} color="white" />
-                </TouchableOpacity>
-              </>
-            );
-          })()}
+          <TouchableOpacity
+            style={styles.viewDetailsButton}
+            onPress={() => navigation.navigate('Detail', { neighborhood: selectedNeighborhoodData })}
+          >
+            <Text style={styles.viewDetailsButtonText}>View Details</Text>
+            <Ionicons name="arrow-forward" size={16} color="white" />
+          </TouchableOpacity>
         </View>
       )}
-
-      {/* FAB to add/manage destinations */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('Destinations' as never)}
-      >
-        <Ionicons name="location" size={24} color={COLORS.white} />
-        <Text style={styles.fabText}>Destinations</Text>
-      </TouchableOpacity>
 
       <SignInPromptModal
         visible={showSignInModal}
@@ -229,13 +294,13 @@ export default function MapScreen() {
         featureName="saving places"
       />
 
-      {selectedNeighborhood && (
+      {selectedNeighborhoodData && (
         <StatusPickerModal
           visible={showStatusPicker}
           onClose={() => setShowStatusPicker(false)}
           currentStatus={currentStatus}
-          onSelectStatus={(newStatus) => setNeighborhoodStatus(selectedNeighborhood, newStatus)}
-          neighborhoodName={cityNeighborhoods.find(n => n.id === selectedNeighborhood)?.name}
+          onSelectStatus={(newStatus) => setNeighborhoodStatus(selectedNeighborhoodData.id, newStatus)}
+          neighborhoodName={selectedNeighborhoodData.name}
         />
       )}
     </View>
@@ -257,12 +322,41 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     padding: SPACING.xl,
     paddingTop: 60,
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: FONT_SIZES.xxxl,
     fontWeight: 'bold',
     color: COLORS.white,
+  },
+  destinationsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs,
+    backgroundColor: COLORS.white,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    borderRadius: BORDER_RADIUS.round,
+  },
+  destinationsButtonText: {
+    color: COLORS.primary,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+  },
+  myLocationButton: {
+    position: 'absolute',
+    top: 130,
+    right: SPACING.md,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.medium,
   },
   marker: {
     width: 40,
@@ -412,23 +506,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: 'white',
-  },
-  fab: {
-    position: 'absolute',
-    bottom: 24,
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    backgroundColor: COLORS.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: BORDER_RADIUS.round,
-    ...SHADOWS.medium,
-  },
-  fabText: {
-    color: COLORS.white,
-    fontSize: FONT_SIZES.base,
-    fontWeight: '600',
   },
 });

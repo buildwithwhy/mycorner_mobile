@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
@@ -60,7 +60,23 @@ function NeighborhoodCard({
 }: NeighborhoodCardProps) {
   const statusInfo = currentStatus ? STATUS_INFO[currentStatus] : null;
   const hasPhotos = photoCount > 0;
-  const boroughColor = getBoroughColor(neighborhood.borough);
+
+  // Memoize borough color to avoid recalculating on every render
+  const boroughColor = useMemo(
+    () => getBoroughColor(neighborhood.borough),
+    [neighborhood.borough]
+  );
+
+  // Memoize image sources to avoid creating new objects on every render
+  const photoImageSource = useMemo(
+    () => firstPhotoUri ? { uri: firstPhotoUri } : null,
+    [firstPhotoUri]
+  );
+
+  const defaultImageSource = useMemo(
+    () => getNeighborhoodImage(neighborhood.id),
+    [neighborhood.id]
+  );
 
   const handleAddToPlaces = useCallback(() => {
     onAddToPlaces(neighborhood.id);
@@ -81,10 +97,10 @@ function NeighborhoodCard({
         >
           {/* Hero Image Section */}
           <View style={styles.heroSection}>
-            {firstPhotoUri ? (
-              <Image source={{ uri: firstPhotoUri }} style={styles.heroImage} />
-            ) : getNeighborhoodImage(neighborhood.id) ? (
-              <Image source={getNeighborhoodImage(neighborhood.id)} style={styles.heroImage} />
+            {photoImageSource ? (
+              <Image source={photoImageSource} style={styles.heroImage} />
+            ) : defaultImageSource ? (
+              <Image source={defaultImageSource} style={styles.heroImage} />
             ) : (
               <View style={[styles.heroPlaceholder, { backgroundColor: boroughColor }]}>
                 <Text style={styles.heroInitial}>{neighborhood.name[0]}</Text>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { useSubscription } from './SubscriptionContext';
 import {
@@ -165,20 +165,31 @@ export function StatusComparisonProvider({ children }: { children: React.ReactNo
 
   const clearComparison = useCallback(() => setComparison([]), []);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    status,
+    setNeighborhoodStatus,
+    getNeighborhoodsByStatus,
+    comparison,
+    toggleComparison,
+    isInComparison,
+    clearComparison,
+    comparisonLimit,
+    isComparisonLimitReached,
+  }), [
+    status,
+    setNeighborhoodStatus,
+    getNeighborhoodsByStatus,
+    comparison,
+    toggleComparison,
+    isInComparison,
+    clearComparison,
+    comparisonLimit,
+    isComparisonLimitReached,
+  ]);
+
   return (
-    <StatusComparisonContext.Provider
-      value={{
-        status,
-        setNeighborhoodStatus,
-        getNeighborhoodsByStatus,
-        comparison,
-        toggleComparison,
-        isInComparison,
-        clearComparison,
-        comparisonLimit,
-        isComparisonLimitReached,
-      }}
-    >
+    <StatusComparisonContext.Provider value={contextValue}>
       {children}
     </StatusComparisonContext.Provider>
   );

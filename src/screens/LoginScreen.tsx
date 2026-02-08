@@ -53,7 +53,20 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (error) {
-      Alert.alert('Login Failed', error.message);
+      // Check if this might be an OAuth-only account
+      const errorMsg = error.message.toLowerCase();
+      if (errorMsg.includes('invalid login credentials') || errorMsg.includes('invalid password')) {
+        Alert.alert(
+          'Login Failed',
+          'Invalid email or password. If you signed up with Google, please use "Continue with Google" instead.',
+          [
+            { text: 'Use Google', onPress: handleGoogleLogin },
+            { text: 'Try Again', style: 'cancel' },
+          ]
+        );
+      } else {
+        Alert.alert('Login Failed', error.message);
+      }
     }
   };
 

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useApp, useCity } from '../contexts/AppContext';
+import { useStatusComparison, useNotesRatings, useDestinations, useCity } from '../contexts/AppContext';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
@@ -9,8 +9,22 @@ import EmptyState from '../components/EmptyState';
 import AffordabilityBadge from '../components/AffordabilityBadge';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 
+// Pre-defined arrays to avoid recreation on each render
+const METRICS = [
+  { label: 'Affordability', icon: 'cash-outline' as keyof typeof Ionicons.glyphMap, key: 'affordability' },
+  { label: 'Safety', icon: 'shield-checkmark' as keyof typeof Ionicons.glyphMap, key: 'safety' },
+  { label: 'Transit', icon: 'bus' as keyof typeof Ionicons.glyphMap, key: 'transit' },
+  { label: 'Green Space', icon: 'leaf' as keyof typeof Ionicons.glyphMap, key: 'greenSpace' },
+  { label: 'Nightlife', icon: 'moon' as keyof typeof Ionicons.glyphMap, key: 'nightlife' },
+  { label: 'Family Friendly', icon: 'people' as keyof typeof Ionicons.glyphMap, key: 'familyFriendly' },
+] as const;
+
+const STAR_INDICES = [0, 1, 2, 3, 4] as const;
+
 export default function CompareScreen() {
-  const { comparison, toggleComparison, clearComparison, notes, destinations } = useApp();
+  const { comparison, toggleComparison, clearComparison } = useStatusComparison();
+  const { notes } = useNotesRatings();
+  const { cityDestinations: destinations } = useDestinations();
   const { cityNeighborhoods } = useCity();
   const { comparisonLimit, isPremium } = useFeatureAccess();
 
@@ -60,15 +74,6 @@ export default function CompareScreen() {
     );
   }
 
-  const metrics = [
-    { label: 'Affordability', icon: 'cash-outline' as keyof typeof Ionicons.glyphMap, key: 'affordability' },
-    { label: 'Safety', icon: 'shield-checkmark' as keyof typeof Ionicons.glyphMap, key: 'safety' },
-    { label: 'Transit', icon: 'bus' as keyof typeof Ionicons.glyphMap, key: 'transit' },
-    { label: 'Green Space', icon: 'leaf' as keyof typeof Ionicons.glyphMap, key: 'greenSpace' },
-    { label: 'Nightlife', icon: 'moon' as keyof typeof Ionicons.glyphMap, key: 'nightlife' },
-    { label: 'Family Friendly', icon: 'people' as keyof typeof Ionicons.glyphMap, key: 'familyFriendly' },
-  ];
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -85,7 +90,7 @@ export default function CompareScreen() {
             <View style={styles.headerLabelCell}>
               <Text style={styles.headerLabelText}>Neighborhood</Text>
             </View>
-            {metrics.map((metric) => (
+            {METRICS.map((metric) => (
               <View key={metric.key} style={styles.metricLabelCell}>
                 <Ionicons name={metric.icon} size={18} color="#6b7280" />
                 <Text style={styles.metricLabel}>{metric.label}</Text>
@@ -127,7 +132,7 @@ export default function CompareScreen() {
                 </View>
 
                 {/* Metrics */}
-                {metrics.map((metric) => {
+                {METRICS.map((metric) => {
                   const value = n[metric.key as keyof typeof n] as number;
                   return (
                     <View key={metric.key} style={styles.metricValueCell}>
@@ -138,7 +143,7 @@ export default function CompareScreen() {
                           </View>
                         ) : (
                           <View style={styles.rating}>
-                            {[...Array(5)].map((_, i) => (
+                            {STAR_INDICES.map((i) => (
                               <Ionicons
                                 key={i}
                                 name={i < value ? 'star' : 'star-outline'}

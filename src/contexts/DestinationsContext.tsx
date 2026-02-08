@@ -185,16 +185,23 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     syncUpdateDestination(id, updates);
   }, [syncUpdateDestination]);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    destinations,
+    cityDestinations,
+    addDestination,
+    removeDestination,
+    updateDestination,
+  }), [
+    destinations,
+    cityDestinations,
+    addDestination,
+    removeDestination,
+    updateDestination,
+  ]);
+
   return (
-    <DestinationsContext.Provider
-      value={{
-        destinations,
-        cityDestinations,
-        addDestination,
-        removeDestination,
-        updateDestination,
-      }}
-    >
+    <DestinationsContext.Provider value={contextValue}>
       {children}
     </DestinationsContext.Provider>
   );

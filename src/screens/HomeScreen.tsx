@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, S
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { Neighborhood } from '../data/neighborhoods';
-import { useApp, useCity, useNotesRatings, NeighborhoodStatus } from '../contexts/AppContext';
+import { useStatusComparison, useCity, useNotesRatings, NeighborhoodStatus } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
@@ -20,7 +20,7 @@ type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
 export default function HomeScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
-  const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useApp();
+  const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useStatusComparison();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
   const { photos } = useNotesRatings();
   const { preferences, hasCustomPreferences } = usePreferences();

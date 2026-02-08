@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal,
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useApp, TransportMode, useCity } from '../contexts/AppContext';
+import { useDestinations, TransportMode, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { getTransportModeInfo } from '../utils/commute';
@@ -22,7 +22,7 @@ const DESTINATION_LIMITS = {
 export default function DestinationsScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
-  const { destinations, addDestination, removeDestination } = useApp();
+  const { cityDestinations: destinations, addDestination, removeDestination } = useDestinations();
   const { selectedCity } = useCity();
   const { tier, isPremium } = useFeatureAccess();
 

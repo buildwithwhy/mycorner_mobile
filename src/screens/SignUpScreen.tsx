@@ -56,7 +56,20 @@ export default function SignUpScreen() {
     setLoading(false);
 
     if (error) {
-      Alert.alert('Sign Up Failed', error.message);
+      // Check if email is already registered (likely via Google OAuth)
+      const errorMsg = error.message.toLowerCase();
+      if (errorMsg.includes('already registered') || errorMsg.includes('already been registered') || errorMsg.includes('user already exists')) {
+        Alert.alert(
+          'Email Already Registered',
+          'This email is already associated with an account. If you signed up with Google, please use "Continue with Google" to sign in.',
+          [
+            { text: 'Use Google', onPress: handleGoogleSignUp },
+            { text: 'Cancel', style: 'cancel' },
+          ]
+        );
+      } else {
+        Alert.alert('Sign Up Failed', error.message);
+      }
     } else {
       Alert.alert(
         'Success!',

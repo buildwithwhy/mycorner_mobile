@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
-import { useApp, type NeighborhoodStatus } from '../contexts/AppContext';
+import { useStatusComparison, useNotesRatings, useDestinations, type NeighborhoodStatus } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
@@ -34,6 +34,17 @@ import { PremiumBadge } from '../components/FeatureGate';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
 
+// Pre-defined rating metrics to avoid recreation on each render
+const RATING_METRICS = [
+  { key: 'safety', icon: 'shield-checkmark' as keyof typeof Ionicons.glyphMap, label: 'Safety' },
+  { key: 'transit', icon: 'bus' as keyof typeof Ionicons.glyphMap, label: 'Transit' },
+  { key: 'greenSpace', icon: 'leaf' as keyof typeof Ionicons.glyphMap, label: 'Green Space' },
+  { key: 'nightlife', icon: 'moon' as keyof typeof Ionicons.glyphMap, label: 'Nightlife' },
+  { key: 'familyFriendly', icon: 'home' as keyof typeof Ionicons.glyphMap, label: 'Family' },
+  { key: 'dining', icon: 'restaurant' as keyof typeof Ionicons.glyphMap, label: 'Dining' },
+  { key: 'vibe', icon: 'people' as keyof typeof Ionicons.glyphMap, label: 'Local Scene' },
+] as const;
+
 export default function DetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
@@ -41,21 +52,9 @@ export default function DetailScreen() {
   const { session } = useAuth();
   const { comparisonLimit, requiresUpgrade, canAccess } = useFeatureAccess();
   const { preferences, hasCustomPreferences } = usePreferences();
-  const {
-    status,
-    setNeighborhoodStatus,
-    isInComparison,
-    toggleComparison,
-    comparison,
-    notes,
-    setNeighborhoodNote,
-    photos,
-    addNeighborhoodPhoto,
-    removeNeighborhoodPhoto,
-    userRatings,
-    setUserRating,
-    destinations,
-  } = useApp();
+  const { status, setNeighborhoodStatus, isInComparison, toggleComparison, comparison } = useStatusComparison();
+  const { notes, setNeighborhoodNote, photos, addNeighborhoodPhoto, removeNeighborhoodPhoto, userRatings, setUserRating } = useNotesRatings();
+  const { cityDestinations: destinations } = useDestinations();
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteText, setNoteText] = useState(notes[neighborhood?.id] || '');
@@ -83,19 +82,23 @@ export default function DetailScreen() {
   };
 
   const currentStatus = status[neighborhood?.id] || null;
-  const currentPhotos = photos[neighborhood?.id] || [];
-  const currentUserRatings = userRatings[neighborhood?.id] || {};
+  const currentPhotos = useMemo(() => photos[neighborhood?.id] || [], [photos, neighborhood?.id]);
+  const currentUserRatings = useMemo(() => userRatings[neighborhood?.id] || {}, [userRatings, neighborhood?.id]);
 
-  // Build gallery images: default image first, then user photos
-  const defaultImage = getNeighborhoodImage(neighborhood?.id);
-  const galleryImages: Array<{ uri?: string; isDefault?: boolean; source?: any }> = [];
+  // Build gallery images: default image first, then user photos (memoized)
+  const galleryImages = useMemo(() => {
+    const defaultImage = getNeighborhoodImage(neighborhood?.id);
+    const images: Array<{ uri?: string; isDefault?: boolean; source?: any }> = [];
 
-  if (defaultImage) {
-    galleryImages.push({ isDefault: true, source: defaultImage });
-  }
-  currentPhotos.forEach((uri) => {
-    galleryImages.push({ uri });
-  });
+    if (defaultImage) {
+      images.push({ isDefault: true, source: defaultImage });
+    }
+    currentPhotos.forEach((uri) => {
+      images.push({ uri });
+    });
+
+    return images;
+  }, [neighborhood?.id, currentPhotos]);
 
   // Convert vibe category to numeric score
   const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
@@ -168,12 +171,12 @@ export default function DetailScreen() {
     ]);
   };
 
-  const handleDeletePhoto = (uri: string) => {
+  const handleDeletePhoto = useCallback((uri: string) => {
     Alert.alert('Delete Photo', 'Are you sure you want to remove this photo?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => removeNeighborhoodPhoto(neighborhood.id, uri) },
     ]);
-  };
+  }, [neighborhood?.id, removeNeighborhoodPhoto]);
 
   const handleSaveNote = () => {
     setNeighborhoodNote(neighborhood.id, noteText);
@@ -196,7 +199,14 @@ export default function DetailScreen() {
     );
   }
 
-  const renderGalleryItem = ({ item, index }: { item: typeof galleryImages[0]; index: number }) => {
+  // Optimized getItemLayout for gallery FlatList
+  const getGalleryItemLayout = useCallback((_: any, index: number) => ({
+    length: SCREEN_WIDTH,
+    offset: SCREEN_WIDTH * index,
+    index,
+  }), []);
+
+  const renderGalleryItem = useCallback(({ item, index }: { item: typeof galleryImages[0]; index: number }) => {
     const isUserPhoto = !item.isDefault && item.uri;
 
     return (
@@ -230,7 +240,7 @@ export default function DetailScreen() {
         </View>
       </View>
     );
-  };
+  }, [handleDeletePhoto]);
 
   return (
     <View style={styles.container}>
@@ -251,6 +261,8 @@ export default function DetailScreen() {
                   setActiveImageIndex(index);
                 }}
                 keyExtractor={(_, index) => index.toString()}
+                getItemLayout={getGalleryItemLayout}
+                initialNumToRender={2}
               />
 
               {/* Gallery pagination dots */}
@@ -420,20 +432,12 @@ export default function DetailScreen() {
             </View>
 
             <View style={styles.ratingsGrid}>
-              {[
-                { key: 'safety', icon: 'shield-checkmark', label: 'Safety', description: CRITERIA_INFO.safety.description },
-                { key: 'transit', icon: 'bus', label: 'Transit', description: CRITERIA_INFO.transit.description },
-                { key: 'greenSpace', icon: 'leaf', label: 'Green Space', description: CRITERIA_INFO.greenSpace.description },
-                { key: 'nightlife', icon: 'moon', label: 'Nightlife', description: CRITERIA_INFO.nightlife.description },
-                { key: 'familyFriendly', icon: 'home', label: 'Family', description: CRITERIA_INFO.familyFriendly.description },
-                { key: 'dining', icon: 'restaurant', label: 'Dining', description: CRITERIA_INFO.dining.description },
-                { key: 'vibe', icon: 'people', label: 'Local Scene', description: CRITERIA_INFO.vibe.description },
-              ].map((rating) => (
+              {RATING_METRICS.map((rating) => (
                 <RatingCard
                   key={rating.key}
-                  icon={rating.icon as keyof typeof Ionicons.glyphMap}
+                  icon={rating.icon}
                   label={rating.label}
-                  description={rating.description}
+                  description={CRITERIA_INFO[rating.key as keyof typeof CRITERIA_INFO]?.description}
                   value={getEffectiveRating(rating.key) as number}
                   isEditing={isEditingRatings}
                   isCustom={!!currentUserRatings[rating.key as keyof typeof currentUserRatings]}

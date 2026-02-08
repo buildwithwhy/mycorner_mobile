@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import {
   syncNeighborhoodNote,
@@ -174,18 +174,27 @@ export function NotesRatingsProvider({ children }: { children: React.ReactNode }
     }));
   }, []);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    notes,
+    setNeighborhoodNote,
+    photos,
+    addNeighborhoodPhoto,
+    removeNeighborhoodPhoto,
+    userRatings,
+    setUserRating,
+  }), [
+    notes,
+    setNeighborhoodNote,
+    photos,
+    addNeighborhoodPhoto,
+    removeNeighborhoodPhoto,
+    userRatings,
+    setUserRating,
+  ]);
+
   return (
-    <NotesRatingsContext.Provider
-      value={{
-        notes,
-        setNeighborhoodNote,
-        photos,
-        addNeighborhoodPhoto,
-        removeNeighborhoodPhoto,
-        userRatings,
-        setUserRating,
-      }}
-    >
+    <NotesRatingsContext.Provider value={contextValue}>
       {children}
     </NotesRatingsContext.Provider>
   );

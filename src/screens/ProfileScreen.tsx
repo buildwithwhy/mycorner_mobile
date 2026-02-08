@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking, A
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import { useApp } from '../contexts/AppContext';
+import { useDestinations } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
@@ -16,7 +16,7 @@ const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  const { destinations } = useApp();
+  const { cityDestinations: destinations } = useDestinations();
   const { user, signOut } = useAuth();
   const { isPremium, getManageSubscriptionUrl } = useSubscription();
   const { tier } = useFeatureAccess();
