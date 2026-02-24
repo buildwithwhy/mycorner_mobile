@@ -53,6 +53,7 @@ interface NeighborhoodStatsProps {
   variant?: StatsVariant;
   showLabels?: boolean;
   highlightGoodScores?: boolean; // Highlight scores >= 4
+  currencySymbol?: string; // '£' for London, '$' for New York
 }
 
 // ============================================================================
@@ -65,9 +66,10 @@ interface StatItemProps {
   variant: StatsVariant;
   showLabel: boolean;
   highlightGood: boolean;
+  currencySymbol: string;
 }
 
-const StatItem = memo(({ config, value, variant, showLabel, highlightGood }: StatItemProps) => {
+const StatItem = memo(({ config, value, variant, showLabel, highlightGood, currencySymbol }: StatItemProps) => {
   const isGood = highlightGood && value >= 4;
   const isMinimal = variant === 'minimal';
   const isCompact = variant === 'compact';
@@ -79,7 +81,7 @@ const StatItem = memo(({ config, value, variant, showLabel, highlightGood }: Sta
   if (config.isAffordability) {
     return (
       <View style={[styles.statItem, isMinimal && styles.statItemMinimal]}>
-        <AffordabilityBadge value={value} size="small" />
+        <AffordabilityBadge value={value} size="small" currencySymbol={currencySymbol} />
         {showLabel && <Text style={styles.statLabel}>{config.label}</Text>}
       </View>
     );
@@ -114,6 +116,7 @@ function NeighborhoodStats({
   variant = 'standard',
   showLabels = false,
   highlightGoodScores = true,
+  currencySymbol = '£',
 }: NeighborhoodStatsProps) {
   // Select stats based on variant
   let stats: StatConfig[];
@@ -149,6 +152,7 @@ function NeighborhoodStats({
           variant={variant}
           showLabel={showLabels}
           highlightGood={highlightGoodScores}
+          currencySymbol={currencySymbol}
         />
       ))}
     </View>

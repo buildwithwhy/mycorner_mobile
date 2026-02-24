@@ -21,7 +21,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const { session } = useAuth();
   const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useStatusComparison();
-  const { cityNeighborhoods, showCityPicker, hasSelectedCity } = useCity();
+  const { cityNeighborhoods, showCityPicker, hasSelectedCity, selectedCity } = useCity();
   const { photos } = useNotesRatings();
   const { preferences, hasCustomPreferences } = usePreferences();
   const { canAccess, requiresUpgrade } = useFeatureAccess();
@@ -164,9 +164,10 @@ export default function HomeScreen() {
         photoCount={neighborhoodPhotos.length}
         firstPhotoUri={neighborhoodPhotos[0] || null}
         matchScore={matchScore}
+        currencySymbol={selectedCity.currencySymbol}
       />
     );
-  }, [navigation, status, comparison, handleAddToPlaces, handleToggleComparison, viewMode, photos, hasCustomPreferences, matchPercentages]);
+  }, [navigation, status, comparison, handleAddToPlaces, handleToggleComparison, viewMode, photos, hasCustomPreferences, matchPercentages, selectedCity.currencySymbol]);
 
   const keyExtractor = useCallback((item: Neighborhood) => item.id, []);
 
@@ -291,7 +292,7 @@ export default function HomeScreen() {
 
             <ScrollView style={styles.modalScroll}>
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>Minimum Affordability: {minAffordability}/5</Text>
+                <Text style={styles.filterLabel}>Maximum Cost</Text>
                 <View style={styles.filterOptions}>
                   {[1, 2, 3, 4, 5].map((value) => (
                     <TouchableOpacity
@@ -300,7 +301,7 @@ export default function HomeScreen() {
                       onPress={() => setMinAffordability(value)}
                     >
                       <Text style={[styles.filterChipText, minAffordability === value && styles.filterChipTextActive]}>
-                        {value}
+                        {selectedCity.currencySymbol.repeat(6 - value)}
                       </Text>
                     </TouchableOpacity>
                   ))}

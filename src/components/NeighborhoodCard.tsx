@@ -35,6 +35,7 @@ interface NeighborhoodCardProps {
   photoCount?: number;
   firstPhotoUri?: string | null;
   matchScore?: number | null;
+  currencySymbol?: string;
 }
 
 // Status info lookup - moved outside component to avoid recreation
@@ -57,6 +58,7 @@ function NeighborhoodCard({
   photoCount = 0,
   firstPhotoUri = null,
   matchScore = null,
+  currencySymbol = '£',
 }: NeighborhoodCardProps) {
   const statusInfo = currentStatus ? STATUS_INFO[currentStatus] : null;
   const hasPhotos = photoCount > 0;
@@ -83,8 +85,8 @@ function NeighborhoodCard({
   }, [onAddToPlaces, neighborhood.id]);
 
   const handleShare = useCallback(() => {
-    shareNeighborhood(neighborhood);
-  }, [neighborhood]);
+    shareNeighborhood(neighborhood, currencySymbol);
+  }, [neighborhood, currencySymbol]);
 
   // Card view renders with hero image
   if (viewMode === 'card') {
@@ -134,7 +136,7 @@ function NeighborhoodCard({
           <View style={styles.cardViewContent}>
             <Text style={styles.cardViewTitle}>{neighborhood.name}</Text>
             <Text style={styles.cardViewBorough}>{neighborhood.borough}</Text>
-            <NeighborhoodStats neighborhood={neighborhood} variant="compact" />
+            <NeighborhoodStats neighborhood={neighborhood} variant="compact" currencySymbol={currencySymbol} />
           </View>
         </TouchableOpacity>
 
@@ -224,7 +226,7 @@ function NeighborhoodCard({
         </View>
 
         <View style={styles.statsRow}>
-          <NeighborhoodStats neighborhood={neighborhood} variant="standard" />
+          <NeighborhoodStats neighborhood={neighborhood} variant="standard" currencySymbol={currencySymbol} />
         </View>
       </TouchableOpacity>
 

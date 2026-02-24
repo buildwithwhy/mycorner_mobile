@@ -15,6 +15,7 @@ import PaywallScreen from '../screens/PaywallScreen';
 import PreferencesScreen from '../screens/PreferencesScreen';
 import MatcherScreen from '../screens/MatcherScreen';
 import { useAuth } from '../contexts/AuthContext';
+import { useStatusComparison } from '../contexts/AppContext';
 import { COLORS } from '../constants/theme';
 
 // Lazy load heavy screens to reduce initial bundle parse time
@@ -65,6 +66,9 @@ function ProfileTabScreen() {
 }
 
 function TabNavigator() {
+  const { comparison } = useStatusComparison();
+  const compareCount = comparison.length;
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -93,7 +97,14 @@ function TabNavigator() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Map" component={LazyMapScreen} />
       <Tab.Screen name="MyPlaces" component={MyPlacesScreen} options={{ title: 'My Places' }} />
-      <Tab.Screen name="Compare" component={CompareScreen} />
+      <Tab.Screen
+        name="Compare"
+        component={CompareScreen}
+        options={{
+          tabBarBadge: compareCount > 0 ? compareCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: COLORS.primary },
+        }}
+      />
       <Tab.Screen name="Profile" component={ProfileTabScreen} />
     </Tab.Navigator>
   );

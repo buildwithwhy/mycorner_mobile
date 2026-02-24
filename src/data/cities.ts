@@ -3,6 +3,7 @@ export interface City {
   name: string;
   country: string;
   flag: string;
+  currencySymbol: string;
   region: {
     latitude: number;
     longitude: number;
@@ -18,6 +19,7 @@ export const cities: City[] = [
     name: 'London',
     country: 'UK',
     flag: '\u{1F1EC}\u{1F1E7}',
+    currencySymbol: '£',
     region: {
       latitude: 51.5074,
       longitude: -0.1278,
@@ -31,6 +33,7 @@ export const cities: City[] = [
     name: 'New York',
     country: 'USA',
     flag: '\u{1F1FA}\u{1F1F8}',
+    currencySymbol: '$',
     region: {
       latitude: 40.7128,
       longitude: -74.006,

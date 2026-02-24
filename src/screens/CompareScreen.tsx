@@ -25,7 +25,7 @@ export default function CompareScreen() {
   const { comparison, toggleComparison, clearComparison } = useStatusComparison();
   const { notes } = useNotesRatings();
   const { cityDestinations: destinations } = useDestinations();
-  const { cityNeighborhoods } = useCity();
+  const { cityNeighborhoods, selectedCity } = useCity();
   const { comparisonLimit, isPremium } = useFeatureAccess();
 
   // Filter comparison to only include neighborhoods from the current city
@@ -139,7 +139,7 @@ export default function CompareScreen() {
                       <View style={styles.valueContainer}>
                         {metric.key === 'affordability' ? (
                           <View style={styles.affordabilityBadge}>
-                            <AffordabilityBadge value={value} />
+                            <AffordabilityBadge value={value} currencySymbol={selectedCity.currencySymbol} />
                           </View>
                         ) : (
                           <View style={styles.rating}>

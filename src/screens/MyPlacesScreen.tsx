@@ -164,7 +164,7 @@ export default function MyPlacesScreen() {
                         <View style={[styles.statusIndicator, { backgroundColor: section.color }]} />
                       </View>
 
-                      <NeighborhoodStats neighborhood={neighborhood} variant="compact" />
+                      <NeighborhoodStats neighborhood={neighborhood} variant="compact" currencySymbol={selectedCity.currencySymbol} />
                     </View>
 
                     <TouchableOpacity

@@ -237,7 +237,7 @@ export default function MapScreen() {
           </Text>
 
           <View style={styles.infoStats}>
-            <NeighborhoodStats neighborhood={selectedNeighborhoodData} variant="compact" />
+            <NeighborhoodStats neighborhood={selectedNeighborhoodData} variant="compact" currencySymbol={selectedCity.currencySymbol} />
           </View>
 
           {commuteData.length > 0 && (

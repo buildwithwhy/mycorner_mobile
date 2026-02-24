@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
-import { useStatusComparison, useNotesRatings, useDestinations, type NeighborhoodStatus } from '../contexts/AppContext';
+import { useStatusComparison, useNotesRatings, useDestinations, useCity, type NeighborhoodStatus } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
@@ -55,6 +55,7 @@ export default function DetailScreen() {
   const { status, setNeighborhoodStatus, isInComparison, toggleComparison, comparison } = useStatusComparison();
   const { notes, setNeighborhoodNote, photos, addNeighborhoodPhoto, removeNeighborhoodPhoto, userRatings, setUserRating } = useNotesRatings();
   const { cityDestinations: destinations } = useDestinations();
+  const { selectedCity } = useCity();
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteText, setNoteText] = useState(notes[neighborhood?.id] || '');
@@ -318,7 +319,7 @@ export default function DetailScreen() {
             {/* Quick Stats Row */}
             <View style={styles.quickStats}>
               <View style={styles.quickStat}>
-                <AffordabilityBadge value={neighborhood.affordability} size="small" />
+                <AffordabilityBadge value={neighborhood.affordability} size="small" currencySymbol={selectedCity.currencySymbol} />
                 <Text style={styles.quickStatLabel}>{getAffordabilityLabel(neighborhood.affordability)}</Text>
               </View>
               <View style={styles.quickStatDivider} />
@@ -606,7 +607,7 @@ export default function DetailScreen() {
 
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => shareNeighborhood(neighborhood)}
+            onPress={() => shareNeighborhood(neighborhood, selectedCity.currencySymbol)}
           >
             <Ionicons
               name="share-outline"

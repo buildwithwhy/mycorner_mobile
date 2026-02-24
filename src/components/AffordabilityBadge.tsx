@@ -8,9 +8,10 @@ const SYMBOL_INDICES = [0, 1, 2, 3, 4] as const;
 interface AffordabilityBadgeProps {
   value: number; // 1-5 scale
   size?: 'small' | 'large';
+  currencySymbol?: string; // '£' for London, '$' for New York
 }
 
-function AffordabilityBadge({ value, size = 'small' }: AffordabilityBadgeProps) {
+function AffordabilityBadge({ value, size = 'small', currencySymbol = '£' }: AffordabilityBadgeProps) {
   const activeCount = 6 - value; // Convert: 5 (affordable) = 1 symbol, 1 (expensive) = 5 symbols
 
   return (
@@ -23,7 +24,7 @@ function AffordabilityBadge({ value, size = 'small' }: AffordabilityBadgeProps) 
             i < activeCount && styles.symbolActive,
           ]}
         >
-          £
+          {currencySymbol}
         </Text>
       ))}
     </View>
