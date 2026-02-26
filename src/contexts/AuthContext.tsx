@@ -51,6 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
+    }).catch(() => {
+      // Network failure — continue as logged out
+      setLoading(false);
     });
 
     // Listen for auth changes

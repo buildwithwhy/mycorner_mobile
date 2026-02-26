@@ -120,15 +120,20 @@ export function SubscriptionProvider({ children }: SubscriptionProviderProps) {
 
       setIsLoading(true);
 
-      if (user) {
-        await loginUser(user.id);
-      } else {
-        await logoutUser();
-      }
+      try {
+        if (user) {
+          await loginUser(user.id);
+        } else {
+          await logoutUser();
+        }
 
-      // Refresh status after auth change
-      await refreshStatusInternal();
-      setIsLoading(false);
+        // Refresh status after auth change
+        await refreshStatusInternal();
+      } catch (error) {
+        logger.error('[SubscriptionContext] Auth change handling failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     handleAuthChange();
