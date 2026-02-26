@@ -16,6 +16,7 @@ import {
   DEV_MODE,
   SubscriptionState,
   DEFAULT_SUBSCRIPTION_STATE,
+  ProductId,
 } from '../config/subscriptions';
 import {
   REVENUECAT_API_KEY_IOS,
@@ -190,7 +191,7 @@ export const getSubscriptionState = async (): Promise<SubscriptionState> => {
 
     return {
       status: 'active',
-      productId: proEntitlement.productIdentifier as any,
+      productId: proEntitlement.productIdentifier as ProductId,
       expiresAt: proEntitlement.expirationDate
         ? new Date(proEntitlement.expirationDate)
         : null,

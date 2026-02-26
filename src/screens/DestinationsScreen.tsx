@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { GooglePlacesAutocomplete, GooglePlacesAutocompleteRef } from 'react-native-google-places-autocomplete';
 import { useDestinations, TransportMode, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
@@ -37,7 +37,7 @@ export default function DestinationsScreen() {
   const [newAddress, setNewAddress] = useState('');
   const [selectedCoords, setSelectedCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedTransportMode, setSelectedTransportMode] = useState<TransportMode>('transit');
-  const autocompleteRef = useRef<any>(null);
+  const autocompleteRef = useRef<GooglePlacesAutocompleteRef>(null);
 
   // Google Places query config based on selected city
   const placesQueryConfig = useMemo(() => {

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ImageSourcePropType,
   TextInput,
   Dimensions,
   FlatList,
@@ -87,7 +88,7 @@ export default function DetailScreen() {
   // Build gallery images: default image first, then user photos (memoized)
   const galleryImages = useMemo(() => {
     const defaultImage = getNeighborhoodImage(neighborhood?.id);
-    const images: Array<{ uri?: string; isDefault?: boolean; source?: any }> = [];
+    const images: Array<{ uri?: string; isDefault?: boolean; source?: ImageSourcePropType }> = [];
 
     if (defaultImage) {
       images.push({ isDefault: true, source: defaultImage });
@@ -199,7 +200,7 @@ export default function DetailScreen() {
   }
 
   // Optimized getItemLayout for gallery FlatList
-  const getGalleryItemLayout = useCallback((_: any, index: number) => ({
+  const getGalleryItemLayout = useCallback((_: unknown, index: number) => ({
     length: SCREEN_WIDTH,
     offset: SCREEN_WIDTH * index,
     index,
