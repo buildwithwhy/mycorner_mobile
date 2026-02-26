@@ -7,9 +7,11 @@ import { AppProvider } from './src/contexts/AppContext';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { SubscriptionProvider } from './src/contexts/SubscriptionContext';
 import { PreferencesProvider } from './src/contexts/PreferencesContext';
+import { ToastProvider } from './src/contexts/ToastContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/ErrorBoundary';
 import OfflineBanner from './src/components/OfflineBanner';
+import Toast from './src/components/Toast';
 import { initSentry, wrap } from './src/services/sentry';
 import { logConfig, POSTHOG_API_KEY, POSTHOG_HOST, ENABLE_ANALYTICS } from './config';
 import logger from './src/utils/logger';
@@ -35,9 +37,12 @@ function AppContent() {
           <SubscriptionProvider>
             <PreferencesProvider>
               <AppProvider>
-                <OfflineBanner />
-                <AppNavigator />
-                <StatusBar style="light" />
+                <ToastProvider>
+                  <OfflineBanner />
+                  <AppNavigator />
+                  <Toast />
+                  <StatusBar style="light" />
+                </ToastProvider>
               </AppProvider>
             </PreferencesProvider>
           </SubscriptionProvider>

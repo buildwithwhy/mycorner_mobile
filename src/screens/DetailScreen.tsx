@@ -26,6 +26,7 @@ import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 import AffordabilityBadge from '../components/AffordabilityBadge';
 import RatingCard from '../components/RatingCard';
+import { useToast } from '../contexts/ToastContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { usePreferences, CRITERIA_INFO } from '../contexts/PreferencesContext';
 import { shareNeighborhood } from '../utils/sharing';
@@ -34,6 +35,14 @@ import { PremiumBadge } from '../components/FeatureGate';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
+
+const STATUS_LABELS: Record<string, string> = {
+  shortlist: 'Shortlist',
+  want_to_visit: 'Want to Visit',
+  visited: 'Visited',
+  living_here: 'Living Here',
+  ruled_out: 'Ruled Out',
+};
 
 // Pre-defined rating metrics to avoid recreation on each render
 const RATING_METRICS = [
@@ -51,6 +60,7 @@ export default function DetailScreen() {
   const navigation = useNavigation();
   const neighborhood = route.params?.neighborhood as Neighborhood;
   const { session } = useAuth();
+  const { showToast } = useToast();
   const { comparisonLimit, requiresUpgrade, canAccess } = useFeatureAccess();
   const { preferences, hasCustomPreferences } = usePreferences();
   const { status, setNeighborhoodStatus, isInComparison, toggleComparison, comparison } = useStatusComparison();
@@ -595,7 +605,12 @@ export default function DetailScreen() {
                   Alert.alert('Comparison Full', `You can compare up to ${comparisonLimit} neighborhoods at once.`);
                 }
               } else {
+                const wasInComparison = isInComparison(neighborhood.id);
                 toggleComparison(neighborhood.id);
+                showToast(
+                  wasInComparison ? 'Removed from Compare' : 'Added to Compare',
+                  wasInComparison ? 'git-compare-outline' : 'git-compare',
+                );
               }
             }}
           >
@@ -649,7 +664,14 @@ export default function DetailScreen() {
         visible={showStatusPicker}
         onClose={() => setShowStatusPicker(false)}
         currentStatus={currentStatus}
-        onSelectStatus={(newStatus) => setNeighborhoodStatus(neighborhood.id, newStatus)}
+        onSelectStatus={(newStatus) => {
+          setNeighborhoodStatus(neighborhood.id, newStatus);
+          if (newStatus) {
+            showToast(`Saved to ${STATUS_LABELS[newStatus]}`, 'bookmark');
+          } else {
+            showToast('Removed from My Places', 'bookmark-outline');
+          }
+        }}
         neighborhoodName={neighborhood.name}
       />
     </View>
