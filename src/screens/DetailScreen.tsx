@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
+import { METRIC_SOURCES } from '../data/neighborhoods';
 import { useStatusComparison, useNotesRatings, useDestinations, useCity, type NeighborhoodStatus } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
@@ -59,11 +60,13 @@ export default function DetailScreen() {
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteText, setNoteText] = useState(notes[neighborhood?.id] || '');
-  const [isEditingRatings, setIsEditingRatings] = useState(false);
+  const [editingMetric, setEditingMetric] = useState<string | null>(null);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [signInFeature, setSignInFeature] = useState('this feature');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const galleryRef = useRef<FlatList>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const notesSectionY = useRef(0);
 
   // Track if component is mounted to prevent state updates after unmount
   const isMountedRef = useRef(true);
@@ -245,7 +248,7 @@ export default function DetailScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollViewRef} style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Hero Gallery */}
         <View style={styles.heroContainer}>
           {galleryImages.length > 0 ? (
@@ -415,22 +418,7 @@ export default function DetailScreen() {
 
           {/* Ratings */}
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Ratings</Text>
-              <TouchableOpacity
-                style={styles.editButton}
-                onPress={() => requireAuth('ratings', () => setIsEditingRatings(!isEditingRatings))}
-              >
-                <Ionicons
-                  name={isEditingRatings ? 'checkmark' : 'pencil'}
-                  size={16}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.editButtonText}>
-                  {isEditingRatings ? 'Done' : 'Edit'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={[styles.sectionTitle, { marginBottom: SPACING.md }]}>Ratings</Text>
 
             <View style={styles.ratingsGrid}>
               {RATING_METRICS.map((rating) => (
@@ -440,9 +428,25 @@ export default function DetailScreen() {
                   label={rating.label}
                   description={CRITERIA_INFO[rating.key as keyof typeof CRITERIA_INFO]?.description}
                   value={getEffectiveRating(rating.key) as number}
-                  isEditing={isEditingRatings}
+                  isEditing={editingMetric === rating.key}
                   isCustom={!!currentUserRatings[rating.key as keyof typeof currentUserRatings]}
                   onRatingChange={(value) => setUserRating(neighborhood.id, rating.key, value)}
+                  sourceShort={METRIC_SOURCES[neighborhood.cityId]?.[rating.key]?.short}
+                  sourceLong={METRIC_SOURCES[neighborhood.cityId]?.[rating.key]?.long}
+                  onPress={() => {
+                    if (editingMetric === rating.key) {
+                      setEditingMetric(null);
+                    } else {
+                      requireAuth('ratings', () => setEditingMetric(rating.key));
+                    }
+                  }}
+                  onNotePress={() => {
+                    setEditingMetric(null);
+                    scrollViewRef.current?.scrollTo({ y: HERO_HEIGHT + notesSectionY.current, animated: true });
+                    setTimeout(() => {
+                      requireAuth('notes', () => setIsEditingNote(true));
+                    }, 400);
+                  }}
                 />
               ))}
             </View>
@@ -498,7 +502,7 @@ export default function DetailScreen() {
           )}
 
           {/* My Notes */}
-          <View style={styles.section}>
+          <View style={styles.section} onLayout={(e) => { notesSectionY.current = e.nativeEvent.layout.y; }}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>My Notes</Text>
               {!isEditingNote && notes[neighborhood.id] && (

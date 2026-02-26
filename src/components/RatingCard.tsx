@@ -15,6 +15,10 @@ interface RatingCardProps {
   isEditing: boolean;
   isCustom?: boolean;
   onRatingChange: (value: number) => void;
+  onPress?: () => void;
+  onNotePress?: () => void;
+  sourceShort?: string;
+  sourceLong?: string;
 }
 
 function RatingCard({
@@ -25,9 +29,13 @@ function RatingCard({
   isEditing,
   isCustom,
   onRatingChange,
+  onPress,
+  onNotePress,
+  sourceShort,
+  sourceLong,
 }: RatingCardProps) {
-  return (
-    <View style={styles.card}>
+  const cardContent = (
+    <>
       <View style={styles.header}>
         <Ionicons name={icon} size={24} color={COLORS.primary} />
         <View style={styles.labelContainer}>
@@ -37,27 +45,48 @@ function RatingCard({
       </View>
 
       {isEditing ? (
-        <View style={styles.editContainer}>
-          {RATING_VALUES.map((rating) => (
-            <TouchableOpacity
-              key={rating}
-              style={[
-                styles.ratingButton,
-                value === rating && styles.ratingButtonActive,
-              ]}
-              onPress={() => onRatingChange(rating)}
-            >
-              <Text
-                style={[
-                  styles.ratingButtonText,
-                  value === rating && styles.ratingButtonTextActive,
-                ]}
-              >
-                {rating}
+        <>
+          {!isCustom && sourceLong && (
+            <View style={styles.sourceDisclaimerRow}>
+              <Ionicons name="information-circle-outline" size={14} color={COLORS.gray400} />
+              <Text style={styles.sourceDisclaimer}>
+                {sourceLong}. Tap to set your own.
               </Text>
+            </View>
+          )}
+          <View style={styles.editContainer}>
+            {RATING_VALUES.map((rating) => (
+              <TouchableOpacity
+                key={rating}
+                style={[
+                  styles.ratingButton,
+                  value === rating && styles.ratingButtonActive,
+                ]}
+                onPress={() => onRatingChange(rating)}
+              >
+                <Text
+                  style={[
+                    styles.ratingButtonText,
+                    value === rating && styles.ratingButtonTextActive,
+                  ]}
+                >
+                  {rating}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <View style={styles.editActions}>
+            {onNotePress && (
+              <TouchableOpacity style={styles.addNoteLink} onPress={onNotePress}>
+                <Ionicons name="create-outline" size={14} color={COLORS.primary} />
+                <Text style={styles.addNoteLinkText}>Add a note</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.doneButton} onPress={onPress}>
+              <Text style={styles.doneButtonText}>Done</Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          </View>
+        </>
       ) : (
         <>
           <View style={styles.stars}>
@@ -72,11 +101,25 @@ function RatingCard({
           </View>
           <Text style={styles.score}>
             {value}/5
-            {isCustom && <Text style={styles.customBadge}> (Custom)</Text>}
+            {isCustom ? (
+              <Text style={styles.customBadge}> (Custom)</Text>
+            ) : sourceShort ? (
+              <Text style={styles.sourceBadge}> · {sourceShort}</Text>
+            ) : null}
           </Text>
         </>
       )}
-    </View>
+    </>
+  );
+
+  if (isEditing) {
+    return <View style={styles.card}>{cardContent}</View>;
+  }
+
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+      {cardContent}
+    </TouchableOpacity>
   );
 }
 
@@ -123,6 +166,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.info,
   },
+  sourceBadge: {
+    fontSize: FONT_SIZES.xs,
+    fontWeight: '400',
+    color: COLORS.gray400,
+  },
+  sourceDisclaimerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: SPACING.sm,
+  },
+  sourceDisclaimer: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.gray400,
+    flex: 1,
+  },
   editContainer: {
     flexDirection: 'row',
     gap: SPACING.sm,
@@ -148,6 +207,33 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
   },
   ratingButtonTextActive: {
+    color: COLORS.primary,
+  },
+  editActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: SPACING.sm,
+  },
+  addNoteLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  addNoteLinkText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '500',
+    color: COLORS.primary,
+  },
+  doneButton: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  doneButtonText: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
     color: COLORS.primary,
   },
 });
