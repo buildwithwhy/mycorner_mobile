@@ -31,6 +31,8 @@ export type UserRatings = Record<string, Partial<{
   greenSpace: number;
   nightlife: number;
   familyFriendly: number;
+  dining: number;
+  vibe: number;
 }>>;
 
 interface NotesRatingsContextType {
