@@ -11,7 +11,7 @@ import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { getTransportModeInfo } from '../utils/commute';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, MODAL_STYLES } from '../constants/theme';
 
 const TRANSPORT_MODES: TransportMode[] = ['transit', 'walking', 'cycling', 'driving'];
 
@@ -218,14 +218,14 @@ export default function DestinationsScreen() {
 
       <Modal visible={showAddModal} animationType="slide" transparent={true}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.modalOverlay}>
+          <View style={MODAL_STYLES.overlay}>
             <TouchableWithoutFeedback>
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={styles.modalContent}
+                style={[MODAL_STYLES.content, { maxHeight: '90%' }]}
               >
-                <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>New Destination</Text>
+                <View style={MODAL_STYLES.header}>
+                  <Text style={MODAL_STYLES.title}>New Destination</Text>
                   <TouchableOpacity onPress={handleCloseModal}>
                     <Ionicons name="close" size={24} color={COLORS.gray500} />
                   </TouchableOpacity>
@@ -557,30 +557,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.white,
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: BORDER_RADIUS.xl,
-    borderTopRightRadius: BORDER_RADIUS.xl,
-    maxHeight: '90%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: SPACING.xl,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray200,
-  },
-  modalTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: '600',
-    color: COLORS.gray900,
-  },
   modalBody: {
     maxHeight: 450,
   },
@@ -637,11 +613,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.md,
-    backgroundColor: '#fffbeb',
+    backgroundColor: COLORS.warningBg,
     padding: SPACING.lg,
     borderRadius: BORDER_RADIUS.sm,
     borderWidth: 1,
-    borderColor: '#fbbf24',
+    borderColor: COLORS.warningBorder,
     marginBottom: SPACING.md,
   },
   apiKeyWarningContent: {
@@ -650,12 +626,12 @@ const styles = StyleSheet.create({
   apiKeyWarningTitle: {
     fontSize: FONT_SIZES.base,
     fontWeight: '600',
-    color: '#92400e',
+    color: COLORS.warningDark,
     marginBottom: 4,
   },
   apiKeyWarningText: {
     fontSize: FONT_SIZES.md,
-    color: '#78350f',
+    color: COLORS.warningTextDark,
     lineHeight: 18,
   },
   modalActions: {

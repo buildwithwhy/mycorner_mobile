@@ -1,29 +1,29 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { Neighborhood } from '../data/neighborhoods';
 import { useStatusComparison, useCity, useNotesRatings, NeighborhoodStatus } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
 import { usePreferences } from '../contexts/PreferencesContext';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard, { ViewMode } from '../components/NeighborhoodCard';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
+import FilterModal from '../components/FilterModal';
+import SortModal, { SortOption } from '../components/SortModal';
+import MatchModal from '../components/MatchModal';
 import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
-import { scoreAndSortNeighborhoods, calculateMatchPercentage, ScoredNeighborhood } from '../utils/personalizedScoring';
+import { scoreAndSortNeighborhoods, ScoredNeighborhood } from '../utils/personalizedScoring';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import { PremiumBadge } from '../components/FeatureGate';
-
-type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { session } = useAuth();
+  const { requireAuth, showSignInModal, dismissSignInModal } = useRequireAuth();
   const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useStatusComparison();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity, selectedCity } = useCity();
   const { photos } = useNotesRatings();
@@ -41,7 +41,6 @@ export default function HomeScreen() {
   const [showMatchModal, setShowMatchModal] = useState(false);
 
   // Lifted modal state - single instance for all cards
-  const [showSignInModal, setShowSignInModal] = useState(false);
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState<string | null>(null);
 
@@ -54,12 +53,8 @@ export default function HomeScreen() {
   // Handler for "Add to Places" - checks auth and shows appropriate modal
   const handleAddToPlaces = useCallback((neighborhoodId: string) => {
     setSelectedNeighborhoodId(neighborhoodId);
-    if (!session) {
-      setShowSignInModal(true);
-    } else {
-      setShowStatusPicker(true);
-    }
-  }, [session]);
+    requireAuth('saving places', () => setShowStatusPicker(true));
+  }, [requireAuth]);
 
   // Handler for status selection
   const handleSetStatus = useCallback((newStatus: NeighborhoodStatus) => {
@@ -212,17 +207,17 @@ export default function HomeScreen() {
         <Text style={styles.subtitle}>Discover your perfect area</Text>
 
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
+          <Ionicons name="search" size={20} color={COLORS.gray400} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search neighborhoods..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={COLORS.gray400}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color="#9ca3af" />
+              <Ionicons name="close-circle" size={20} color={COLORS.gray400} />
             </TouchableOpacity>
           )}
         </View>
@@ -284,196 +279,26 @@ export default function HomeScreen() {
         windowSize={10}
       />
 
-      <Modal visible={showFilters} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Filters</Text>
-              <TouchableOpacity onPress={() => setShowFilters(false)}>
-                <Ionicons name="close" size={24} color="#6b7280" />
-              </TouchableOpacity>
-            </View>
+      <FilterModal
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
+        minAffordability={minAffordability}
+        minSafety={minSafety}
+        minTransit={minTransit}
+        setMinAffordability={setMinAffordability}
+        setMinSafety={setMinSafety}
+        setMinTransit={setMinTransit}
+        currencySymbol={selectedCity.currencySymbol}
+      />
 
-            <ScrollView style={styles.modalScroll}>
-              <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>Maximum Cost</Text>
-                <View style={styles.filterOptions}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[styles.filterChip, minAffordability === value && styles.filterChipActive]}
-                      onPress={() => setMinAffordability(value)}
-                    >
-                      <Text style={[styles.filterChipText, minAffordability === value && styles.filterChipTextActive]}>
-                        {selectedCity.currencySymbol.repeat(6 - value)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>Minimum Safety: {minSafety}/5</Text>
-                <View style={styles.filterOptions}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[styles.filterChip, minSafety === value && styles.filterChipActive]}
-                      onPress={() => setMinSafety(value)}
-                    >
-                      <Text style={[styles.filterChipText, minSafety === value && styles.filterChipTextActive]}>
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-
-              <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>Minimum Transit: {minTransit}/5</Text>
-                <View style={styles.filterOptions}>
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <TouchableOpacity
-                      key={value}
-                      style={[styles.filterChip, minTransit === value && styles.filterChipActive]}
-                      onPress={() => setMinTransit(value)}
-                    >
-                      <Text style={[styles.filterChipText, minTransit === value && styles.filterChipTextActive]}>
-                        {value}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            </ScrollView>
-
-            <View style={styles.modalActions}>
-              <TouchableOpacity
-                style={styles.modalClearButton}
-                onPress={() => {
-                  setMinAffordability(1);
-                  setMinSafety(1);
-                  setMinTransit(1);
-                }}
-              >
-                <Text style={styles.modalClearButtonText}>Clear All</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalApplyButton} onPress={() => setShowFilters(false)}>
-                <Text style={styles.modalApplyButtonText}>Apply Filters</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={showSortModal} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.sortModalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Sort By</Text>
-              <TouchableOpacity onPress={() => setShowSortModal(false)}>
-                <Ionicons name="close" size={24} color="#6b7280" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.sortOptions}>
-              {/* Best Match - soft gated for non-premium */}
-              <TouchableOpacity
-                style={[styles.sortOption, sortBy === 'bestMatch' && styles.sortOptionActive]}
-                onPress={() => {
-                  if (requiresUpgrade('personalized_scores')) {
-                    setShowSortModal(false);
-                    navigation.navigate('Paywall', { source: 'best_match_sort' });
-                  } else {
-                    setSortBy('bestMatch');
-                    setShowSortModal(false);
-                  }
-                }}
-              >
-                <Ionicons name="heart" size={24} color={sortBy === 'bestMatch' ? COLORS.primary : COLORS.gray500} />
-                <View style={styles.sortOptionText}>
-                  <View style={styles.sortOptionTitleRow}>
-                    <Text style={[styles.sortOptionTitle, sortBy === 'bestMatch' && styles.sortOptionTitleActive]}>
-                      Best Match
-                    </Text>
-                    {requiresUpgrade('personalized_scores') && <PremiumBadge />}
-                  </View>
-                  <Text style={styles.sortOptionDescription}>Based on your preferences</Text>
-                </View>
-                {sortBy === 'bestMatch' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.sortOption, sortBy === 'name' && styles.sortOptionActive]}
-                onPress={() => {
-                  setSortBy('name');
-                  setShowSortModal(false);
-                }}
-              >
-                <Ionicons name="text" size={24} color={sortBy === 'name' ? COLORS.primary : COLORS.gray500} />
-                <View style={styles.sortOptionText}>
-                  <Text style={[styles.sortOptionTitle, sortBy === 'name' && styles.sortOptionTitleActive]}>
-                    Name
-                  </Text>
-                  <Text style={styles.sortOptionDescription}>Alphabetical order</Text>
-                </View>
-                {sortBy === 'name' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.sortOption, sortBy === 'affordability' && styles.sortOptionActive]}
-                onPress={() => {
-                  setSortBy('affordability');
-                  setShowSortModal(false);
-                }}
-              >
-                <Ionicons name="cash-outline" size={24} color={sortBy === 'affordability' ? COLORS.primary : COLORS.gray500} />
-                <View style={styles.sortOptionText}>
-                  <Text style={[styles.sortOptionTitle, sortBy === 'affordability' && styles.sortOptionTitleActive]}>
-                    Affordability
-                  </Text>
-                  <Text style={styles.sortOptionDescription}>Most affordable first</Text>
-                </View>
-                {sortBy === 'affordability' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.sortOption, sortBy === 'safety' && styles.sortOptionActive]}
-                onPress={() => {
-                  setSortBy('safety');
-                  setShowSortModal(false);
-                }}
-              >
-                <Ionicons name="shield-checkmark" size={24} color={sortBy === 'safety' ? COLORS.primary : COLORS.gray500} />
-                <View style={styles.sortOptionText}>
-                  <Text style={[styles.sortOptionTitle, sortBy === 'safety' && styles.sortOptionTitleActive]}>
-                    Safety
-                  </Text>
-                  <Text style={styles.sortOptionDescription}>Safest areas first</Text>
-                </View>
-                {sortBy === 'safety' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.sortOption, sortBy === 'transit' && styles.sortOptionActive]}
-                onPress={() => {
-                  setSortBy('transit');
-                  setShowSortModal(false);
-                }}
-              >
-                <Ionicons name="bus" size={24} color={sortBy === 'transit' ? COLORS.primary : COLORS.gray500} />
-                <View style={styles.sortOptionText}>
-                  <Text style={[styles.sortOptionTitle, sortBy === 'transit' && styles.sortOptionTitleActive]}>
-                    Transit
-                  </Text>
-                  <Text style={styles.sortOptionDescription}>Best transit first</Text>
-                </View>
-                {sortBy === 'transit' && <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <SortModal
+        visible={showSortModal}
+        onClose={() => setShowSortModal(false)}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        requiresUpgrade={requiresUpgrade}
+        onNavigatePaywall={() => navigation.navigate('Paywall', { source: 'best_match_sort' })}
+      />
 
       {/* City selector modal - handles both first-launch and regular switching */}
       <CitySelectorModal
@@ -486,7 +311,7 @@ export default function HomeScreen() {
       <SignInPromptModal
         visible={showSignInModal}
         onClose={() => {
-          setShowSignInModal(false);
+          dismissSignInModal();
           setSelectedNeighborhoodId(null);
         }}
         featureName="saving places"
@@ -503,106 +328,15 @@ export default function HomeScreen() {
         neighborhoodName={selectedNeighborhood?.name || ''}
       />
 
-      {/* Match Modal - personalization options */}
-      <Modal visible={showMatchModal} animationType="slide" transparent={true}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.matchModalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Find Your Match</Text>
-              <TouchableOpacity onPress={() => setShowMatchModal(false)}>
-                <Ionicons name="close" size={24} color={COLORS.gray500} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.matchOptions}>
-              <TouchableOpacity
-                style={styles.matchOption}
-                onPress={() => {
-                  setShowMatchModal(false);
-                  if (requiresUpgrade('ai_matcher')) {
-                    navigation.navigate('Paywall', { source: 'quiz' });
-                  } else {
-                    navigation.navigate('Matcher');
-                  }
-                }}
-              >
-                <View style={[styles.matchOptionIcon, { backgroundColor: COLORS.primaryLight }]}>
-                  <Ionicons name="clipboard-outline" size={24} color={COLORS.primary} />
-                </View>
-                <View style={styles.matchOptionContent}>
-                  <View style={styles.matchOptionTitleRow}>
-                    <Text style={styles.matchOptionTitle}>Take the Quiz</Text>
-                    {requiresUpgrade('ai_matcher') && <PremiumBadge />}
-                  </View>
-                  <Text style={styles.matchOptionDescription}>
-                    Answer a few quick questions about your lifestyle
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.matchOption}
-                onPress={() => {
-                  setShowMatchModal(false);
-                  if (requiresUpgrade('ai_matcher')) {
-                    navigation.navigate('Paywall', { source: 'ai_describe' });
-                  } else {
-                    navigation.navigate('Matcher');
-                  }
-                }}
-              >
-                <View style={[styles.matchOptionIcon, { backgroundColor: '#EEF2FF' }]}>
-                  <Ionicons name="chatbubble-outline" size={24} color="#6366F1" />
-                </View>
-                <View style={styles.matchOptionContent}>
-                  <View style={styles.matchOptionTitleRow}>
-                    <Text style={styles.matchOptionTitle}>Describe What You Want</Text>
-                    {requiresUpgrade('ai_matcher') && <PremiumBadge />}
-                  </View>
-                  <Text style={styles.matchOptionDescription}>
-                    Tell us in your own words what matters to you
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.matchOption}
-                onPress={() => {
-                  setShowMatchModal(false);
-                  if (requiresUpgrade('personalized_scores')) {
-                    navigation.navigate('Paywall', { source: 'preferences' });
-                  } else {
-                    navigation.navigate('Preferences');
-                  }
-                }}
-              >
-                <View style={[styles.matchOptionIcon, { backgroundColor: '#FEF3C7' }]}>
-                  <Ionicons name="options-outline" size={24} color="#D97706" />
-                </View>
-                <View style={styles.matchOptionContent}>
-                  <View style={styles.matchOptionTitleRow}>
-                    <Text style={styles.matchOptionTitle}>Adjust Weights</Text>
-                    {requiresUpgrade('personalized_scores') && <PremiumBadge />}
-                  </View>
-                  <Text style={styles.matchOptionDescription}>
-                    Fine-tune how important each factor is to you
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
-              </TouchableOpacity>
-            </View>
-
-            {hasCustomPreferences && (
-              <View style={styles.matchStatus}>
-                <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
-                <Text style={styles.matchStatusText}>Your preferences are active</Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </Modal>
+      <MatchModal
+        visible={showMatchModal}
+        onClose={() => setShowMatchModal(false)}
+        hasCustomPreferences={hasCustomPreferences}
+        requiresUpgrade={requiresUpgrade}
+        onNavigatePaywall={(source) => navigation.navigate('Paywall', { source })}
+        onNavigateMatcher={() => navigation.navigate('Matcher')}
+        onNavigatePreferences={() => navigation.navigate('Preferences')}
+      />
     </View>
   );
 }
@@ -750,200 +484,5 @@ const styles = StyleSheet.create({
     color: COLORS.gray500,
     marginBottom: SPACING.md,
     textAlign: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray200,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.gray900,
-  },
-  modalScroll: {
-    padding: 20,
-  },
-  filterSection: {
-    marginBottom: 24,
-  },
-  filterLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginBottom: 12,
-  },
-  filterOptions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  filterChip: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
-    backgroundColor: COLORS.gray100,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  filterChipActive: {
-    backgroundColor: COLORS.primary,
-  },
-  filterChipText: {
-    fontSize: FONT_SIZES.base,
-    fontWeight: '600',
-    color: COLORS.gray500,
-  },
-  filterChipTextActive: {
-    color: COLORS.white,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-    padding: SPACING.xl,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.gray200,
-  },
-  modalClearButton: {
-    flex: 1,
-    paddingVertical: 14,
-    backgroundColor: COLORS.gray100,
-    borderRadius: BORDER_RADIUS.sm,
-    alignItems: 'center',
-  },
-  modalClearButtonText: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray500,
-  },
-  modalApplyButton: {
-    flex: 2,
-    paddingVertical: 14,
-    backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS.sm,
-    alignItems: 'center',
-  },
-  modalApplyButtonText: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.white,
-  },
-  sortModalContent: {
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '60%',
-  },
-  sortOptions: {
-    padding: 20,
-  },
-  sortOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    padding: 16,
-    backgroundColor: COLORS.gray50,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  sortOptionActive: {
-    backgroundColor: COLORS.primaryLight,
-    borderColor: COLORS.primary,
-  },
-  sortOptionText: {
-    flex: 1,
-  },
-  sortOptionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  sortOptionTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginBottom: 2,
-  },
-  sortOptionTitleActive: {
-    color: COLORS.primary,
-  },
-  sortOptionDescription: {
-    fontSize: FONT_SIZES.md,
-    color: COLORS.gray500,
-  },
-
-  // Match Modal Styles
-  matchModalContent: {
-    backgroundColor: COLORS.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingBottom: 34, // Safe area
-  },
-  matchOptions: {
-    padding: 16,
-  },
-  matchOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: COLORS.gray50,
-    borderRadius: 16,
-    marginBottom: 12,
-  },
-  matchOptionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-  },
-  matchOptionContent: {
-    flex: 1,
-  },
-  matchOptionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  matchOptionTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginBottom: 2,
-  },
-  matchOptionDescription: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.gray500,
-    lineHeight: 18,
-  },
-  matchStatus: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.gray100,
-  },
-  matchStatusText: {
-    fontSize: FONT_SIZES.sm,
-    fontWeight: '500',
-    color: COLORS.success,
   },
 });

@@ -20,7 +20,7 @@ import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
 import { METRIC_SOURCES } from '../data/neighborhoods';
 import { useStatusComparison, useNotesRatings, useDestinations, useCity, type NeighborhoodStatus } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
@@ -55,7 +55,7 @@ export default function DetailScreen() {
   const route = useRoute<RouteProp<RootStackParamList, 'Detail'>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const neighborhood = route.params.neighborhood;
-  const { session } = useAuth();
+  const { requireAuth, showSignInModal, signInFeatureName, dismissSignInModal } = useRequireAuth();
   const { showToast } = useToast();
   const { comparisonLimit, requiresUpgrade, canAccess } = useFeatureAccess();
   const { preferences, hasCustomPreferences } = usePreferences();
@@ -67,8 +67,6 @@ export default function DetailScreen() {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteText, setNoteText] = useState(notes[neighborhood?.id] || '');
   const [editingMetric, setEditingMetric] = useState<string | null>(null);
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const [signInFeature, setSignInFeature] = useState('this feature');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const galleryRef = useRef<FlatList>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -81,15 +79,6 @@ export default function DetailScreen() {
       isMountedRef.current = false;
     };
   }, []);
-
-  const requireAuth = (featureName: string, action: () => void) => {
-    if (!session) {
-      setSignInFeature(featureName);
-      setShowSignInModal(true);
-      return;
-    }
-    action();
-  };
 
   const currentStatus = status[neighborhood?.id] || null;
   const currentPhotos = useMemo(() => photos[neighborhood?.id] || [], [photos, neighborhood?.id]);
@@ -647,8 +636,8 @@ export default function DetailScreen() {
 
       <SignInPromptModal
         visible={showSignInModal}
-        onClose={() => setShowSignInModal(false)}
-        featureName={signInFeature}
+        onClose={dismissSignInModal}
+        featureName={signInFeatureName}
       />
 
       <StatusPickerModal

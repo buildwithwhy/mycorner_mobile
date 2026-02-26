@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useCity } from '../contexts/CityContext';
 import { City } from '../data/cities';
-import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, MODAL_STYLES } from '../constants/theme';
 
 interface CitySelectorModalProps {
   visible: boolean;
@@ -56,7 +56,7 @@ export function CitySelectorModal({ visible, onClose, isFirstLaunch = false }: C
       transparent={true}
       onRequestClose={isFirstLaunch ? undefined : onClose}
     >
-      <View style={styles.modalOverlay}>
+      <View style={MODAL_STYLES.overlay}>
         <Animated.View
           style={[
             styles.modalContent,
@@ -147,11 +147,6 @@ export function CityHeaderSelector({ onPress }: CityHeaderSelectorProps) {
 }
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
   modalContent: {
     backgroundColor: COLORS.white,
     borderTopLeftRadius: BORDER_RADIUS.xl,

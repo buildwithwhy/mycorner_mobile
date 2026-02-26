@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useStatusComparison, useDestinations, useCity } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,12 +19,11 @@ import StatusPickerModal from '../components/StatusPickerModal';
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { session } = useAuth();
+  const { requireAuth, showSignInModal, dismissSignInModal } = useRequireAuth();
   const { status, setNeighborhoodStatus, comparison, toggleComparison } = useStatusComparison();
   const { cityDestinations: destinations } = useDestinations();
   const { selectedCity, cityNeighborhoods } = useCity();
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string | null>(null);
-  const [showSignInModal, setShowSignInModal] = useState(false);
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
@@ -125,12 +124,8 @@ export default function MapScreen() {
   }, [status]);
 
   const handleSavePress = useCallback(() => {
-    if (!session) {
-      setShowSignInModal(true);
-      return;
-    }
-    setShowStatusPicker(true);
-  }, [session]);
+    requireAuth('saving places', () => setShowStatusPicker(true));
+  }, [requireAuth]);
 
   return (
     <View style={styles.container}>
@@ -289,7 +284,7 @@ export default function MapScreen() {
 
       <SignInPromptModal
         visible={showSignInModal}
-        onClose={() => setShowSignInModal(false)}
+        onClose={dismissSignInModal}
         featureName="saving places"
       />
 
@@ -363,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -380,7 +375,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -397,7 +392,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -415,16 +410,16 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#111827',
+    color: COLORS.gray900,
     marginBottom: 2,
   },
   infoBorough: {
     fontSize: 14,
-    color: '#6b7280',
+    color: COLORS.gray500,
   },
   infoDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: COLORS.gray500,
     lineHeight: 20,
     marginBottom: 12,
   },
@@ -432,18 +427,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: COLORS.gray200,
   },
   commuteSection: {
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: COLORS.gray200,
   },
   commuteSectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6b7280',
+    color: COLORS.gray500,
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -464,7 +459,7 @@ const styles = StyleSheet.create({
   commuteLabel: {
     flex: 1,
     fontSize: 13,
-    color: '#6b7280',
+    color: COLORS.gray500,
   },
   commuteTime: {
     fontSize: FONT_SIZES.md,

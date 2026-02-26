@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
 import { NeighborhoodStatus } from '../contexts/AppContext';
-import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, BOROUGH_COLORS } from '../constants/theme';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
 import { shareNeighborhood } from '../utils/sharing';
 import NeighborhoodStats from './NeighborhoodStats';
@@ -11,10 +11,6 @@ import NeighborhoodStats from './NeighborhoodStats';
 export type ViewMode = 'list' | 'card';
 
 // Generate a consistent color based on borough name
-const BOROUGH_COLORS = [
-  '#5D8A8A', '#7BA3B8', '#9B8ABD', '#BD8A9B',
-  '#D4956A', '#6AAB8E', '#8B9DC3', '#C4A484',
-];
 
 const getBoroughColor = (borough: string): string => {
   let hash = 0;
@@ -492,14 +488,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
-    backgroundColor: COLORS.successLight || '#ECFDF5',
+    backgroundColor: COLORS.successLight,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: BORDER_RADIUS.sm,
     marginBottom: 4,
   },
   listMatchBadgeTop: {
-    backgroundColor: COLORS.warningLight || '#FFFBEB',
+    backgroundColor: COLORS.warningLight,
   },
   listMatchText: {
     fontSize: FONT_SIZES.xs,

@@ -55,6 +55,22 @@ export const COLORS = {
   black: '#000000',
   transparent: 'transparent',
 
+  // Accent variants
+  indigo: '#6366F1',              // Indigo for AI/describe features
+  indigoLight: '#EEF2FF',         // Light indigo background
+  amberDark: '#D97706',           // Dark amber for weight/adjust icons
+  amberLight: '#FEF3C7',          // Light amber background
+
+  // Warning banner palette (API key alerts, etc.)
+  warningBg: '#fffbeb',
+  warningBorder: '#fbbf24',
+  warningDark: '#92400e',
+  warningTextDark: '#78350f',
+
+  // Borough color extras
+  boroughBlue: '#8B9DC3',
+  boroughTaupe: '#C4A484',
+
   // Soft backgrounds for cards and sections
   warmWhite: '#FDFCFB',           // Slightly warm white for cards
   coolMist: '#F7F9F9',            // Cool mist for contrast areas
@@ -203,3 +219,45 @@ export const DESTINATION_COLORS = [
   COLORS.destination4,
   COLORS.destination5,
 ];
+
+// Borough color palette for neighborhood cards
+export const BOROUGH_COLORS = [
+  COLORS.primary,
+  COLORS.info,
+  COLORS.destination2,
+  COLORS.favorite,
+  COLORS.accent,
+  COLORS.success,
+  COLORS.boroughBlue,
+  COLORS.boroughTaupe,
+];
+
+import { StyleSheet } from 'react-native';
+
+// Shared modal base styles - bottom sheet pattern
+export const MODAL_STYLES = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  content: {
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
+    maxHeight: '80%',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: SPACING.xl,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray200,
+  },
+  title: {
+    fontSize: FONT_SIZES.xxl,
+    fontWeight: '600',
+    color: COLORS.gray900,
+  },
+});
