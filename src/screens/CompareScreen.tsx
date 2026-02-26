@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useStatusComparison, useNotesRatings, useDestinations, useCity } from '../contexts/AppContext';
 import { calculateDistance, estimateCommuteTime } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import EmptyState from '../components/EmptyState';
 import AffordabilityBadge from '../components/AffordabilityBadge';
@@ -22,6 +23,7 @@ const METRICS = [
 const STAR_INDICES = [0, 1, 2, 3, 4] as const;
 
 export default function CompareScreen() {
+  const insets = useSafeAreaInsets();
   const { comparison, toggleComparison, clearComparison } = useStatusComparison();
   const { notes } = useNotesRatings();
   const { cityDestinations: destinations } = useDestinations();
@@ -62,7 +64,7 @@ export default function CompareScreen() {
   if (compareNeighborhoods.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
           <Text style={styles.title}>Compare</Text>
         </View>
         <EmptyState
@@ -76,7 +78,7 @@ export default function CompareScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
         <Text style={styles.title}>Compare</Text>
         <TouchableOpacity style={styles.clearButton} onPress={clearComparison}>
           <Text style={styles.clearButtonText}>Clear All</Text>
@@ -201,7 +203,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: SPACING.xl,
-    paddingTop: 60,
     paddingBottom: SPACING.xl,
   },
   title: {

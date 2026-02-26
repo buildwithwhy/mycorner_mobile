@@ -11,54 +11,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NeighborhoodStatus } from '../contexts/AppContext';
-import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { Subheading, Body, Caption } from './Typography';
 
-interface StatusOption {
-  value: NeighborhoodStatus;
-  label: string;
-  description: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  color: string;
-}
-
-const STATUS_OPTIONS: StatusOption[] = [
-  {
-    value: 'shortlist',
-    label: 'Shortlist',
-    description: 'A serious contender',
-    icon: 'star',
-    color: STATUS_COLORS.shortlist,
-  },
-  {
-    value: 'want_to_visit',
-    label: 'Want to Visit',
-    description: 'Planning to explore',
-    icon: 'bookmark',
-    color: STATUS_COLORS.want_to_visit,
-  },
-  {
-    value: 'visited',
-    label: 'Visited',
-    description: 'Already been there',
-    icon: 'checkmark-circle',
-    color: STATUS_COLORS.visited,
-  },
-  {
-    value: 'living_here',
-    label: 'Living Here',
-    description: 'Your current home',
-    icon: 'home',
-    color: STATUS_COLORS.living_here,
-  },
-  {
-    value: 'ruled_out',
-    label: 'Ruled Out',
-    description: 'Not for me',
-    icon: 'close-circle',
-    color: STATUS_COLORS.ruled_out,
-  },
-];
+const STATUS_OPTIONS = (Object.entries(STATUS_CONFIG) as [NonNullable<NeighborhoodStatus>, typeof STATUS_CONFIG[keyof typeof STATUS_CONFIG]][]).map(
+  ([value, config]) => ({ value: value as NeighborhoodStatus, ...config })
+);
 
 interface StatusPickerModalProps {
   visible: boolean;

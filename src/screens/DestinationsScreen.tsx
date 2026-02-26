@@ -2,12 +2,15 @@ import React, { useState, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useDestinations, TransportMode, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { getTransportModeInfo } from '../utils/commute';
 import { GOOGLE_MAPS_API_KEY } from '../../config';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 const TRANSPORT_MODES: TransportMode[] = ['transit', 'walking', 'cycling', 'driving'];
@@ -20,7 +23,8 @@ const DESTINATION_LIMITS = {
 };
 
 export default function DestinationsScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { session } = useAuth();
   const { cityDestinations: destinations, addDestination, removeDestination } = useDestinations();
   const { selectedCity } = useCity();
@@ -98,7 +102,7 @@ export default function DestinationsScreen() {
   if (!session) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.white} />
           </TouchableOpacity>
@@ -116,7 +120,7 @@ export default function DestinationsScreen() {
           </Text>
           <TouchableOpacity
             style={styles.signInButton}
-            onPress={() => navigation.navigate('Login' as never)}
+            onPress={() => navigation.navigate('Login')}
           >
             <Text style={styles.signInButtonText}>Sign In</Text>
           </TouchableOpacity>
@@ -127,7 +131,7 @@ export default function DestinationsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.white} />
         </TouchableOpacity>
@@ -198,7 +202,7 @@ export default function DestinationsScreen() {
             </View>
             <TouchableOpacity
               style={styles.upgradeButton}
-              onPress={() => navigation.navigate('Paywall' as never, { source: 'destinations_limit' } as never)}
+              onPress={() => navigation.navigate('Paywall', { source: 'destinations_limit' })}
             >
               <Ionicons name="star" size={20} color={COLORS.white} />
               <Text style={styles.upgradeButtonText}>Upgrade for Unlimited</Text>
@@ -410,7 +414,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 60,
     paddingBottom: SPACING.xl,
     paddingHorizontal: SPACING.xl,
   },

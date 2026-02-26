@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Neighborhood } from '../data/neighborhoods';
 import { NeighborhoodStatus } from '../contexts/AppContext';
-import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
 import { shareNeighborhood } from '../utils/sharing';
 import NeighborhoodStats from './NeighborhoodStats';
@@ -38,14 +38,6 @@ interface NeighborhoodCardProps {
   currencySymbol?: string;
 }
 
-// Status info lookup - moved outside component to avoid recreation
-const STATUS_INFO: Record<Exclude<NeighborhoodStatus, null>, { icon: keyof typeof Ionicons.glyphMap; color: string }> = {
-  shortlist: { icon: 'star', color: STATUS_COLORS.shortlist },
-  want_to_visit: { icon: 'bookmark', color: STATUS_COLORS.want_to_visit },
-  visited: { icon: 'checkmark-circle', color: STATUS_COLORS.visited },
-  living_here: { icon: 'home', color: STATUS_COLORS.living_here },
-  ruled_out: { icon: 'close-circle', color: STATUS_COLORS.ruled_out },
-};
 
 function NeighborhoodCard({
   neighborhood,
@@ -60,7 +52,7 @@ function NeighborhoodCard({
   matchScore = null,
   currencySymbol = '£',
 }: NeighborhoodCardProps) {
-  const statusInfo = currentStatus ? STATUS_INFO[currentStatus] : null;
+  const statusInfo = currentStatus ? STATUS_CONFIG[currentStatus] : null;
   const hasPhotos = photoCount > 0;
 
   // Memoize borough color to avoid recalculating on every render

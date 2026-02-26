@@ -13,6 +13,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import type { RootStackParamList } from '../navigation/types';
 import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
 import { METRIC_SOURCES } from '../data/neighborhoods';
@@ -21,7 +24,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
-import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, STATUS_CONFIG } from '../constants/theme';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 import AffordabilityBadge from '../components/AffordabilityBadge';
@@ -36,13 +39,6 @@ import { PremiumBadge } from '../components/FeatureGate';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
 
-const STATUS_LABELS: Record<string, string> = {
-  shortlist: 'Shortlist',
-  want_to_visit: 'Want to Visit',
-  visited: 'Visited',
-  living_here: 'Living Here',
-  ruled_out: 'Ruled Out',
-};
 
 // Pre-defined rating metrics to avoid recreation on each render
 const RATING_METRICS = [
@@ -56,9 +52,9 @@ const RATING_METRICS = [
 ] as const;
 
 export default function DetailScreen() {
-  const route = useRoute();
-  const navigation = useNavigation();
-  const neighborhood = route.params?.neighborhood as Neighborhood;
+  const route = useRoute<RouteProp<RootStackParamList, 'Detail'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const neighborhood = route.params.neighborhood;
   const { session } = useAuth();
   const { showToast } = useToast();
   const { comparisonLimit, requiresUpgrade, canAccess } = useFeatureAccess();
@@ -393,7 +389,7 @@ export default function DetailScreen() {
           {hasCustomPreferences && !canAccess('personalized_scores') && (
             <TouchableOpacity
               style={styles.matchScoreUpgradePrompt}
-              onPress={() => navigation.navigate('Paywall' as never, { source: 'detail_match_score' } as never)}
+              onPress={() => navigation.navigate('Paywall', { source: 'detail_match_score' })}
             >
               <View style={styles.matchScoreUpgradeIcon}>
                 <Ionicons name="sparkles" size={20} color={COLORS.primary} />
@@ -467,7 +463,7 @@ export default function DetailScreen() {
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Commute Times</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Destinations' as never)}>
+                <TouchableOpacity onPress={() => navigation.navigate('Destinations')}>
                   <Text style={styles.manageLink}>Manage</Text>
                 </TouchableOpacity>
               </View>
@@ -598,7 +594,7 @@ export default function DetailScreen() {
                     `You can compare up to ${comparisonLimit} neighborhoods on your current plan. Upgrade to Premium for more!`,
                     [
                       { text: 'Maybe Later', style: 'cancel' },
-                      { text: 'Upgrade', onPress: () => navigation.navigate('Paywall' as never, { source: 'comparison_limit' } as never) },
+                      { text: 'Upgrade', onPress: () => navigation.navigate('Paywall', { source: 'comparison_limit' }) },
                     ]
                   );
                 } else {
@@ -643,12 +639,7 @@ export default function DetailScreen() {
         >
           <Ionicons name={currentStatus ? 'bookmark' : 'bookmark-outline'} size={20} color="white" />
           <Text style={styles.statusButtonText}>
-            {currentStatus === 'shortlist' && 'Shortlisted'}
-            {currentStatus === 'want_to_visit' && 'Want to Visit'}
-            {currentStatus === 'visited' && 'Visited'}
-            {currentStatus === 'living_here' && 'Living Here'}
-            {currentStatus === 'ruled_out' && 'Ruled Out'}
-            {!currentStatus && 'Add to My Places'}
+            {currentStatus ? STATUS_CONFIG[currentStatus].label : 'Add to My Places'}
           </Text>
           <Ionicons name="chevron-down" size={16} color="white" />
         </TouchableOpacity>
@@ -667,7 +658,7 @@ export default function DetailScreen() {
         onSelectStatus={(newStatus) => {
           setNeighborhoodStatus(neighborhood.id, newStatus);
           if (newStatus) {
-            showToast(`Saved to ${STATUS_LABELS[newStatus]}`, 'bookmark');
+            showToast(`Saved to ${STATUS_CONFIG[newStatus].label}`, 'bookmark');
           } else {
             showToast('Removed from My Places', 'bookmark-outline');
           }

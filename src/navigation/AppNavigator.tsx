@@ -17,6 +17,7 @@ import MatcherScreen from '../screens/MatcherScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { useStatusComparison } from '../contexts/AppContext';
 import { COLORS } from '../constants/theme';
+import type { RootStackParamList, TabParamList } from './types';
 
 // Lazy load heavy screens to reduce initial bundle parse time
 const MapScreen = lazy(() => import('../screens/MapScreen'));
@@ -57,8 +58,8 @@ function LazyDestinationsScreen() {
   );
 }
 
-const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator<TabParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function ProfileTabScreen() {
   const { session } = useAuth();

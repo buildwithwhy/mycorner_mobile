@@ -16,7 +16,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PurchasesPackage, PACKAGE_TYPE } from 'react-native-purchases';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
+import type { RootStackParamList } from '../navigation/types';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { useAuth } from '../contexts/AuthContext';
 import { getPremiumFeatures, PRODUCTS } from '../config/subscriptions';
@@ -61,12 +63,6 @@ const getPackageInfo = (pkg: PurchasesPackage): PackageInfo => {
 // TYPES
 // ============================================================================
 
-type PaywallRouteParams = {
-  Paywall: {
-    source?: string;
-    feature?: string;
-  };
-};
 
 interface PaywallScreenProps {
   onClose?: () => void;
@@ -90,7 +86,7 @@ const FEATURE_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 export default function PaywallScreen({ onClose, source: propSource }: PaywallScreenProps) {
   const navigation = useNavigation();
-  const route = useRoute<RouteProp<PaywallRouteParams, 'Paywall'>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Paywall'>>();
   const { user } = useAuth();
   const { offerings, isProUser, isLoading, isAvailable, purchase, restore } = useSubscription();
 

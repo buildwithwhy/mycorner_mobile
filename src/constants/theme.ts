@@ -146,13 +146,53 @@ export const STATUS_COLORS = {
   ruled_out: COLORS.error,
 };
 
-// Status light backgrounds
-export const STATUS_LIGHT_COLORS = {
-  shortlist: COLORS.accentLight,
-  want_to_visit: COLORS.infoLight,
-  visited: COLORS.primaryLight,
-  living_here: COLORS.successLight,
-  ruled_out: COLORS.errorLight,
+import type { Ionicons } from '@expo/vector-icons';
+
+export const STATUS_CONFIG: Record<
+  'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out',
+  {
+    label: string;
+    description: string;
+    icon: keyof typeof Ionicons.glyphMap;
+    color: string;
+    lightColor: string;
+  }
+> = {
+  shortlist: {
+    label: 'Shortlist',
+    description: 'A serious contender',
+    icon: 'star',
+    color: STATUS_COLORS.shortlist,
+    lightColor: COLORS.accentLight,
+  },
+  want_to_visit: {
+    label: 'Want to Visit',
+    description: 'Planning to explore',
+    icon: 'bookmark',
+    color: STATUS_COLORS.want_to_visit,
+    lightColor: COLORS.infoLight,
+  },
+  visited: {
+    label: 'Visited',
+    description: 'Already been there',
+    icon: 'checkmark-circle',
+    color: STATUS_COLORS.visited,
+    lightColor: COLORS.primaryLight,
+  },
+  living_here: {
+    label: 'Living Here',
+    description: 'Your current home',
+    icon: 'home',
+    color: STATUS_COLORS.living_here,
+    lightColor: COLORS.successLight,
+  },
+  ruled_out: {
+    label: 'Ruled Out',
+    description: 'Not for me',
+    icon: 'close-circle',
+    color: STATUS_COLORS.ruled_out,
+    lightColor: COLORS.errorLight,
+  },
 };
 
 // Destination marker colors array

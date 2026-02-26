@@ -4,17 +4,21 @@ import MapView, { Marker, Polyline, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 're
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { useStatusComparison, useDestinations, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
 import { getNeighborhoodCoordinates } from '../utils/coordinates';
-import { COLORS, DESTINATION_COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { COLORS, DESTINATION_COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodStats from '../components/NeighborhoodStats';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 
 export default function MapScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { session } = useAuth();
   const { status, setNeighborhoodStatus, comparison, toggleComparison } = useStatusComparison();
   const { cityDestinations: destinations } = useDestinations();
@@ -117,12 +121,7 @@ export default function MapScreen() {
 
   const getStatusInfo = useCallback((neighborhoodId: string) => {
     const s = status[neighborhoodId];
-    if (s === 'shortlist') return { icon: 'star' as const, color: STATUS_COLORS.shortlist };
-    if (s === 'want_to_visit') return { icon: 'bookmark' as const, color: STATUS_COLORS.want_to_visit };
-    if (s === 'visited') return { icon: 'checkmark-circle' as const, color: STATUS_COLORS.visited };
-    if (s === 'living_here') return { icon: 'home' as const, color: STATUS_COLORS.living_here };
-    if (s === 'ruled_out') return { icon: 'close-circle' as const, color: STATUS_COLORS.ruled_out };
-    return null;
+    return s ? STATUS_CONFIG[s] : null;
   }, [status]);
 
   const handleSavePress = useCallback(() => {
@@ -201,11 +200,11 @@ export default function MapScreen() {
         ))}
       </MapView>
 
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
         <Text style={styles.title}>Map</Text>
         <TouchableOpacity
           style={styles.destinationsButton}
-          onPress={() => navigation.navigate('Destinations' as never)}
+          onPress={() => navigation.navigate('Destinations')}
         >
           <Ionicons name="location" size={20} color={COLORS.primary} />
           <Text style={styles.destinationsButtonText}>Destinations</Text>
@@ -321,7 +320,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: COLORS.primary,
     padding: SPACING.xl,
-    paddingTop: 60,
     paddingBottom: SPACING.lg,
     flexDirection: 'row',
     justifyContent: 'space-between',

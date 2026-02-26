@@ -15,6 +15,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { COLORS, SPACING, FONT_SIZES, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import { usePreferences, CRITERIA_INFO, ScoringCriterion } from '../contexts/PreferencesContext';
 import { useCity } from '../contexts/AppContext';
@@ -29,7 +31,7 @@ import { getTopNeighborhoods, ScoredNeighborhood } from '../utils/personalizedSc
 type ScreenMode = 'input' | 'quiz' | 'results';
 
 export default function MatcherScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { setAllPreferences } = usePreferences();
   const { cityNeighborhoods } = useCity();
 
@@ -237,7 +239,7 @@ export default function MatcherScreen() {
           <TouchableOpacity
             key={neighborhood.id}
             style={styles.matchCard}
-            onPress={() => navigation.navigate('Detail' as never, { neighborhood } as never)}
+            onPress={() => navigation.navigate('Detail', { neighborhood })}
           >
             <View style={styles.matchRank}>
               <Text style={styles.matchRankText}>#{index + 1}</Text>

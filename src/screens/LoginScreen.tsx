@@ -11,13 +11,15 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { useAuth } from '../contexts/AuthContext';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import { Button, Heading, Subheading, Body, Caption } from '../components';
 import logger from '../utils/logger';
 
 export default function LoginScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { signIn, signInWithGoogle, session } = useAuth();
 
@@ -32,7 +34,7 @@ export default function LoginScreen() {
         // Otherwise go to main screen
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Main' as never }],
+          routes: [{ name: 'Main' }],
         });
       }
     }
@@ -156,14 +158,14 @@ export default function LoginScreen() {
 
           <View style={styles.footer}>
             <Body color={COLORS.gray500}>Don't have an account? </Body>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
               <Body color={COLORS.primary} style={styles.footerLink}>Sign Up</Body>
             </TouchableOpacity>
           </View>
 
           <Button
             title="Skip for now"
-            onPress={() => navigation.navigate('Main' as never)}
+            onPress={() => navigation.navigate('Main')}
             variant="ghost"
             style={styles.skipButton}
             textStyle={styles.skipButtonText}

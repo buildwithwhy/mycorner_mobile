@@ -2,10 +2,13 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Modal, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { Neighborhood } from '../data/neighborhoods';
 import { useStatusComparison, useCity, useNotesRatings, NeighborhoodStatus } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePreferences } from '../contexts/PreferencesContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 import NeighborhoodCard, { ViewMode } from '../components/NeighborhoodCard';
 import SignInPromptModal from '../components/SignInPromptModal';
@@ -18,7 +21,8 @@ import { PremiumBadge } from '../components/FeatureGate';
 type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { session } = useAuth();
   const { status, setNeighborhoodStatus, comparison, toggleComparison, comparisonLimit } = useStatusComparison();
   const { cityNeighborhoods, showCityPicker, hasSelectedCity, selectedCity } = useCity();
@@ -86,7 +90,7 @@ export default function HomeScreen() {
         `You can compare up to ${comparisonLimit} neighborhoods. Upgrade to Premium to compare more!`,
         [
           { text: 'OK', style: 'cancel' },
-          { text: 'Upgrade', onPress: () => navigation.navigate('Paywall' as never) },
+          { text: 'Upgrade', onPress: () => navigation.navigate('Paywall', { source: 'comparison_limit' }) },
         ]
       );
     }
@@ -200,7 +204,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>MyCorner</Text>
           <CityHeaderSelector onPress={() => setShowCitySelectorModal(true)} />
@@ -379,7 +383,7 @@ export default function HomeScreen() {
                 onPress={() => {
                   if (requiresUpgrade('personalized_scores')) {
                     setShowSortModal(false);
-                    navigation.navigate('Paywall' as never, { source: 'best_match_sort' } as never);
+                    navigation.navigate('Paywall', { source: 'best_match_sort' });
                   } else {
                     setSortBy('bestMatch');
                     setShowSortModal(false);
@@ -516,9 +520,9 @@ export default function HomeScreen() {
                 onPress={() => {
                   setShowMatchModal(false);
                   if (requiresUpgrade('ai_matcher')) {
-                    navigation.navigate('Paywall' as never, { source: 'quiz' } as never);
+                    navigation.navigate('Paywall', { source: 'quiz' });
                   } else {
-                    navigation.navigate('Matcher' as never);
+                    navigation.navigate('Matcher');
                   }
                 }}
               >
@@ -542,9 +546,9 @@ export default function HomeScreen() {
                 onPress={() => {
                   setShowMatchModal(false);
                   if (requiresUpgrade('ai_matcher')) {
-                    navigation.navigate('Paywall' as never, { source: 'ai_describe' } as never);
+                    navigation.navigate('Paywall', { source: 'ai_describe' });
                   } else {
-                    navigation.navigate('Matcher' as never);
+                    navigation.navigate('Matcher');
                   }
                 }}
               >
@@ -568,9 +572,9 @@ export default function HomeScreen() {
                 onPress={() => {
                   setShowMatchModal(false);
                   if (requiresUpgrade('personalized_scores')) {
-                    navigation.navigate('Paywall' as never, { source: 'preferences' } as never);
+                    navigation.navigate('Paywall', { source: 'preferences' });
                   } else {
-                    navigation.navigate('Preferences' as never);
+                    navigation.navigate('Preferences');
                   }
                 }}
               >
@@ -611,7 +615,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: COLORS.primary,
     padding: SPACING.xl,
-    paddingTop: 60,
     paddingBottom: SPACING.xl,
   },
   titleRow: {

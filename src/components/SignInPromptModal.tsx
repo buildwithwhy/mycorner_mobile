@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 interface SignInPromptModalProps {
@@ -11,11 +13,11 @@ interface SignInPromptModalProps {
 }
 
 export default function SignInPromptModal({ visible, onClose, featureName = 'this feature' }: SignInPromptModalProps) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleSignIn = () => {
     onClose();
-    navigation.navigate('Login' as never);
+    navigation.navigate('Login');
   };
 
   return (

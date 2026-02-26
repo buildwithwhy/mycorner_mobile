@@ -13,11 +13,15 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { useAuth } from '../contexts/AuthContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from '../constants/theme';
 
 export default function SignUpScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { signUp, signInWithGoogle, session } = useAuth();
 
@@ -29,7 +33,7 @@ export default function SignUpScreen() {
       } else {
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Main' as never }],
+          routes: [{ name: 'Main' }],
         });
       }
     }
@@ -61,7 +65,7 @@ export default function SignUpScreen() {
       Alert.alert(
         'Success!',
         'Account created successfully. Please check your email to verify your account.',
-        [{ text: 'OK', onPress: () => navigation.navigate('Login' as never) }]
+        [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
       );
     }
   };
@@ -82,7 +86,7 @@ export default function SignUpScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + SPACING.xl }]}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
@@ -175,7 +179,7 @@ export default function SignUpScreen() {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.footerLink}>Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -197,7 +201,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: SPACING.xl,
-    paddingTop: 60,
   },
   header: {
     marginBottom: SPACING.lg,

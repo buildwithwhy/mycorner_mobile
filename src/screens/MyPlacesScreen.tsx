@@ -2,10 +2,13 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import { useStatusComparison, NeighborhoodStatus, useCity } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Neighborhood } from '../data/neighborhoods';
-import { COLORS, STATUS_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Heading, Subheading, Body, Caption } from '../components/Typography';
 import { Button, EmptyState } from '../components';
 import NeighborhoodStats from '../components/NeighborhoodStats';
@@ -19,16 +22,19 @@ interface StatusSection {
   defaultCollapsed?: boolean;
 }
 
-const STATUS_CONFIG: { status: NonNullable<NeighborhoodStatus>; title: string; icon: keyof typeof Ionicons.glyphMap; color: string; defaultCollapsed?: boolean }[] = [
-  { status: 'shortlist', title: 'Shortlist', icon: 'star', color: STATUS_COLORS.shortlist },
-  { status: 'want_to_visit', title: 'Want to Visit', icon: 'bookmark', color: STATUS_COLORS.want_to_visit },
-  { status: 'visited', title: 'Visited', icon: 'checkmark-circle', color: STATUS_COLORS.visited },
-  { status: 'living_here', title: 'Living Here', icon: 'home', color: STATUS_COLORS.living_here },
-  { status: 'ruled_out', title: 'Ruled Out', icon: 'close-circle', color: STATUS_COLORS.ruled_out, defaultCollapsed: true },
-];
+const STATUS_SECTIONS = (Object.entries(STATUS_CONFIG) as [NonNullable<NeighborhoodStatus>, typeof STATUS_CONFIG[keyof typeof STATUS_CONFIG]][]).map(
+  ([status, config]) => ({
+    status,
+    title: config.label,
+    icon: config.icon,
+    color: config.color,
+    defaultCollapsed: status === 'ruled_out',
+  })
+);
 
 export default function MyPlacesScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { session } = useAuth();
   const { status, comparison, toggleComparison } = useStatusComparison();
   const { cityNeighborhoods, selectedCity } = useCity();
@@ -36,7 +42,7 @@ export default function MyPlacesScreen() {
   // Track which sections are collapsed
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => {
     const initialCollapsed = new Set<string>();
-    STATUS_CONFIG.forEach(config => {
+    STATUS_SECTIONS.forEach(config => {
       if (config.defaultCollapsed) {
         initialCollapsed.add(config.status);
       }
@@ -60,7 +66,7 @@ export default function MyPlacesScreen() {
   const sections = useMemo(() => {
     const result: StatusSection[] = [];
 
-    STATUS_CONFIG.forEach(({ status: statusValue, title, icon, color, defaultCollapsed }) => {
+    STATUS_SECTIONS.forEach(({ status: statusValue, title, icon, color, defaultCollapsed }) => {
       const neighborhoodIds = Object.entries(status)
         .filter(([_, s]) => s === statusValue)
         .map(([id]) => id);
@@ -88,7 +94,7 @@ export default function MyPlacesScreen() {
   if (!session) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
           <Heading style={styles.title} color={COLORS.white}>My Places</Heading>
           <Body color={COLORS.white} style={styles.subtitle}>Track neighborhoods you're exploring</Body>
         </View>
@@ -103,7 +109,7 @@ export default function MyPlacesScreen() {
           </Body>
           <Button
             title="Sign In"
-            onPress={() => navigation.navigate('Login' as never)}
+            onPress={() => navigation.navigate('Login')}
             size="large"
           />
         </View>
@@ -113,7 +119,7 @@ export default function MyPlacesScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
         <Heading style={styles.title} color={COLORS.white}>My Places</Heading>
         <Body color={COLORS.white} style={styles.subtitle}>
           {totalPlaces} {totalPlaces === 1 ? 'neighborhood' : 'neighborhoods'} saved in {selectedCity.name}
@@ -207,7 +213,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: COLORS.primary,
     padding: SPACING.xl,
-    paddingTop: 60,
     paddingBottom: 30,
   },
   title: {

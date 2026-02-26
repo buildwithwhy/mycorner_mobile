@@ -2,24 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/types';
 import Constants from 'expo-constants';
 import { useDestinations } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { deleteUserAccount } from '../services/supabase';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
 const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || 'https://kallidao.com/productlab/mycorner/privacy';
 const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export default function ProfileScreen() {
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { cityDestinations: destinations } = useDestinations();
   const { user, signOut } = useAuth();
   const { isPremium, getManageSubscriptionUrl } = useSubscription();
-  const { tier } = useFeatureAccess();
   const { hasCustomPreferences } = usePreferences();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -114,7 +116,7 @@ export default function ProfileScreen() {
     return (
       <TouchableOpacity
         style={styles.upgradeCard}
-        onPress={() => navigation.navigate('Paywall' as never, { source: 'profile' } as never)}
+        onPress={() => navigation.navigate('Paywall', { source: 'profile' })}
       >
         <View style={styles.upgradeHeader}>
           <View style={styles.upgradeIconContainer}>
@@ -146,7 +148,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SPACING.xl }]}>
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.subtitle}>Your account and preferences</Text>
       </View>
@@ -197,7 +199,7 @@ export default function ProfileScreen() {
 
           <TouchableOpacity
             style={styles.preferencesCard}
-            onPress={() => navigation.navigate('Preferences' as never)}
+            onPress={() => navigation.navigate('Preferences')}
           >
             <View style={styles.preferencesHeader}>
               <View style={styles.preferencesIconContainer}>
@@ -257,7 +259,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: COLORS.primary,
     padding: SPACING.xl,
-    paddingTop: 60,
     paddingBottom: 30,
   },
   title: {
@@ -490,102 +491,6 @@ const styles = StyleSheet.create({
   preferencesSubtitle: {
     fontSize: FONT_SIZES.md,
     color: COLORS.gray500,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.md,
-    marginBottom: SPACING.xxl,
-  },
-  statCard: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.xl,
-    alignItems: 'center',
-    ...SHADOWS.small,
-  },
-  statNumber: {
-    fontSize: FONT_SIZES.huge,
-    fontWeight: 'bold',
-    color: COLORS.gray900,
-    marginTop: SPACING.sm,
-  },
-  statLabel: {
-    fontSize: FONT_SIZES.sm,
-    color: COLORS.gray500,
-    marginTop: 4,
-  },
-  section: {
-    marginBottom: SPACING.xxl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-    gap: SPACING.sm,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZES.xl,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    flex: 1,
-  },
-  sectionCount: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray500,
-    backgroundColor: COLORS.gray100,
-    paddingHorizontal: 10,
-    paddingVertical: 2,
-    borderRadius: BORDER_RADIUS.md,
-  },
-  list: {
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.md,
-    overflow: 'hidden',
-    ...SHADOWS.small,
-  },
-  listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: SPACING.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray200,
-  },
-  listItemContent: {
-    flex: 1,
-  },
-  listItemName: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginBottom: 2,
-  },
-  listItemBorough: {
-    fontSize: FONT_SIZES.base,
-    color: COLORS.gray500,
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 60,
-    paddingHorizontal: 40,
-  },
-  emptyTitle: {
-    fontSize: FONT_SIZES.xxl,
-    fontWeight: '600',
-    color: COLORS.gray900,
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.sm,
-  },
-  emptyText: {
-    fontSize: FONT_SIZES.base,
-    color: COLORS.gray500,
-    textAlign: 'center',
-    lineHeight: 20,
   },
   footer: {
     alignItems: 'center',
