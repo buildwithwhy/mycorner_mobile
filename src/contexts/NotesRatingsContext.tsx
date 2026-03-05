@@ -5,35 +5,11 @@ import {
   getUserNotes,
   syncNeighborhoodRating,
   getUserNeighborhoodRatings,
+  ratingsFromDb,
 } from '../services/supabase';
 import { useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
+import type { UserRatings, NeighborhoodNoteRow, NeighborhoodRatingRow } from '../types';
 import logger from '../utils/logger';
-
-interface NeighborhoodNoteRow {
-  neighborhood_id: string;
-  note: string;
-}
-
-interface NeighborhoodRatingRow {
-  neighborhood_id: string;
-  affordability: number | null;
-  safety: number | null;
-  transit: number | null;
-  green_space: number | null;
-  nightlife: number | null;
-  family_friendly: number | null;
-}
-
-export type UserRatings = Record<string, Partial<{
-  affordability: number;
-  safety: number;
-  transit: number;
-  greenSpace: number;
-  nightlife: number;
-  familyFriendly: number;
-  dining: number;
-  vibe: number;
-}>>;
 
 interface NotesRatingsContextType {
   notes: Record<string, string>;
@@ -91,14 +67,7 @@ export function NotesRatingsProvider({ children }: { children: React.ReactNode }
         if (!ratingsError && ratingsData) {
           const ratingsMap: UserRatings = {};
           (ratingsData as NeighborhoodRatingRow[]).forEach((item) => {
-            ratingsMap[item.neighborhood_id] = {
-              affordability: item.affordability ?? undefined,
-              safety: item.safety ?? undefined,
-              transit: item.transit ?? undefined,
-              greenSpace: item.green_space ?? undefined,
-              nightlife: item.nightlife ?? undefined,
-              familyFriendly: item.family_friendly ?? undefined,
-            };
+            ratingsMap[item.neighborhood_id] = ratingsFromDb(item);
           });
           setUserRatings(ratingsMap);
         }

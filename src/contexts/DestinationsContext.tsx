@@ -1,30 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { useCity } from './CityContext';
-import { getUserDestinations, supabase } from '../services/supabase';
+import {
+  getUserDestinations,
+  addDestination as dbAddDestination,
+  removeDestination as dbRemoveDestination,
+  updateDestination as dbUpdateDestination,
+  destinationFromDb,
+} from '../services/supabase';
+import type { Destination, DestinationRow } from '../types';
 import logger from '../utils/logger';
-
-export type TransportMode = 'transit' | 'walking' | 'cycling' | 'driving';
-
-export interface Destination {
-  id: string;
-  cityId: string;
-  label: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  transportMode: TransportMode;
-}
-
-interface DestinationRow {
-  id: string;
-  city_id?: string;
-  label: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  transport_mode?: string;
-}
 
 interface DestinationsContextType {
   destinations: Destination[];
@@ -42,8 +27,6 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const isSyncingRef = useRef(false);
-  const pendingSyncRef = useRef<'add' | 'remove' | 'update' | null>(null);
-  const pendingDataRef = useRef<Destination | string | null>(null);
 
   // Filter destinations by current city
   const cityDestinations = useMemo(
@@ -71,16 +54,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
         const { data: destData, error: destError } = await getUserDestinations(user.id);
         if (!isMounted) return;
         if (!destError && destData) {
-          const dests: Destination[] = (destData as DestinationRow[]).map((d) => ({
-            id: d.id,
-            cityId: d.city_id || 'london', // Default to london for backwards compatibility
-            label: d.label,
-            address: d.address,
-            latitude: d.latitude,
-            longitude: d.longitude,
-            transportMode: (d.transport_mode as TransportMode) || 'transit',
-          }));
-          setDestinations(dests);
+          setDestinations((destData as DestinationRow[]).map(destinationFromDb));
         }
 
         if (isMounted) {
@@ -98,22 +72,12 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     return () => { isMounted = false; };
   }, [user?.id]);
 
-  // Sync individual changes to Supabase (more efficient than delete-all/insert-all)
+  // Sync individual changes to Supabase
   const syncAddDestination = useCallback(async (destination: Destination) => {
     if (!user?.id || !dataLoaded) return;
 
     logger.log('Syncing new destination to Supabase...');
-    const { error } = await supabase.from('user_destinations').insert({
-      id: destination.id,
-      user_id: user.id,
-      city_id: destination.cityId,
-      label: destination.label,
-      address: destination.address,
-      latitude: destination.latitude,
-      longitude: destination.longitude,
-      transport_mode: destination.transportMode,
-    });
-
+    const { error } = await dbAddDestination(user.id, destination);
     if (error) {
       logger.error('Error syncing new destination:', error);
     }
@@ -123,12 +87,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     if (!user?.id || !dataLoaded) return;
 
     logger.log('Removing destination from Supabase...');
-    const { error } = await supabase
-      .from('user_destinations')
-      .delete()
-      .eq('user_id', user.id)
-      .eq('id', id);
-
+    const { error } = await dbRemoveDestination(user.id, id);
     if (error) {
       logger.error('Error removing destination:', error);
     }
@@ -138,20 +97,7 @@ export function DestinationsProvider({ children }: { children: React.ReactNode }
     if (!user?.id || !dataLoaded) return;
 
     logger.log('Updating destination in Supabase...');
-    const dbUpdates: Record<string, unknown> = {};
-    if (updates.cityId !== undefined) dbUpdates.city_id = updates.cityId;
-    if (updates.label !== undefined) dbUpdates.label = updates.label;
-    if (updates.address !== undefined) dbUpdates.address = updates.address;
-    if (updates.latitude !== undefined) dbUpdates.latitude = updates.latitude;
-    if (updates.longitude !== undefined) dbUpdates.longitude = updates.longitude;
-    if (updates.transportMode !== undefined) dbUpdates.transport_mode = updates.transportMode;
-
-    const { error } = await supabase
-      .from('user_destinations')
-      .update(dbUpdates)
-      .eq('user_id', user.id)
-      .eq('id', id);
-
+    const { error } = await dbUpdateDestination(user.id, id, updates);
     if (error) {
       logger.error('Error updating destination:', error);
     }

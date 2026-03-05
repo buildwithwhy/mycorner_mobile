@@ -2,7 +2,6 @@ import React from 'react';
 import {
   StatusComparisonProvider,
   useStatusComparison,
-  NeighborhoodStatus,
 } from './StatusComparisonContext';
 import {
   NotesRatingsProvider,
@@ -11,8 +10,6 @@ import {
 import {
   DestinationsProvider,
   useDestinations,
-  Destination,
-  TransportMode,
 } from './DestinationsContext';
 import {
   CityProvider,
@@ -20,8 +17,7 @@ import {
 } from './CityContext';
 
 // Re-export types for backward compatibility
-export type { NeighborhoodStatus } from './StatusComparisonContext';
-export type { Destination, TransportMode } from './DestinationsContext';
+export type { NeighborhoodStatus, Destination, TransportMode } from '../types';
 
 /**
  * Combined AppProvider that wraps all context providers.

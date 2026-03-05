@@ -15,22 +15,15 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, MODAL_STYLES } fro
 
 const TRANSPORT_MODES: TransportMode[] = ['transit', 'walking', 'cycling', 'driving'];
 
-// Destination limits by tier
-const DESTINATION_LIMITS = {
-  anonymous: 0,
-  free: 1,
-  premium: 99, // effectively unlimited
-};
-
 export default function DestinationsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { session } = useAuth();
   const { cityDestinations: destinations, addDestination, removeDestination } = useDestinations();
   const { selectedCity } = useCity();
-  const { tier, isPremium } = useFeatureAccess();
+  const { isPremium, isLoggedIn, getLimit } = useFeatureAccess();
 
-  const destinationLimit = DESTINATION_LIMITS[tier];
+  const destinationLimit = isLoggedIn ? (getLimit('unlimited_destinations') ?? Infinity) : 0;
   const canAddMore = destinations.length < destinationLimit;
   const [showAddModal, setShowAddModal] = useState(false);
   const [newLabel, setNewLabel] = useState('');

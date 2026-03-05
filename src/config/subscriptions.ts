@@ -109,50 +109,59 @@ export type FeatureKey =
   | 'save_places'
   | 'add_notes'
   | 'add_photos'
-  | 'sharing';
+  | 'sharing'
+  // Screen-level gates (Phase 2 readiness)
+  | 'screen_businesses'
+  | 'screen_announcements';
 
-interface FeatureDefinition {
+export interface FeatureDefinition {
   name: string;
   description: string;
   requiresPro: boolean;
-  // For limited features: how many can free users access?
+  requiresLogin: boolean;
   freeLimit?: number;
   proLimit?: number;
 }
 
 export const FEATURES: Record<FeatureKey, FeatureDefinition> = {
-  // Free features
+  // Free features (login required)
   save_places: {
     name: 'Save Places',
     description: 'Save neighborhoods to your lists',
     requiresPro: false,
+    requiresLogin: true,
   },
   add_notes: {
     name: 'Add Notes',
     description: 'Add personal notes to neighborhoods',
     requiresPro: false,
+    requiresLogin: true,
   },
   add_photos: {
     name: 'Add Photos',
     description: 'Add your own photos to neighborhoods',
     requiresPro: false,
+    requiresLogin: true,
   },
   sharing: {
     name: 'Share',
     description: 'Share neighborhoods with friends',
     requiresPro: false,
+    requiresLogin: false,
   },
 
-  // Premium features (only list features that actually exist)
+  // Premium features
   ai_matcher: {
     name: 'AI Neighborhood Matcher',
     description: 'Get personalized recommendations based on your lifestyle',
     requiresPro: true,
+    requiresLogin: true,
   },
   unlimited_comparisons: {
     name: 'Unlimited Comparisons',
     description: 'Compare up to 10 neighborhoods side by side',
     requiresPro: true,
+    requiresLogin: false,
     freeLimit: 2,
     proLimit: 10,
   },
@@ -160,13 +169,29 @@ export const FEATURES: Record<FeatureKey, FeatureDefinition> = {
     name: 'Personalized Scoring',
     description: 'Weight criteria and get custom match scores',
     requiresPro: true,
+    requiresLogin: false,
   },
   unlimited_destinations: {
     name: 'Unlimited Destinations',
     description: 'Add as many commute destinations as you need',
     requiresPro: true,
+    requiresLogin: true,
     freeLimit: 1,
     proLimit: undefined, // Unlimited
+  },
+
+  // Phase 2 screen gates (not yet active)
+  screen_businesses: {
+    name: 'Local Businesses',
+    description: 'Discover local businesses in each neighborhood',
+    requiresPro: false,
+    requiresLogin: false,
+  },
+  screen_announcements: {
+    name: 'Announcements',
+    description: 'Community announcements and updates',
+    requiresPro: false,
+    requiresLogin: false,
   },
 };
 
@@ -188,22 +213,3 @@ export const getFeatureLimit = (feature: FeatureKey, isPro: boolean): number | n
   return def.freeLimit ?? null;
 };
 
-// ============================================================================
-// BACKWARDS COMPATIBILITY
-// These types and functions maintain compatibility with existing code
-// ============================================================================
-
-// Legacy tier type (used by StatusComparisonContext)
-export type UserTier = 'anonymous' | 'free' | 'premium';
-
-// Comparison limits by tier
-const COMPARISON_LIMITS: Record<UserTier, number> = {
-  anonymous: 2,
-  free: 2,
-  premium: 10,
-};
-
-// Get comparison limit for a tier
-export const getComparisonLimit = (tier: UserTier): number => {
-  return COMPARISON_LIMITS[tier];
-};

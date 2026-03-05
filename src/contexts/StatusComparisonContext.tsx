@@ -8,20 +8,9 @@ import {
   getUserNeighborhoodStatuses,
 } from '../services/supabase';
 import { useSyncToSupabase, useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
-import { getComparisonLimit, UserTier } from '../config/subscriptions';
+import { FEATURES } from '../config/subscriptions';
+import type { NeighborhoodStatus, NeighborhoodStatusRow, ToggleComparisonResult } from '../types';
 import logger from '../utils/logger';
-
-export type NeighborhoodStatus = 'shortlist' | 'want_to_visit' | 'visited' | 'living_here' | 'ruled_out' | null;
-
-interface NeighborhoodStatusRow {
-  neighborhood_id: string;
-  status: string;
-}
-
-interface ToggleComparisonResult {
-  success: boolean;
-  action: 'added' | 'removed' | 'limit_reached';
-}
 
 interface StatusComparisonContextType {
   status: Record<string, NeighborhoodStatus>;
@@ -46,9 +35,10 @@ export function StatusComparisonProvider({ children }: { children: React.ReactNo
   const [dataLoaded, setDataLoaded] = useState(false);
   const isSyncingRef = useRef(false);
 
-  // Determine user tier and comparison limit
-  const userTier: UserTier = !user ? 'anonymous' : isPremium ? 'premium' : 'free';
-  const comparisonLimit = getComparisonLimit(userTier);
+  // Determine comparison limit from FEATURES config
+  const comparisonLimit = isPremium
+    ? (FEATURES.unlimited_comparisons.proLimit ?? 10)
+    : (FEATURES.unlimited_comparisons.freeLimit ?? 2);
   const isComparisonLimitReached = comparison.length >= comparisonLimit;
 
   // Load data from Supabase when user logs in

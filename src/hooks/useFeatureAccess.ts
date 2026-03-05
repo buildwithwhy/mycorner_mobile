@@ -1,17 +1,16 @@
 // useFeatureAccess Hook
-// Simple hook for checking feature access based on subscription status
+// Data-driven feature access checks based on subscription status and FEATURES config
 
 import { useCallback, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
-import { FeatureKey, FEATURES, UserTier, getComparisonLimit } from '../config/subscriptions';
+import { FeatureKey, FEATURES } from '../config/subscriptions';
 
 interface UseFeatureAccessReturn {
   // Status
   isProUser: boolean;
-  isPremium: boolean; // Alias for isProUser
+  isPremium: boolean;
   isLoggedIn: boolean;
-  tier: UserTier;
 
   // Limits
   comparisonLimit: number;
@@ -32,59 +31,50 @@ export function useFeatureAccess(): UseFeatureAccessReturn {
 
   const isLoggedIn = !!user;
 
-  // Determine user tier
-  const tier: UserTier = useMemo(() => {
-    if (!user) return 'anonymous';
-    if (isProUser) return 'premium';
-    return 'free';
-  }, [user, isProUser]);
+  // Derive comparison limit from FEATURES config
+  const comparisonLimit = useMemo(() => {
+    const feature = FEATURES.unlimited_comparisons;
+    if (isProUser) return feature.proLimit ?? Infinity;
+    return feature.freeLimit ?? 2;
+  }, [isProUser]);
 
-  // Get comparison limit for current tier
-  const comparisonLimit = useMemo(() => getComparisonLimit(tier), [tier]);
-
-  // Check if user can access a feature
+  // Check if user can access a feature (data-driven)
   const canAccess = useCallback((feature: FeatureKey): boolean => {
     const featureDef = FEATURES[feature];
     if (!featureDef) return false;
 
-    // Some features require login (like save_places, add_notes)
-    // These are defined as not requiring pro but needing an account
-    if (feature === 'save_places' || feature === 'add_notes' || feature === 'add_photos') {
-      return isLoggedIn;
+    // Check login requirement from config
+    if (featureDef.requiresLogin && !isLoggedIn) {
+      return false;
     }
 
+    // Pro check delegated to subscription context
     return canAccessFeature(feature);
   }, [isLoggedIn, canAccessFeature]);
 
   // Check if limit is exceeded for a feature
   const isLimitExceeded = useCallback((feature: FeatureKey, currentCount: number): boolean => {
     const limit = getLimit(feature);
-    if (limit === null) return false; // No limit
+    if (limit === null) return false;
     return currentCount >= limit;
   }, [getLimit]);
 
-  // Check if feature requires login
+  // Check if feature requires login (data-driven)
   const requiresLogin = useCallback((feature: FeatureKey): boolean => {
     if (isLoggedIn) return false;
-
-    // Features that need login but not pro
-    const loginRequired = ['save_places', 'add_notes', 'add_photos'];
-    return loginRequired.includes(feature);
+    return FEATURES[feature]?.requiresLogin ?? false;
   }, [isLoggedIn]);
 
   // Check if feature requires upgrade
   const requiresUpgrade = useCallback((feature: FeatureKey): boolean => {
     if (isProUser) return false;
-
-    const featureDef = FEATURES[feature];
-    return featureDef?.requiresPro ?? false;
+    return FEATURES[feature]?.requiresPro ?? false;
   }, [isProUser]);
 
   return {
     isProUser,
-    isPremium: isProUser, // Alias
+    isPremium: isProUser,
     isLoggedIn,
-    tier,
     comparisonLimit,
     canAccess,
     getLimit,
