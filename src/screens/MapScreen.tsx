@@ -222,7 +222,7 @@ export default function MapScreen() {
               <Text style={styles.infoBorough}>{selectedNeighborhoodData.borough}</Text>
             </View>
             <TouchableOpacity onPress={() => setSelectedNeighborhood(null)}>
-              <Ionicons name="close" size={24} color="#6b7280" />
+              <Ionicons name="close" size={24} color={COLORS.gray500} />
             </TouchableOpacity>
           </View>
 

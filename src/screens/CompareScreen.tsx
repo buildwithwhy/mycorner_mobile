@@ -94,12 +94,12 @@ export default function CompareScreen() {
             </View>
             {METRICS.map((metric) => (
               <View key={metric.key} style={styles.metricLabelCell}>
-                <Ionicons name={metric.icon} size={18} color="#6b7280" />
+                <Ionicons name={metric.icon} size={18} color={COLORS.gray500} />
                 <Text style={styles.metricLabel}>{metric.label}</Text>
               </View>
             ))}
             <View style={styles.metricLabelCell}>
-              <Ionicons name="document-text" size={18} color="#6b7280" />
+              <Ionicons name="document-text" size={18} color={COLORS.gray500} />
               <Text style={styles.metricLabel}>My Notes</Text>
             </View>
             {destinations.length > 0 && (
@@ -127,7 +127,7 @@ export default function CompareScreen() {
                     style={styles.removeButton}
                     onPress={() => toggleComparison(n.id)}
                   >
-                    <Ionicons name="close-circle" size={20} color="#ef4444" />
+                    <Ionicons name="close-circle" size={20} color={COLORS.error} />
                   </TouchableOpacity>
                   <Text style={styles.headerCellTitle}>{n.name}</Text>
                   <Text style={styles.headerCellSubtitle}>{n.borough}</Text>
