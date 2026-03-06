@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from './AuthContext';
 import {
   syncNeighborhoodNote,
@@ -8,6 +9,7 @@ import {
   ratingsFromDb,
 } from '../services/supabase';
 import { useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import type { UserRatings, NeighborhoodNoteRow, NeighborhoodRatingRow } from '../types';
 import logger from '../utils/logger';
 
@@ -23,13 +25,47 @@ interface NotesRatingsContextType {
 
 const NotesRatingsContext = createContext<NotesRatingsContextType | undefined>(undefined);
 
+const PHOTOS_STORAGE_KEY = '@mycorner_photos';
+
 export function NotesRatingsProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { isConnected } = useNetworkStatus();
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [photos, setPhotos] = useState<Record<string, string[]>>({});
+  const [photosLoaded, setPhotosLoaded] = useState(false);
   const [userRatings, setUserRatings] = useState<UserRatings>({});
   const [dataLoaded, setDataLoaded] = useState(false);
   const isSyncingRef = useRef(false);
+
+  // Load photos from AsyncStorage on mount (device-local, not tied to user)
+  useEffect(() => {
+    const loadPhotos = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(PHOTOS_STORAGE_KEY);
+        if (stored) {
+          setPhotos(JSON.parse(stored));
+        }
+      } catch (error) {
+        logger.error('Error loading photos from AsyncStorage:', error);
+      } finally {
+        setPhotosLoaded(true);
+      }
+    };
+    loadPhotos();
+  }, []);
+
+  // Persist photos to AsyncStorage when they change (debounced)
+  useEffect(() => {
+    if (!photosLoaded) return;
+
+    const timer = setTimeout(() => {
+      AsyncStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(photos)).catch((error) => {
+        logger.error('Error saving photos to AsyncStorage:', error);
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [photos, photosLoaded]);
 
   // Load data from Supabase when user logs in
   useEffect(() => {
@@ -91,6 +127,7 @@ export function NotesRatingsProvider({ children }: { children: React.ReactNode }
     userId: user?.id,
     dataLoaded,
     isSyncing: isSyncingRef,
+    isOnline: isConnected !== false,
   };
 
   // Sync neighborhood notes to Supabase

@@ -8,6 +8,7 @@ import {
   getUserNeighborhoodStatuses,
 } from '../services/supabase';
 import { useSyncToSupabase, useSyncRecordToSupabase } from '../hooks/useSyncToSupabase';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { FEATURES } from '../config/subscriptions';
 import type { NeighborhoodStatus, NeighborhoodStatusRow, ToggleComparisonResult } from '../types';
 import logger from '../utils/logger';
@@ -29,6 +30,7 @@ const StatusComparisonContext = createContext<StatusComparisonContextType | unde
 export function StatusComparisonProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { isProUser } = useSubscription();
+  const { isConnected } = useNetworkStatus();
   const isPremium = isProUser; // Alias for backwards compatibility
   const [status, setStatus] = useState<Record<string, NeighborhoodStatus>>({});
   const [comparison, setComparison] = useState<string[]>([]);
@@ -96,6 +98,7 @@ export function StatusComparisonProvider({ children }: { children: React.ReactNo
     userId: user?.id,
     dataLoaded,
     isSyncing: isSyncingRef,
+    isOnline: isConnected !== false,
   };
 
   // Sync comparison to Supabase

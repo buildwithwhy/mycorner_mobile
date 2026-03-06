@@ -1,11 +1,12 @@
 // Offline Banner Component
-// Displays a banner when the device is offline
+// Displays a banner when the device is offline, with pending sync count
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { usePendingSyncCount } from '../services/syncQueue';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 
 interface OfflineBannerProps {
@@ -15,6 +16,7 @@ interface OfflineBannerProps {
 
 export const OfflineBanner: React.FC<OfflineBannerProps> = ({ strictMode = false }) => {
   const { isConnected, isInternetReachable } = useNetworkStatus();
+  const pendingCount = usePendingSyncCount();
   const insets = useSafeAreaInsets();
 
   // Determine if we should show the banner
@@ -26,11 +28,15 @@ export const OfflineBanner: React.FC<OfflineBannerProps> = ({ strictMode = false
     return null;
   }
 
+  const message = pendingCount > 0
+    ? `You're offline — ${pendingCount} change${pendingCount !== 1 ? 's' : ''} pending`
+    : "You're offline. Some features may be unavailable.";
+
   return (
     <View style={[styles.container, { paddingTop: insets.top || SPACING.sm }]}>
       <View style={styles.content}>
         <Ionicons name="cloud-offline" size={18} color={COLORS.white} />
-        <Text style={styles.text}>You're offline. Some features may be unavailable.</Text>
+        <Text style={styles.text}>{message}</Text>
       </View>
     </View>
   );

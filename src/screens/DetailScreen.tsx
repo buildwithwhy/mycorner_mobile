@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,15 +17,14 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/types';
-import * as ImagePicker from 'expo-image-picker';
 import type { Neighborhood } from '../data/neighborhoods';
 import { METRIC_SOURCES } from '../data/neighborhoods';
 import { useStatusComparison, useNotesRatings, useDestinations, useCity, type NeighborhoodStatus } from '../contexts/AppContext';
 import { useRequireAuth } from '../hooks/useRequireAuth';
-import { calculateDistance, estimateCommuteTime, getTransportModeInfo } from '../utils/commute';
-import { getNeighborhoodCoordinates } from '../utils/coordinates';
+import { usePhotoManagement } from '../hooks/usePhotoManagement';
+import { useCommuteData } from '../hooks/useCommuteData';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
-import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, STATUS_CONFIG } from '../constants/theme';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, STATUS_CONFIG } from '../constants/theme';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 import AffordabilityBadge from '../components/AffordabilityBadge';
@@ -73,13 +72,16 @@ export default function DetailScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const notesSectionY = useRef(0);
 
-  // Track if component is mounted to prevent state updates after unmount
-  const isMountedRef = useRef(true);
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+  // Photo management hook (handles permissions, picking, taking, deleting)
+  const { handleAddPhoto, handleDeletePhoto } = usePhotoManagement(
+    neighborhood?.id,
+    addNeighborhoodPhoto,
+    removeNeighborhoodPhoto,
+    requireAuth,
+  );
+
+  // Commute data hook (calculates distances and travel times)
+  const commuteItems = useCommuteData(neighborhood?.id, destinations);
 
   const currentStatus = status[neighborhood?.id] || null;
   const currentPhotos = useMemo(() => photos[neighborhood?.id] || [], [photos, neighborhood?.id]);
@@ -117,66 +119,6 @@ export default function DetailScreen() {
     }
     return currentUserRatings[metric as keyof typeof currentUserRatings] ?? neighborhood[metric as keyof typeof neighborhood];
   };
-
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!isMountedRef.current) return;
-
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow access to your photo library');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.7,
-    });
-
-    if (!isMountedRef.current) return;
-
-    if (!result.canceled) {
-      addNeighborhoodPhoto(neighborhood.id, result.assets[0].uri);
-    }
-  };
-
-  const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (!isMountedRef.current) return;
-
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please allow access to your camera');
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.7,
-    });
-
-    if (!isMountedRef.current) return;
-
-    if (!result.canceled) {
-      addNeighborhoodPhoto(neighborhood.id, result.assets[0].uri);
-    }
-  };
-
-  const handleAddPhoto = () => {
-    Alert.alert('Add Photo', 'Choose how to add a photo', [
-      { text: 'Take Photo', onPress: () => requireAuth('photos', takePhoto) },
-      { text: 'Choose from Library', onPress: () => requireAuth('photos', pickImage) },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
-
-  const handleDeletePhoto = useCallback((uri: string) => {
-    Alert.alert('Delete Photo', 'Are you sure you want to remove this photo?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => removeNeighborhoodPhoto(neighborhood.id, uri) },
-    ]);
-  }, [neighborhood?.id, removeNeighborhoodPhoto]);
 
   const handleSaveNote = () => {
     setNeighborhoodNote(neighborhood.id, noteText);
@@ -449,7 +391,7 @@ export default function DetailScreen() {
           </View>
 
           {/* Commute Times */}
-          {destinations.length > 0 && (
+          {commuteItems.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Commute Times</Text>
@@ -458,41 +400,28 @@ export default function DetailScreen() {
                 </TouchableOpacity>
               </View>
               <View style={styles.commuteList}>
-                {destinations.map((destination, index) => {
-                  const neighborhoodCoords = getNeighborhoodCoordinates(neighborhood.id);
-                  const distance = calculateDistance(
-                    neighborhoodCoords.latitude,
-                    neighborhoodCoords.longitude,
-                    destination.latitude,
-                    destination.longitude
-                  );
-                  const transportMode = destination.transportMode || 'transit';
-                  const time = estimateCommuteTime(distance, transportMode);
-                  const modeInfo = getTransportModeInfo(transportMode);
-
-                  return (
-                    <View key={destination.id} style={styles.commuteItem}>
-                      <View
-                        style={[
-                          styles.commuteIconCircle,
-                          { backgroundColor: DESTINATION_COLORS[index % DESTINATION_COLORS.length] },
-                        ]}
-                      >
-                        <Ionicons name={modeInfo.icon as keyof typeof Ionicons.glyphMap} size={16} color="white" />
-                      </View>
-                      <View style={styles.commuteTextContainer}>
-                        <Text style={styles.commuteLabel}>{destination.label}</Text>
-                        <Text style={styles.commuteAddress} numberOfLines={1}>
-                          {destination.address}
-                        </Text>
-                      </View>
-                      <View style={styles.commuteTimeContainer}>
-                        <Text style={styles.commuteTime}>{time}</Text>
-                        <Text style={styles.commuteDistance}>{distance.toFixed(1)} km</Text>
-                      </View>
+                {commuteItems.map((item) => (
+                  <View key={item.destinationId} style={styles.commuteItem}>
+                    <View
+                      style={[
+                        styles.commuteIconCircle,
+                        { backgroundColor: item.color },
+                      ]}
+                    >
+                      <Ionicons name={item.modeIcon as keyof typeof Ionicons.glyphMap} size={16} color="white" />
                     </View>
-                  );
-                })}
+                    <View style={styles.commuteTextContainer}>
+                      <Text style={styles.commuteLabel}>{item.label}</Text>
+                      <Text style={styles.commuteAddress} numberOfLines={1}>
+                        {item.address}
+                      </Text>
+                    </View>
+                    <View style={styles.commuteTimeContainer}>
+                      <Text style={styles.commuteTime}>{item.time}</Text>
+                      <Text style={styles.commuteDistance}>{item.distance.toFixed(1)} km</Text>
+                    </View>
+                  </View>
+                ))}
               </View>
             </View>
           )}

@@ -1,21 +1,19 @@
 import { useEffect, useRef } from 'react';
+import { markPending, clearPending, clearAllPending } from '../services/syncQueue';
 import logger from '../utils/logger';
 
 interface SyncOptions {
   userId: string | undefined;
   dataLoaded: boolean;
   isSyncing: React.MutableRefObject<boolean>;
+  isOnline?: boolean;
   debounceMs?: number;
 }
 
 /**
  * A reusable hook for syncing data to Supabase with debouncing.
  * Uses the "latest ref" pattern to avoid breaking debounce when syncFn changes.
- *
- * @param data - The data to sync (used as dependency)
- * @param syncFn - The async function that performs the sync
- * @param label - Label for logging purposes
- * @param options - Sync options including userId, dataLoaded flag, and syncing ref
+ * Offline-aware: skips sync when offline, marks as pending, re-syncs on reconnect.
  */
 export function useSyncToSupabase<T>(
   data: T,
@@ -23,17 +21,38 @@ export function useSyncToSupabase<T>(
   label: string,
   options: SyncOptions
 ) {
-  const { userId, dataLoaded, isSyncing, debounceMs = 500 } = options;
+  const { userId, dataLoaded, isSyncing, isOnline = true, debounceMs = 500 } = options;
 
-  // Use ref to always have latest syncFn without triggering effect
   const syncFnRef = useRef(syncFn);
   syncFnRef.current = syncFn;
 
-  // Track if this is the initial mount to skip first sync
   const isInitialMount = useRef(true);
+  const wasOfflineRef = useRef(false);
 
+  // Track offline→online transitions to force re-sync
   useEffect(() => {
-    // Skip sync on initial mount - data was just loaded from server
+    if (!isOnline) {
+      wasOfflineRef.current = true;
+      return;
+    }
+
+    // Just came back online — force re-sync if we have pending data
+    if (wasOfflineRef.current && userId && dataLoaded && !isSyncing.current) {
+      wasOfflineRef.current = false;
+      logger.log(`Reconnected — flushing pending ${label} sync...`);
+      syncFnRef.current().then(({ error }) => {
+        if (error) {
+          logger.error(`Error flushing ${label}:`, error);
+          markPending(label);
+        } else {
+          clearAllPending(label);
+        }
+      });
+    }
+  }, [isOnline, userId, dataLoaded, label, isSyncing]);
+
+  // Normal data change sync
+  useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
@@ -41,27 +60,30 @@ export function useSyncToSupabase<T>(
 
     if (!userId || !dataLoaded || isSyncing.current) return;
 
+    if (!isOnline) {
+      markPending(label);
+      return;
+    }
+
     const syncTimer = setTimeout(async () => {
       logger.log(`Syncing ${label} to Supabase...`);
       const { error } = await syncFnRef.current();
       if (error) {
         logger.error(`Error syncing ${label}:`, error);
+        markPending(label);
+      } else {
+        clearAllPending(label);
       }
     }, debounceMs);
 
     return () => clearTimeout(syncTimer);
-  }, [data, userId, dataLoaded, label, debounceMs, isSyncing]);
+  }, [data, userId, dataLoaded, label, debounceMs, isSyncing, isOnline]);
 }
 
 /**
  * A reusable hook for syncing record-based data (like status, notes, ratings)
  * where each entry needs to be synced individually.
- * Uses the "latest ref" pattern to avoid breaking debounce when syncEntryFn changes.
- *
- * @param data - Record of data to sync
- * @param syncEntryFn - Function to sync a single entry
- * @param label - Label for logging purposes
- * @param options - Sync options
+ * Offline-aware: skips sync when offline, marks entries as pending, re-syncs on reconnect.
  */
 export function useSyncRecordToSupabase<T>(
   data: Record<string, T>,
@@ -69,20 +91,55 @@ export function useSyncRecordToSupabase<T>(
   label: string,
   options: SyncOptions
 ) {
-  const { userId, dataLoaded, isSyncing, debounceMs = 500 } = options;
+  const { userId, dataLoaded, isSyncing, isOnline = true, debounceMs = 500 } = options;
 
-  // Use ref to always have latest syncEntryFn without triggering effect
   const syncEntryFnRef = useRef(syncEntryFn);
   syncEntryFnRef.current = syncEntryFn;
 
-  // Track previous data to only sync changed entries
   const prevDataRef = useRef<Record<string, T>>({});
-
-  // Track if this is the initial mount to skip first sync
   const isInitialMount = useRef(true);
+  const wasOfflineRef = useRef(false);
 
+  // Track offline→online transitions to force re-sync of all dirty entries
   useEffect(() => {
-    // Skip sync on initial mount - data was just loaded from server
+    if (!isOnline) {
+      wasOfflineRef.current = true;
+      return;
+    }
+
+    if (wasOfflineRef.current && userId && dataLoaded && !isSyncing.current) {
+      wasOfflineRef.current = false;
+
+      // Find all entries that differ from last successful sync
+      const dirtyEntries: [string, T][] = [];
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== prevDataRef.current[key]) {
+          dirtyEntries.push([key, value]);
+        }
+      }
+
+      if (dirtyEntries.length > 0) {
+        logger.log(`Reconnected — flushing ${dirtyEntries.length} pending ${label} entries...`);
+        (async () => {
+          for (const [key, value] of dirtyEntries) {
+            if (value) {
+              const { error } = await syncEntryFnRef.current(key, value);
+              if (error) {
+                logger.error(`Error flushing ${label} for ${key}:`, error);
+                markPending(label, key);
+              } else {
+                clearPending(label, key);
+              }
+            }
+          }
+          prevDataRef.current = { ...data };
+        })();
+      }
+    }
+  }, [isOnline, data, userId, dataLoaded, label, isSyncing]);
+
+  // Normal data change sync
+  useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       prevDataRef.current = { ...data };
@@ -91,7 +148,6 @@ export function useSyncRecordToSupabase<T>(
 
     if (!userId || !dataLoaded || isSyncing.current) return;
 
-    // Find which entries actually changed
     const changedEntries: [string, T][] = [];
     for (const [key, value] of Object.entries(data)) {
       if (value !== prevDataRef.current[key]) {
@@ -99,8 +155,14 @@ export function useSyncRecordToSupabase<T>(
       }
     }
 
-    // Nothing changed, skip sync
     if (changedEntries.length === 0) return;
+
+    if (!isOnline) {
+      for (const [key] of changedEntries) {
+        markPending(label, key);
+      }
+      return;
+    }
 
     const syncTimer = setTimeout(async () => {
       logger.log(`Syncing ${label} to Supabase (${changedEntries.length} changed)...`);
@@ -109,13 +171,15 @@ export function useSyncRecordToSupabase<T>(
           const { error } = await syncEntryFnRef.current(key, value);
           if (error) {
             logger.error(`Error syncing ${label} for ${key}:`, error);
+            markPending(label, key);
+          } else {
+            clearPending(label, key);
           }
         }
       }
-      // Update prev data after successful sync
       prevDataRef.current = { ...data };
     }, debounceMs);
 
     return () => clearTimeout(syncTimer);
-  }, [data, userId, dataLoaded, label, debounceMs, isSyncing]);
+  }, [data, userId, dataLoaded, label, debounceMs, isSyncing, isOnline]);
 }

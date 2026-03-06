@@ -17,8 +17,9 @@ import FilterModal from '../components/FilterModal';
 import SortModal, { SortOption } from '../components/SortModal';
 import MatchModal from '../components/MatchModal';
 import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelector';
-import { scoreAndSortNeighborhoods, ScoredNeighborhood } from '../utils/personalizedScoring';
+import { ScoredNeighborhood } from '../utils/personalizedScoring';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import { useFilteredNeighborhoods } from '../hooks/useFilteredNeighborhoods';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -91,60 +92,11 @@ export default function HomeScreen() {
     }
   }, [toggleComparison, comparisonLimit, navigation]);
 
-  // Memoized filter and sort for better performance
-  const filteredNeighborhoods = useMemo(() => {
-    const searchLower = searchQuery.toLowerCase();
-
-    const filtered = cityNeighborhoods.filter((n) => {
-      const matchesSearch =
-        searchQuery === '' ||
-        n.name.toLowerCase().includes(searchLower) ||
-        n.borough.toLowerCase().includes(searchLower) ||
-        n.description.toLowerCase().includes(searchLower);
-
-      const matchesAffordability = n.affordability >= minAffordability;
-      const matchesSafety = n.safety >= minSafety;
-      const matchesTransit = n.transit >= minTransit;
-
-      return matchesSearch && matchesAffordability && matchesSafety && matchesTransit;
-    });
-
-    // Sort filtered results
-    if (sortBy === 'bestMatch') {
-      // Use personalized scoring for "Best Match" sort
-      return scoreAndSortNeighborhoods(filtered, preferences);
-    }
-
-    return filtered.sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      if (sortBy === 'affordability') return b.affordability - a.affordability;
-      if (sortBy === 'safety') return b.safety - a.safety;
-      if (sortBy === 'transit') return b.transit - a.transit;
-      return 0;
-    });
-  }, [cityNeighborhoods, searchQuery, sortBy, minAffordability, minSafety, minTransit, preferences]);
-
-  // Calculate match percentages as ranking percentiles for display
-  // Shows "Top X%" - how this neighborhood ranks among all neighborhoods based on preferences
-  // Always calculate when user has custom preferences, regardless of current sort
-  const matchPercentages = useMemo(() => {
-    if (!hasCustomPreferences) return {};
-
-    // Score and sort by preferences to get rankings
-    const scoredAndSorted = scoreAndSortNeighborhoods(filteredNeighborhoods, preferences);
-    const total = scoredAndSorted.length;
-
-    const percentages: Record<string, number> = {};
-    scoredAndSorted.forEach((n, index) => {
-      // Calculate percentile rank (top 1 = 99%, middle = 50%, last = 1%)
-      const percentileRank = Math.round(((total - index) / total) * 100);
-      percentages[n.id] = Math.max(1, percentileRank);
-    });
-
-    return percentages;
-  }, [filteredNeighborhoods, preferences, hasCustomPreferences]);
-
-  const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
+  // Filter, sort, and calculate match percentages via reusable hook
+  const { filteredNeighborhoods, matchPercentages, hasActiveFilters } = useFilteredNeighborhoods(
+    cityNeighborhoods,
+    { searchQuery, minAffordability, minSafety, minTransit, sortBy, preferences, hasCustomPreferences },
+  );
 
   // Memoized render function for FlatList
   const renderNeighborhoodCard = useCallback(({ item: neighborhood }: { item: Neighborhood | ScoredNeighborhood }) => {
