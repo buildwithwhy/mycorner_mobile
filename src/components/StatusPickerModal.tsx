@@ -150,6 +150,9 @@ export default function StatusPickerModal({
                       ]}
                       onPress={() => handleSelectStatus(option.value)}
                       activeOpacity={0.7}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected: isSelected }}
+                      accessibilityLabel={option.label}
                     >
                       <View style={[styles.iconContainer, { backgroundColor: `${option.color}20` }]}>
                         <Ionicons name={option.icon} size={24} color={option.color} />
@@ -170,12 +173,14 @@ export default function StatusPickerModal({
                 <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => handleSelectStatus(null)}
+                  accessibilityLabel="Remove from My Places"
+                  accessibilityRole="button"
                 >
                   <Body color={COLORS.error}>Remove from My Places</Body>
                 </TouchableOpacity>
               )}
 
-              <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
+              <TouchableOpacity style={styles.cancelButton} onPress={handleClose} accessibilityLabel="Cancel" accessibilityRole="button">
                 <Body color={COLORS.gray500}>Cancel</Body>
               </TouchableOpacity>
             </Animated.View>

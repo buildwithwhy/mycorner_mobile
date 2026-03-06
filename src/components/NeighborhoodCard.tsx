@@ -84,6 +84,7 @@ function NeighborhoodCard({
           style={styles.cardViewTouchable}
           onPress={onPress}
           activeOpacity={0.7}
+          accessibilityLabel={neighborhood.name}
         >
           {/* Hero Image Section */}
           <View style={styles.heroSection}>
@@ -133,6 +134,8 @@ function NeighborhoodCard({
           <TouchableOpacity
             style={[styles.cardViewActionButton, currentStatus && styles.cardViewActionButtonActive]}
             onPress={handleAddToPlaces}
+            accessibilityLabel={currentStatus ? 'Remove bookmark' : 'Bookmark'}
+            accessibilityRole="button"
           >
             <Ionicons
               name={currentStatus ? 'bookmark' : 'bookmark-outline'}
@@ -143,6 +146,8 @@ function NeighborhoodCard({
           <TouchableOpacity
             style={[styles.cardViewActionButton, isInComparison && styles.cardViewActionButtonActive]}
             onPress={onToggleComparison}
+            accessibilityLabel={isInComparison ? 'Remove from comparison' : 'Add to comparison'}
+            accessibilityRole="button"
           >
             <Ionicons
               name={isInComparison ? 'git-compare' : 'git-compare-outline'}
@@ -153,6 +158,8 @@ function NeighborhoodCard({
           <TouchableOpacity
             style={styles.cardViewActionButton}
             onPress={handleShare}
+            accessibilityLabel="Share"
+            accessibilityRole="button"
           >
             <Ionicons
               name="share-outline"
@@ -172,6 +179,7 @@ function NeighborhoodCard({
         style={styles.cardContent}
         onPress={onPress}
         activeOpacity={0.7}
+        accessibilityLabel={neighborhood.name}
       >
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderText}>
@@ -222,6 +230,8 @@ function NeighborhoodCard({
         <TouchableOpacity
           style={[styles.cardActionButton, currentStatus && styles.cardActionButtonSaved]}
           onPress={handleAddToPlaces}
+          accessibilityLabel={currentStatus ? 'Remove bookmark' : 'Bookmark'}
+          accessibilityRole="button"
         >
           <Ionicons
             name={currentStatus ? 'bookmark' : 'bookmark-outline'}
@@ -232,6 +242,8 @@ function NeighborhoodCard({
         <TouchableOpacity
           style={[styles.cardActionButton, isInComparison && styles.cardActionButtonCompare]}
           onPress={onToggleComparison}
+          accessibilityLabel={isInComparison ? 'Remove from comparison' : 'Add to comparison'}
+          accessibilityRole="button"
         >
           <Ionicons
             name={isInComparison ? 'git-compare' : 'git-compare-outline'}
@@ -242,6 +254,8 @@ function NeighborhoodCard({
         <TouchableOpacity
           style={styles.cardActionButton}
           onPress={handleShare}
+          accessibilityLabel="Share"
+          accessibilityRole="button"
         >
           <Ionicons
             name="share-outline"

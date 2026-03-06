@@ -171,7 +171,7 @@ export default function HomeScreen() {
             placeholderTextColor={COLORS.gray400}
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityLabel="Clear search" accessibilityRole="button">
               <Ionicons name="close-circle" size={20} color={COLORS.gray400} />
             </TouchableOpacity>
           )}
@@ -211,6 +211,8 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.viewToggle}
             onPress={() => setViewMode(viewMode === 'list' ? 'card' : 'list')}
+            accessibilityLabel={viewMode === 'list' ? 'Switch to card view' : 'Switch to list view'}
+            accessibilityRole="button"
           >
             <Ionicons
               name={viewMode === 'list' ? 'grid-outline' : 'list-outline'}

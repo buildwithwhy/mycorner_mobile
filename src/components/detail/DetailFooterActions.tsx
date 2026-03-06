@@ -27,6 +27,8 @@ function DetailFooterActionsInner({
         <TouchableOpacity
           style={[styles.actionButton, currentStatus && styles.actionButtonActive]}
           onPress={onSavePress}
+          accessibilityLabel={currentStatus ? 'Saved' : 'Save'}
+          accessibilityRole="button"
         >
           <Ionicons
             name={currentStatus ? 'bookmark' : 'bookmark-outline'}
@@ -41,6 +43,8 @@ function DetailFooterActionsInner({
         <TouchableOpacity
           style={[styles.actionButton, isInComparison && styles.actionButtonActive]}
           onPress={onComparePress}
+          accessibilityLabel={isInComparison ? 'Remove from comparison' : 'Add to comparison'}
+          accessibilityRole="button"
         >
           <Ionicons
             name={isInComparison ? 'git-compare' : 'git-compare-outline'}
@@ -52,13 +56,18 @@ function DetailFooterActionsInner({
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton} onPress={onSharePress}>
+        <TouchableOpacity style={styles.actionButton} onPress={onSharePress} accessibilityLabel="Share" accessibilityRole="button">
           <Ionicons name="share-outline" size={20} color={COLORS.gray500} />
           <Text style={styles.actionButtonText}>Share</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.statusButton} onPress={onStatusPress}>
+      <TouchableOpacity
+        style={styles.statusButton}
+        onPress={onStatusPress}
+        accessibilityLabel={currentStatus ? STATUS_CONFIG[currentStatus].label : 'Add to My Places'}
+        accessibilityRole="button"
+      >
         <Ionicons name={currentStatus ? 'bookmark' : 'bookmark-outline'} size={20} color="white" />
         <Text style={styles.statusButtonText}>
           {currentStatus ? STATUS_CONFIG[currentStatus].label : 'Add to My Places'}

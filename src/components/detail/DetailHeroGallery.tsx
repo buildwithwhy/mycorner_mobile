@@ -79,6 +79,8 @@ function DetailHeroGalleryInner({
             <TouchableOpacity
               style={styles.deletePhotoButton}
               onPress={() => onDeletePhoto(item.uri!)}
+              accessibilityLabel="Delete photo"
+              accessibilityRole="button"
             >
               <Ionicons name="trash" size={18} color={COLORS.white} />
             </TouchableOpacity>
@@ -141,12 +143,12 @@ function DetailHeroGalleryInner({
       )}
 
       {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={onGoBack}>
+      <TouchableOpacity style={styles.backButton} onPress={onGoBack} accessibilityLabel="Go back" accessibilityRole="button">
         <Ionicons name="arrow-back" size={24} color={COLORS.white} />
       </TouchableOpacity>
 
       {/* Add photo button */}
-      <TouchableOpacity style={styles.addPhotoButton} onPress={onAddPhoto}>
+      <TouchableOpacity style={styles.addPhotoButton} onPress={onAddPhoto} accessibilityLabel="Add photo" accessibilityRole="button">
         <Ionicons name="camera-outline" size={20} color={COLORS.white} />
       </TouchableOpacity>
 
