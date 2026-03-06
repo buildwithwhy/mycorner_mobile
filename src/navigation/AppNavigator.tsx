@@ -16,6 +16,7 @@ import PreferencesScreen from '../screens/PreferencesScreen';
 import MatcherScreen from '../screens/MatcherScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { useStatusComparison } from '../contexts/AppContext';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { COLORS } from '../constants/theme';
 import type { RootStackParamList, TabParamList } from './types';
 
@@ -33,28 +34,34 @@ function ScreenLoader() {
   );
 }
 
-// Wrapper for lazy-loaded screens
+// Wrapper for lazy-loaded screens with error boundary + suspense
 function LazyMapScreen() {
   return (
-    <Suspense fallback={<ScreenLoader />}>
-      <MapScreen />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<ScreenLoader />}>
+        <MapScreen />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
 function LazyDetailScreen() {
   return (
-    <Suspense fallback={<ScreenLoader />}>
-      <DetailScreen />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<ScreenLoader />}>
+        <DetailScreen />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
 function LazyDestinationsScreen() {
   return (
-    <Suspense fallback={<ScreenLoader />}>
-      <DestinationsScreen />
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<ScreenLoader />}>
+        <DestinationsScreen />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
