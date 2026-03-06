@@ -20,6 +20,8 @@ import { CityHeaderSelector, CitySelectorModal } from '../components/CitySelecto
 import { ScoredNeighborhood } from '../utils/personalizedScoring';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { useFilteredNeighborhoods } from '../hooks/useFilteredNeighborhoods';
+import { METRIC_MAP } from '../config/metrics';
+import type { MetricKey } from '../config/metrics';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -36,9 +38,10 @@ export default function HomeScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showCitySelectorModal, setShowCitySelectorModal] = useState(false);
-  const [minAffordability, setMinAffordability] = useState(1);
-  const [minSafety, setMinSafety] = useState(1);
-  const [minTransit, setMinTransit] = useState(1);
+  const [filters, setFilters] = useState<Record<string, number>>({});
+  const setFilter = useCallback((key: MetricKey, value: number) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }, []);
   const [showMatchModal, setShowMatchModal] = useState(false);
 
   // Lifted modal state - single instance for all cards
@@ -95,7 +98,7 @@ export default function HomeScreen() {
   // Filter, sort, and calculate match percentages via reusable hook
   const { filteredNeighborhoods, matchPercentages, hasActiveFilters } = useFilteredNeighborhoods(
     cityNeighborhoods,
-    { searchQuery, minAffordability, minSafety, minTransit, sortBy, preferences, hasCustomPreferences },
+    { searchQuery, filters, sortBy, preferences, hasCustomPreferences },
   );
 
   // Memoized render function for FlatList
@@ -191,7 +194,7 @@ export default function HomeScreen() {
           >
             <Ionicons name="swap-vertical" size={16} color={sortBy !== 'name' ? COLORS.primary : COLORS.white} />
             <Text style={[styles.controlPillText, sortBy !== 'name' && styles.controlPillTextActive]}>
-              {sortBy === 'name' ? 'Sort' : sortBy === 'bestMatch' ? 'Best Match' : sortBy === 'affordability' ? 'Affordable' : sortBy === 'safety' ? 'Safest' : 'Transit'}
+              {sortBy === 'name' ? 'Sort' : sortBy === 'bestMatch' ? 'Best Match' : METRIC_MAP[sortBy as MetricKey]?.shortLabel ?? 'Sort'}
             </Text>
           </TouchableOpacity>
 
@@ -234,12 +237,8 @@ export default function HomeScreen() {
       <FilterModal
         visible={showFilters}
         onClose={() => setShowFilters(false)}
-        minAffordability={minAffordability}
-        minSafety={minSafety}
-        minTransit={minTransit}
-        setMinAffordability={setMinAffordability}
-        setMinSafety={setMinSafety}
-        setMinTransit={setMinTransit}
+        filters={filters}
+        setFilter={setFilter}
         currencySymbol={selectedCity.currencySymbol}
       />
 

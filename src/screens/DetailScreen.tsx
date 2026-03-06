@@ -31,25 +31,14 @@ import AffordabilityBadge from '../components/AffordabilityBadge';
 import RatingCard from '../components/RatingCard';
 import { useToast } from '../contexts/ToastContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
-import { usePreferences, CRITERIA_INFO } from '../contexts/PreferencesContext';
+import { usePreferences } from '../contexts/PreferencesContext';
 import { shareNeighborhood } from '../utils/sharing';
 import { calculateMatchPercentage, getMatchReasons } from '../utils/personalizedScoring';
 import { PremiumBadge } from '../components/FeatureGate';
+import { METRICS } from '../config/metrics';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
-
-
-// Pre-defined rating metrics to avoid recreation on each render
-const RATING_METRICS = [
-  { key: 'safety', icon: 'shield-checkmark' as keyof typeof Ionicons.glyphMap, label: 'Safety' },
-  { key: 'transit', icon: 'bus' as keyof typeof Ionicons.glyphMap, label: 'Transit' },
-  { key: 'greenSpace', icon: 'leaf' as keyof typeof Ionicons.glyphMap, label: 'Green Space' },
-  { key: 'nightlife', icon: 'moon' as keyof typeof Ionicons.glyphMap, label: 'Nightlife' },
-  { key: 'familyFriendly', icon: 'home' as keyof typeof Ionicons.glyphMap, label: 'Family' },
-  { key: 'dining', icon: 'restaurant' as keyof typeof Ionicons.glyphMap, label: 'Dining' },
-  { key: 'vibe', icon: 'people' as keyof typeof Ionicons.glyphMap, label: 'Local Scene' },
-] as const;
 
 export default function DetailScreen() {
   const route = useRoute<RouteProp<RootStackParamList, 'Detail'>>();
@@ -359,23 +348,23 @@ export default function DetailScreen() {
             <Text style={[styles.sectionTitle, { marginBottom: SPACING.md }]}>Ratings</Text>
 
             <View style={styles.ratingsGrid}>
-              {RATING_METRICS.map((rating) => (
+              {METRICS.map((metric) => (
                 <RatingCard
-                  key={rating.key}
-                  icon={rating.icon}
-                  label={rating.label}
-                  description={CRITERIA_INFO[rating.key as keyof typeof CRITERIA_INFO]?.description}
-                  value={getEffectiveRating(rating.key) as number}
-                  isEditing={editingMetric === rating.key}
-                  isCustom={!!currentUserRatings[rating.key as keyof typeof currentUserRatings]}
-                  onRatingChange={(value) => setUserRating(neighborhood.id, rating.key, value)}
-                  sourceShort={METRIC_SOURCES[neighborhood.cityId]?.[rating.key]?.short}
-                  sourceLong={METRIC_SOURCES[neighborhood.cityId]?.[rating.key]?.long}
+                  key={metric.key}
+                  icon={metric.icon}
+                  label={metric.label}
+                  description={metric.description}
+                  value={getEffectiveRating(metric.key) as number}
+                  isEditing={editingMetric === metric.key}
+                  isCustom={!!currentUserRatings[metric.key as keyof typeof currentUserRatings]}
+                  onRatingChange={(value) => setUserRating(neighborhood.id, metric.key, value)}
+                  sourceShort={METRIC_SOURCES[neighborhood.cityId]?.[metric.key]?.short}
+                  sourceLong={METRIC_SOURCES[neighborhood.cityId]?.[metric.key]?.long}
                   onPress={() => {
-                    if (editingMetric === rating.key) {
+                    if (editingMetric === metric.key) {
                       setEditingMetric(null);
                     } else {
-                      requireAuth('ratings', () => setEditingMetric(rating.key));
+                      requireAuth('ratings', () => setEditingMetric(metric.key));
                     }
                   }}
                   onNotePress={() => {

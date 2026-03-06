@@ -4,11 +4,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logger from '../utils/logger';
+import { METRICS } from '../config/metrics';
+import type { MetricKey } from '../config/metrics';
 
 const STORAGE_KEY = '@mycorner_preferences';
 
-// Scoring criteria that users can weight (matching Neighborhood interface)
-export type ScoringCriterion = 'safety' | 'affordability' | 'transit' | 'greenSpace' | 'nightlife' | 'familyFriendly' | 'dining' | 'vibe';
+// Re-export MetricKey as ScoringCriterion for backwards compatibility
+export type ScoringCriterion = MetricKey;
 
 export interface ScoringPreferences {
   safety: number;        // 0-100
@@ -33,49 +35,10 @@ export const DEFAULT_PREFERENCES: ScoringPreferences = {
   vibe: 50,
 };
 
-// Labels and icons for each criterion
-export const CRITERIA_INFO: Record<ScoringCriterion, { label: string; icon: string; description: string }> = {
-  safety: {
-    label: 'Safety',
-    icon: 'shield-checkmark',
-    description: 'Low crime rates and secure neighborhoods',
-  },
-  affordability: {
-    label: 'Affordability',
-    icon: 'cash-outline',
-    description: 'Lower rent and cost of living',
-  },
-  transit: {
-    label: 'Transit',
-    icon: 'bus',
-    description: 'Easy access to public transportation',
-  },
-  greenSpace: {
-    label: 'Green Space',
-    icon: 'leaf',
-    description: 'Parks, gardens, and outdoor areas',
-  },
-  nightlife: {
-    label: 'Nightlife',
-    icon: 'wine',
-    description: 'Bars, clubs, and evening entertainment',
-  },
-  familyFriendly: {
-    label: 'Family Friendly',
-    icon: 'people',
-    description: 'Schools, playgrounds, and family amenities',
-  },
-  dining: {
-    label: 'Dining Scene',
-    icon: 'restaurant',
-    description: 'Restaurants, cafes, and food options',
-  },
-  vibe: {
-    label: 'Local Scene',
-    icon: 'people',
-    description: 'Events, markets, and community activity',
-  },
-};
+// Labels and icons derived from metrics config (single source of truth)
+export const CRITERIA_INFO: Record<ScoringCriterion, { label: string; icon: string; description: string }> = Object.fromEntries(
+  METRICS.map((m) => [m.key, { label: m.label, icon: m.icon, description: m.description }])
+) as Record<ScoringCriterion, { label: string; icon: string; description: string }>;
 
 interface PreferencesContextType {
   preferences: ScoringPreferences;

@@ -9,6 +9,9 @@ export type RootStackParamList = {
   Paywall: { source?: string; feature?: string };
   Preferences: undefined;
   Matcher: undefined;
+  // Phase 2 (uncomment when implementing)
+  // Businesses: { neighborhoodId: string };
+  // Announcements: undefined;
 };
 
 export type TabParamList = {

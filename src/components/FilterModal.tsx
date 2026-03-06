@@ -2,28 +2,22 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, MODAL_STYLES } from '../constants/theme';
+import { FILTERABLE_METRICS } from '../config/metrics';
+import type { MetricKey } from '../config/metrics';
 
 interface FilterModalProps {
   visible: boolean;
   onClose: () => void;
-  minAffordability: number;
-  minSafety: number;
-  minTransit: number;
-  setMinAffordability: (value: number) => void;
-  setMinSafety: (value: number) => void;
-  setMinTransit: (value: number) => void;
+  filters: Record<string, number>;
+  setFilter: (key: MetricKey, value: number) => void;
   currencySymbol: string;
 }
 
 export default function FilterModal({
   visible,
   onClose,
-  minAffordability,
-  minSafety,
-  minTransit,
-  setMinAffordability,
-  setMinSafety,
-  setMinTransit,
+  filters,
+  setFilter,
   currencySymbol,
 }: FilterModalProps) {
   return (
@@ -38,65 +32,40 @@ export default function FilterModal({
           </View>
 
           <ScrollView style={styles.scroll}>
-            <View style={styles.section}>
-              <Text style={styles.label}>Maximum Cost</Text>
-              <View style={styles.options}>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <TouchableOpacity
-                    key={value}
-                    style={[styles.chip, minAffordability === value && styles.chipActive]}
-                    onPress={() => setMinAffordability(value)}
-                  >
-                    <Text style={[styles.chipText, minAffordability === value && styles.chipTextActive]}>
-                      {currencySymbol.repeat(6 - value)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
+            {FILTERABLE_METRICS.map((metric) => {
+              const value = filters[metric.key] ?? 1;
+              const isAffordability = metric.key === 'affordability';
 
-            <View style={styles.section}>
-              <Text style={styles.label}>Minimum Safety: {minSafety}/5</Text>
-              <View style={styles.options}>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <TouchableOpacity
-                    key={value}
-                    style={[styles.chip, minSafety === value && styles.chipActive]}
-                    onPress={() => setMinSafety(value)}
-                  >
-                    <Text style={[styles.chipText, minSafety === value && styles.chipTextActive]}>
-                      {value}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Minimum Transit: {minTransit}/5</Text>
-              <View style={styles.options}>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <TouchableOpacity
-                    key={value}
-                    style={[styles.chip, minTransit === value && styles.chipActive]}
-                    onPress={() => setMinTransit(value)}
-                  >
-                    <Text style={[styles.chipText, minTransit === value && styles.chipTextActive]}>
-                      {value}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
+              return (
+                <View key={metric.key} style={styles.section}>
+                  <Text style={styles.label}>
+                    {isAffordability
+                      ? metric.filterLabel ?? metric.label
+                      : `${metric.filterLabel ?? `Minimum ${metric.label}`}: ${value}/5`}
+                  </Text>
+                  <View style={styles.options}>
+                    {[1, 2, 3, 4, 5].map((chipValue) => (
+                      <TouchableOpacity
+                        key={chipValue}
+                        style={[styles.chip, value === chipValue && styles.chipActive]}
+                        onPress={() => setFilter(metric.key, chipValue)}
+                      >
+                        <Text style={[styles.chipText, value === chipValue && styles.chipTextActive]}>
+                          {isAffordability ? currencySymbol.repeat(6 - chipValue) : chipValue}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              );
+            })}
           </ScrollView>
 
           <View style={styles.actions}>
             <TouchableOpacity
               style={styles.clearButton}
               onPress={() => {
-                setMinAffordability(1);
-                setMinSafety(1);
-                setMinTransit(1);
+                FILTERABLE_METRICS.forEach((m) => setFilter(m.key, 1));
               }}
             >
               <Text style={styles.clearButtonText}>Clear All</Text>

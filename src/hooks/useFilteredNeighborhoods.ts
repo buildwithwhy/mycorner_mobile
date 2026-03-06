@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import { Neighborhood } from '../data/neighborhoods';
 import { ScoringPreferences } from '../contexts/PreferencesContext';
 import { scoreAndSortNeighborhoods, ScoredNeighborhood } from '../utils/personalizedScoring';
+import { FILTERABLE_METRICS, SORTABLE_METRICS } from '../config/metrics';
 import type { SortOption } from '../components/SortModal';
+import type { MetricKey } from '../config/metrics';
 
-interface FilterConfig {
+export interface FilterConfig {
   searchQuery: string;
-  minAffordability: number;
-  minSafety: number;
-  minTransit: number;
+  filters: Record<string, number>;
   sortBy: SortOption;
   preferences: ScoringPreferences;
   hasCustomPreferences: boolean;
@@ -24,15 +24,7 @@ export function useFilteredNeighborhoods(
   neighborhoods: Neighborhood[],
   config: FilterConfig,
 ): UseFilteredNeighborhoodsReturn {
-  const {
-    searchQuery,
-    minAffordability,
-    minSafety,
-    minTransit,
-    sortBy,
-    preferences,
-    hasCustomPreferences,
-  } = config;
+  const { searchQuery, filters, sortBy, preferences, hasCustomPreferences } = config;
 
   const filteredNeighborhoods = useMemo(() => {
     const searchLower = searchQuery.toLowerCase();
@@ -44,28 +36,38 @@ export function useFilteredNeighborhoods(
         n.borough.toLowerCase().includes(searchLower) ||
         n.description.toLowerCase().includes(searchLower);
 
-      const matchesAffordability = n.affordability >= minAffordability;
-      const matchesSafety = n.safety >= minSafety;
-      const matchesTransit = n.transit >= minTransit;
+      // Check all filterable metrics dynamically
+      const matchesFilters = FILTERABLE_METRICS.every((metric) => {
+        const minValue = filters[metric.key] ?? 1;
+        const neighborhoodValue = n[metric.key as keyof Neighborhood] as number;
+        return neighborhoodValue >= minValue;
+      });
 
-      return matchesSearch && matchesAffordability && matchesSafety && matchesTransit;
+      return matchesSearch && matchesFilters;
     });
 
     if (sortBy === 'bestMatch') {
       return scoreAndSortNeighborhoods(filtered, preferences);
     }
 
-    return filtered.sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      if (sortBy === 'affordability') return b.affordability - a.affordability;
-      if (sortBy === 'safety') return b.safety - a.safety;
-      if (sortBy === 'transit') return b.transit - a.transit;
-      return 0;
-    });
-  }, [neighborhoods, searchQuery, sortBy, minAffordability, minSafety, minTransit, preferences]);
+    if (sortBy === 'name') {
+      return filtered.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    // Sort by metric key (all sortable metrics use descending numeric sort)
+    const metricKey = sortBy as MetricKey;
+    if (SORTABLE_METRICS.some((m) => m.key === metricKey)) {
+      return filtered.sort((a, b) => {
+        const aVal = a[metricKey as keyof Neighborhood] as number;
+        const bVal = b[metricKey as keyof Neighborhood] as number;
+        return bVal - aVal;
+      });
+    }
+
+    return filtered;
+  }, [neighborhoods, searchQuery, sortBy, filters, preferences]);
 
   // Calculate match percentages as ranking percentiles for display
-  // Shows "Top X%" - how this neighborhood ranks among all neighborhoods based on preferences
   const matchPercentages = useMemo(() => {
     if (!hasCustomPreferences) return {};
 
@@ -81,7 +83,7 @@ export function useFilteredNeighborhoods(
     return percentages;
   }, [filteredNeighborhoods, preferences, hasCustomPreferences]);
 
-  const hasActiveFilters = minAffordability > 1 || minSafety > 1 || minTransit > 1;
+  const hasActiveFilters = FILTERABLE_METRICS.some((m) => (filters[m.key] ?? 1) > 1);
 
   return { filteredNeighborhoods, matchPercentages, hasActiveFilters };
 }

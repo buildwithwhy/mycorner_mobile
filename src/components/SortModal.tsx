@@ -3,9 +3,31 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, MODAL_STYLES } from '../constants/theme';
 import { PremiumBadge } from './FeatureGate';
+import { SORTABLE_METRICS } from '../config/metrics';
+import type { MetricKey } from '../config/metrics';
 import type { FeatureKey } from '../config/subscriptions';
 
-export type SortOption = 'name' | 'affordability' | 'safety' | 'transit' | 'bestMatch';
+export type SortOption = 'name' | 'bestMatch' | MetricKey;
+
+interface SortOptionItem {
+  key: SortOption;
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  description: string;
+  feature?: FeatureKey;
+}
+
+// Non-metric sort options + metric-derived sort options
+const SORT_OPTIONS: SortOptionItem[] = [
+  { key: 'bestMatch', icon: 'heart', label: 'Best Match', description: 'Based on your preferences', feature: 'personalized_scores' },
+  { key: 'name', icon: 'text', label: 'Name', description: 'Alphabetical order' },
+  ...SORTABLE_METRICS.map((m): SortOptionItem => ({
+    key: m.key,
+    icon: m.icon,
+    label: m.label,
+    description: m.sortDescription ?? `Best ${m.label.toLowerCase()} first`,
+  })),
+];
 
 interface SortModalProps {
   visible: boolean;
@@ -15,14 +37,6 @@ interface SortModalProps {
   requiresUpgrade: (feature: FeatureKey) => boolean;
   onNavigatePaywall: () => void;
 }
-
-const SORT_OPTIONS: { key: SortOption; icon: keyof typeof Ionicons.glyphMap; label: string; description: string; feature?: FeatureKey }[] = [
-  { key: 'bestMatch', icon: 'heart', label: 'Best Match', description: 'Based on your preferences', feature: 'personalized_scores' },
-  { key: 'name', icon: 'text', label: 'Name', description: 'Alphabetical order' },
-  { key: 'affordability', icon: 'cash-outline', label: 'Affordability', description: 'Most affordable first' },
-  { key: 'safety', icon: 'shield-checkmark', label: 'Safety', description: 'Safest areas first' },
-  { key: 'transit', icon: 'bus', label: 'Transit', description: 'Best transit first' },
-];
 
 export default function SortModal({
   visible,

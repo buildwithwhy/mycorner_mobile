@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -111,6 +111,29 @@ function TabNavigator() {
   );
 }
 
+// Deep linking configuration
+const linking: LinkingOptions<RootStackParamList> = {
+  prefixes: ['mycorner://'],
+  config: {
+    screens: {
+      Main: {
+        screens: {
+          Home: 'home',
+          Map: 'map',
+          MyPlaces: 'places',
+          Compare: 'compare',
+          Profile: 'profile',
+        },
+      },
+      Detail: 'neighborhood/:id',
+      Destinations: 'destinations',
+      Preferences: 'preferences',
+      Paywall: 'paywall',
+      Matcher: 'matcher',
+    },
+  },
+};
+
 export default function AppNavigator() {
   const { loading } = useAuth();
 
@@ -123,20 +146,20 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen name="Detail" component={LazyDetailScreen} />
         <Stack.Screen name="Destinations" component={LazyDestinationsScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen
-          name="Paywall"
-          component={PaywallScreen}
-          options={{ presentation: 'modal' }}
-        />
         <Stack.Screen name="Preferences" component={PreferencesScreen} />
         <Stack.Screen name="Matcher" component={MatcherScreen} />
+
+        {/* Modal-presented screens */}
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen name="Paywall" component={PaywallScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+        </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );
