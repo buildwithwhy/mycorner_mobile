@@ -16,6 +16,42 @@ import NeighborhoodStats from '../components/NeighborhoodStats';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
 
+// Memoized marker component — only re-renders when its own props change
+const MapMarker = React.memo(function MapMarker({
+  neighborhood,
+  coords,
+  isSelected,
+  statusInfo,
+  onPress,
+}: {
+  neighborhood: { id: string; name: string; borough: string };
+  coords: { latitude: number; longitude: number };
+  isSelected: boolean;
+  statusInfo: { color: string; icon: keyof typeof Ionicons.glyphMap } | null;
+  onPress: () => void;
+}) {
+  return (
+    <Marker
+      coordinate={coords}
+      title={neighborhood.name}
+      description={neighborhood.borough}
+      onPress={onPress}
+    >
+      <View style={[
+        styles.marker,
+        isSelected && styles.markerSelected,
+        statusInfo && { borderWidth: 3, borderColor: statusInfo.color },
+      ]}>
+        {statusInfo ? (
+          <Ionicons name={statusInfo.icon} size={20} color={statusInfo.color} />
+        ) : (
+          <Ionicons name="location" size={24} color={isSelected ? COLORS.primary : COLORS.gray500} />
+        )}
+      </View>
+    </Marker>
+  );
+});
+
 export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -138,33 +174,16 @@ export default function MapScreen() {
         showsMyLocationButton
         mapPadding={{ top: 120, right: 0, bottom: 0, left: 0 }}
       >
-        {cityNeighborhoods.map((neighborhood) => {
-          const coords = neighborhoodCoords[neighborhood.id];
-          const isSelected = selectedNeighborhood === neighborhood.id;
-          const statusInfo = getStatusInfo(neighborhood.id);
-
-          return (
-            <Marker
-              key={neighborhood.id}
-              coordinate={coords}
-              title={neighborhood.name}
-              description={neighborhood.borough}
-              onPress={() => setSelectedNeighborhood(neighborhood.id)}
-            >
-              <View style={[
-                styles.marker,
-                isSelected && styles.markerSelected,
-                statusInfo && { borderWidth: 3, borderColor: statusInfo.color },
-              ]}>
-                {statusInfo ? (
-                  <Ionicons name={statusInfo.icon} size={20} color={statusInfo.color} />
-                ) : (
-                  <Ionicons name="location" size={24} color={isSelected ? COLORS.primary : COLORS.gray500} />
-                )}
-              </View>
-            </Marker>
-          );
-        })}
+        {cityNeighborhoods.map((neighborhood) => (
+          <MapMarker
+            key={neighborhood.id}
+            neighborhood={neighborhood}
+            coords={neighborhoodCoords[neighborhood.id]}
+            isSelected={selectedNeighborhood === neighborhood.id}
+            statusInfo={getStatusInfo(neighborhood.id)}
+            onPress={() => setSelectedNeighborhood(neighborhood.id)}
+          />
+        ))}
 
         {/* Destination markers */}
         {destinations.map((destination, index) => (

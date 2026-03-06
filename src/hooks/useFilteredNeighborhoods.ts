@@ -26,17 +26,17 @@ export function useFilteredNeighborhoods(
 ): UseFilteredNeighborhoodsReturn {
   const { searchQuery, filters, sortBy, preferences, hasCustomPreferences } = config;
 
-  const filteredNeighborhoods = useMemo(() => {
+  // Filter neighborhoods by search query and metric filters
+  const filtered = useMemo(() => {
     const searchLower = searchQuery.toLowerCase();
 
-    const filtered = neighborhoods.filter((n) => {
+    return neighborhoods.filter((n) => {
       const matchesSearch =
         searchQuery === '' ||
         n.name.toLowerCase().includes(searchLower) ||
         n.borough.toLowerCase().includes(searchLower) ||
         n.description.toLowerCase().includes(searchLower);
 
-      // Check all filterable metrics dynamically
       const matchesFilters = FILTERABLE_METRICS.every((metric) => {
         const minValue = filters[metric.key] ?? 1;
         const neighborhoodValue = n[metric.key as keyof Neighborhood] as number;
@@ -45,43 +45,51 @@ export function useFilteredNeighborhoods(
 
       return matchesSearch && matchesFilters;
     });
+  }, [neighborhoods, searchQuery, filters]);
 
-    if (sortBy === 'bestMatch') {
-      return scoreAndSortNeighborhoods(filtered, preferences);
+  // Score once when user has custom preferences (reused by both sort and matchPercentages)
+  const scoredNeighborhoods = useMemo(() => {
+    if (!hasCustomPreferences) return null;
+    return scoreAndSortNeighborhoods(filtered, preferences);
+  }, [filtered, preferences, hasCustomPreferences]);
+
+  // Sort filtered neighborhoods
+  const filteredNeighborhoods = useMemo(() => {
+    if (sortBy === 'bestMatch' && scoredNeighborhoods) {
+      return scoredNeighborhoods;
     }
+
+    const toSort = [...filtered];
 
     if (sortBy === 'name') {
-      return filtered.sort((a, b) => a.name.localeCompare(b.name));
+      return toSort.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    // Sort by metric key (all sortable metrics use descending numeric sort)
     const metricKey = sortBy as MetricKey;
     if (SORTABLE_METRICS.some((m) => m.key === metricKey)) {
-      return filtered.sort((a, b) => {
+      return toSort.sort((a, b) => {
         const aVal = a[metricKey as keyof Neighborhood] as number;
         const bVal = b[metricKey as keyof Neighborhood] as number;
         return bVal - aVal;
       });
     }
 
-    return filtered;
-  }, [neighborhoods, searchQuery, sortBy, filters, preferences]);
+    return toSort;
+  }, [filtered, sortBy, scoredNeighborhoods]);
 
-  // Calculate match percentages as ranking percentiles for display
+  // Derive match percentages from already-scored data (no re-scoring)
   const matchPercentages = useMemo(() => {
-    if (!hasCustomPreferences) return {};
+    if (!scoredNeighborhoods) return {};
 
-    const scoredAndSorted = scoreAndSortNeighborhoods(filteredNeighborhoods, preferences);
-    const total = scoredAndSorted.length;
-
+    const total = scoredNeighborhoods.length;
     const percentages: Record<string, number> = {};
-    scoredAndSorted.forEach((n, index) => {
+    scoredNeighborhoods.forEach((n, index) => {
       const percentileRank = Math.round(((total - index) / total) * 100);
       percentages[n.id] = Math.max(1, percentileRank);
     });
 
     return percentages;
-  }, [filteredNeighborhoods, preferences, hasCustomPreferences]);
+  }, [scoredNeighborhoods]);
 
   const hasActiveFilters = FILTERABLE_METRICS.some((m) => (filters[m.key] ?? 1) > 1);
 

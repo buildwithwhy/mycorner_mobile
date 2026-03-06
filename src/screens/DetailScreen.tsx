@@ -9,8 +9,8 @@ import {
   Image,
   ImageSourcePropType,
   TextInput,
-  Dimensions,
   FlatList,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -37,10 +37,10 @@ import { calculateMatchPercentage, getMatchReasons, vibeToScore } from '../utils
 import { PremiumBadge } from '../components/FeatureGate';
 import { METRICS } from '../config/metrics';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
 
 export default function DetailScreen() {
+  const { width: screenWidth } = useWindowDimensions();
   const route = useRoute<RouteProp<RootStackParamList, 'Detail'>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const neighborhood = route.params.neighborhood;
@@ -91,13 +91,23 @@ export default function DetailScreen() {
     return images;
   }, [neighborhood?.id, currentPhotos]);
 
+  // Memoize match scoring to avoid recalculating on every render
+  const matchPercentage = useMemo(
+    () => calculateMatchPercentage(neighborhood, preferences),
+    [neighborhood, preferences]
+  );
+  const matchReasons = useMemo(
+    () => getMatchReasons(neighborhood, preferences),
+    [neighborhood, preferences]
+  );
+
   // Get effective ratings (user ratings override defaults)
-  const getEffectiveRating = (metric: string) => {
+  const getEffectiveRating = useCallback((metric: string) => {
     if (metric === 'vibe') {
       return currentUserRatings.vibe ?? vibeToScore(neighborhood.vibe);
     }
     return currentUserRatings[metric as keyof typeof currentUserRatings] ?? neighborhood[metric as keyof typeof neighborhood];
-  };
+  }, [currentUserRatings, neighborhood]);
 
   const handleSaveNote = () => {
     setNeighborhoodNote(neighborhood.id, noteText);
@@ -122,16 +132,16 @@ export default function DetailScreen() {
 
   // Optimized getItemLayout for gallery FlatList
   const getGalleryItemLayout = useCallback((_: unknown, index: number) => ({
-    length: SCREEN_WIDTH,
-    offset: SCREEN_WIDTH * index,
+    length: screenWidth,
+    offset: screenWidth * index,
     index,
-  }), []);
+  }), [screenWidth]);
 
   const renderGalleryItem = useCallback(({ item, index }: { item: typeof galleryImages[0]; index: number }) => {
     const isUserPhoto = !item.isDefault && item.uri;
 
     return (
-      <View style={styles.gallerySlide}>
+      <View style={[styles.gallerySlide, { width: screenWidth }]}>
         {item.isDefault ? (
           <Image source={item.source} style={styles.heroImage} />
         ) : (
@@ -161,7 +171,7 @@ export default function DetailScreen() {
         </View>
       </View>
     );
-  }, [handleDeletePhoto]);
+  }, [handleDeletePhoto, screenWidth]);
 
   return (
     <View style={styles.container}>
@@ -178,7 +188,7 @@ export default function DetailScreen() {
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
                 onMomentumScrollEnd={(e) => {
-                  const index = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+                  const index = Math.round(e.nativeEvent.contentOffset.x / screenWidth);
                   setActiveImageIndex(index);
                 }}
                 keyExtractor={(_, index) => index.toString()}
@@ -264,7 +274,7 @@ export default function DetailScreen() {
                 <View style={styles.matchScoreBadge}>
                   <Ionicons name="sparkles" size={18} color={COLORS.white} />
                   <Text style={styles.matchScoreValue}>
-                    {calculateMatchPercentage(neighborhood, preferences)}%
+                    {matchPercentage}%
                   </Text>
                 </View>
                 <View style={styles.matchScoreTextContainer}>
@@ -275,10 +285,10 @@ export default function DetailScreen() {
                   <Text style={styles.matchScoreSubtitle}>Based on your preferences</Text>
                 </View>
               </View>
-              {getMatchReasons(neighborhood, preferences).length > 0 && (
+              {matchReasons.length > 0 && (
                 <View style={styles.matchReasons}>
                   <Text style={styles.matchReasonsTitle}>Why it matches:</Text>
-                  {getMatchReasons(neighborhood, preferences).map((reason, index) => (
+                  {matchReasons.map((reason, index) => (
                     <View key={reason.criterion} style={styles.matchReasonItem}>
                       <Ionicons
                         name={reason.isStrength ? 'checkmark-circle' : 'ellipse'}
@@ -583,7 +593,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gray200,
   },
   gallerySlide: {
-    width: SCREEN_WIDTH,
     height: HERO_HEIGHT,
   },
   heroImage: {
