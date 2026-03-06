@@ -33,7 +33,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { shareNeighborhood } from '../utils/sharing';
-import { calculateMatchPercentage, getMatchReasons } from '../utils/personalizedScoring';
+import { calculateMatchPercentage, getMatchReasons, vibeToScore } from '../utils/personalizedScoring';
 import { PremiumBadge } from '../components/FeatureGate';
 import { METRICS } from '../config/metrics';
 
@@ -90,16 +90,6 @@ export default function DetailScreen() {
 
     return images;
   }, [neighborhood?.id, currentPhotos]);
-
-  // Convert vibe category to numeric score
-  const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
-    switch (vibe) {
-      case 'happening': return 5;
-      case 'moderate': return 3;
-      case 'quiet': return 1;
-      default: return 3;
-    }
-  };
 
   // Get effective ratings (user ratings override defaults)
   const getEffectiveRating = (metric: string) => {

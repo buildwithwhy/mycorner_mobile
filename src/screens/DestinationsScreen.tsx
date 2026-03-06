@@ -49,6 +49,16 @@ export default function DestinationsScreen() {
     };
   }, [selectedCity.id]);
 
+  const resetModal = () => {
+    setNewLabel('');
+    setNewAddress('');
+    setSelectedCoords(null);
+    setSelectedTransportMode('transit');
+    if (autocompleteRef.current) {
+      autocompleteRef.current.setAddressText('');
+    }
+  };
+
   const handleAddDestination = () => {
     Keyboard.dismiss();
 
@@ -70,24 +80,12 @@ export default function DestinationsScreen() {
       transportMode: selectedTransportMode,
     });
 
-    setNewLabel('');
-    setNewAddress('');
-    setSelectedCoords(null);
-    setSelectedTransportMode('transit');
-    if (autocompleteRef.current) {
-      autocompleteRef.current.setAddressText('');
-    }
+    resetModal();
     setShowAddModal(false);
   };
 
   const handleCloseModal = () => {
-    setNewLabel('');
-    setNewAddress('');
-    setSelectedCoords(null);
-    setSelectedTransportMode('transit');
-    if (autocompleteRef.current) {
-      autocompleteRef.current.setAddressText('');
-    }
+    resetModal();
     Keyboard.dismiss();
     setShowAddModal(false);
   };
@@ -241,7 +239,7 @@ export default function DestinationsScreen() {
                   />
 
                   <Text style={styles.inputLabel}>Address</Text>
-                  {GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY' ? (
+                  {!GOOGLE_MAPS_API_KEY ? (
                       <View style={styles.apiKeyWarning}>
                         <Ionicons name="information-circle" size={24} color={COLORS.warning} />
                         <View style={styles.apiKeyWarningContent}>

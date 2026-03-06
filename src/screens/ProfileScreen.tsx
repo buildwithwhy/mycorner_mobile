@@ -6,6 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import Constants from 'expo-constants';
 import { useDestinations } from '../contexts/AppContext';
+import { PRIVACY_POLICY_URL } from '../../config';
 import { useAuth } from '../contexts/AuthContext';
 import { useSubscription } from '../contexts/SubscriptionContext';
 import { usePreferences } from '../contexts/PreferencesContext';
@@ -13,7 +14,6 @@ import { deleteUserAccount } from '../services/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../constants/theme';
 
-const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || 'https://kallidao.com/productlab/mycorner/privacy';
 const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export default function ProfileScreen() {
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
   const confirmDeleteAccount = () => {
     Alert.alert(
       'Final Confirmation',
-      'Type DELETE to confirm you want to permanently delete your account and all data.',
+      'This action is permanent and cannot be undone. All your data will be deleted.',
       [
         { text: 'Cancel', style: 'cancel' },
         {

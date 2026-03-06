@@ -47,7 +47,7 @@ export const REVENUECAT_API_KEY_IOS = Constants.expoConfig?.extra?.revenueCatApi
 export const REVENUECAT_API_KEY_ANDROID = Constants.expoConfig?.extra?.revenueCatApiKeyAndroid || '';
 
 // App metadata URLs
-export const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || '';
+export const PRIVACY_POLICY_URL = Constants.expoConfig?.extra?.privacyPolicyUrl || 'https://kallidao.com/productlab/mycorner/privacy';
 export const TERMS_OF_SERVICE_URL = Constants.expoConfig?.extra?.termsOfServiceUrl || '';
 
 // Validate required configuration

@@ -9,16 +9,10 @@ import { COLORS, DESTINATION_COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS
 import EmptyState from '../components/EmptyState';
 import AffordabilityBadge from '../components/AffordabilityBadge';
 import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import { METRICS as ALL_METRICS } from '../config/metrics';
 
-// Pre-defined arrays to avoid recreation on each render
-const METRICS = [
-  { label: 'Affordability', icon: 'cash-outline' as keyof typeof Ionicons.glyphMap, key: 'affordability' },
-  { label: 'Safety', icon: 'shield-checkmark' as keyof typeof Ionicons.glyphMap, key: 'safety' },
-  { label: 'Transit', icon: 'bus' as keyof typeof Ionicons.glyphMap, key: 'transit' },
-  { label: 'Green Space', icon: 'leaf' as keyof typeof Ionicons.glyphMap, key: 'greenSpace' },
-  { label: 'Nightlife', icon: 'moon' as keyof typeof Ionicons.glyphMap, key: 'nightlife' },
-  { label: 'Family Friendly', icon: 'people' as keyof typeof Ionicons.glyphMap, key: 'familyFriendly' },
-] as const;
+// Numeric metrics only (excludes categorical 'vibe'), derived from config
+const COMPARE_METRICS = ALL_METRICS.filter(m => m.type === 'numeric');
 
 const STAR_INDICES = [0, 1, 2, 3, 4] as const;
 
@@ -92,7 +86,7 @@ export default function CompareScreen() {
             <View style={styles.headerLabelCell}>
               <Text style={styles.headerLabelText}>Neighborhood</Text>
             </View>
-            {METRICS.map((metric) => (
+            {COMPARE_METRICS.map((metric) => (
               <View key={metric.key} style={styles.metricLabelCell}>
                 <Ionicons name={metric.icon} size={18} color={COLORS.gray500} />
                 <Text style={styles.metricLabel}>{metric.label}</Text>
@@ -134,7 +128,7 @@ export default function CompareScreen() {
                 </View>
 
                 {/* Metrics */}
-                {METRICS.map((metric) => {
+                {COMPARE_METRICS.map((metric) => {
                   const value = n[metric.key as keyof typeof n] as number;
                   return (
                     <View key={metric.key} style={styles.metricValueCell}>

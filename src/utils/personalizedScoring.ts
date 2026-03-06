@@ -12,7 +12,7 @@ export interface ScoredNeighborhood extends Neighborhood {
 }
 
 // Convert vibe category to numeric score (1-5)
-const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
+export const vibeToScore = (vibe: 'happening' | 'moderate' | 'quiet'): number => {
   switch (vibe) {
     case 'happening': return 5;
     case 'moderate': return 3;

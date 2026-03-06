@@ -2,6 +2,7 @@
 // Respects ENABLE_DEBUG_LOGGING from config
 
 import { ENABLE_DEBUG_LOGGING, APP_ENV } from '../../config';
+import { captureException } from '../services/sentry';
 
 // Use both __DEV__ and our config flag for maximum control
 const shouldLog = __DEV__ && ENABLE_DEBUG_LOGGING;
@@ -11,8 +12,13 @@ export const logger = {
     if (shouldLog) console.log(...args);
   },
   error: (...args: unknown[]) => {
-    // Always log errors, even in production (for debugging)
-    if (__DEV__) console.error(...args);
+    // Always log errors, even in production
+    console.error(...args);
+    // Forward Error objects to Sentry in production
+    if (!__DEV__) {
+      const err = args.find((a) => a instanceof Error);
+      if (err instanceof Error) captureException(err);
+    }
   },
   warn: (...args: unknown[]) => {
     if (shouldLog) console.warn(...args);
