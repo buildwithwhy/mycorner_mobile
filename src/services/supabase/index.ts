@@ -11,9 +11,6 @@ export {
   signInWithGoogle,
   signOut,
   getSession,
-  getCurrentUser,
-  resetPassword,
-  updatePassword,
 } from './auth';
 
 // Repositories

@@ -94,7 +94,6 @@ export default function PaywallScreen({ onClose, source: propSource }: PaywallSc
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
 
-  const source = propSource || route.params?.source || 'unknown';
   const proFeatures = getPremiumFeatures();
 
   // Handle close

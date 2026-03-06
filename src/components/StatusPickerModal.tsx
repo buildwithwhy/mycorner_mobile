@@ -7,7 +7,6 @@ import {
   TouchableWithoutFeedback,
   Animated,
   PanResponder,
-  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NeighborhoodStatus } from '../contexts/AppContext';
@@ -26,7 +25,6 @@ interface StatusPickerModalProps {
   neighborhoodName?: string;
 }
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 50;
 const MODAL_HEIGHT = 500; // Approximate height for animation
 

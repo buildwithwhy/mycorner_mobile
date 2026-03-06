@@ -1,8 +1,6 @@
 // Subscription Configuration
 // Single source of truth for all subscription-related settings
 
-import { Platform } from 'react-native';
-
 // ============================================================================
 // PRODUCT CONFIGURATION
 // These IDs must match exactly what's configured in:
@@ -18,9 +16,6 @@ export const PRODUCTS = {
 
 export type ProductId = typeof PRODUCTS[keyof typeof PRODUCTS];
 
-// All product IDs as array (for fetching)
-export const ALL_PRODUCT_IDS: ProductId[] = [PRODUCTS.MONTHLY, PRODUCTS.YEARLY];
-
 // ============================================================================
 // ENTITLEMENT CONFIGURATION
 // Entitlements are configured in RevenueCat dashboard
@@ -32,23 +27,6 @@ export const ENTITLEMENTS = {
 } as const;
 
 export type EntitlementId = typeof ENTITLEMENTS[keyof typeof ENTITLEMENTS];
-
-// ============================================================================
-// PRICING DISPLAY (fallback when store prices unavailable)
-// ============================================================================
-
-export const FALLBACK_PRICING = {
-  [PRODUCTS.MONTHLY]: {
-    price: Platform.OS === 'ios' ? 4.99 : 4.99,
-    currency: Platform.OS === 'ios' ? 'USD' : 'USD',
-    period: 'month' as const,
-  },
-  [PRODUCTS.YEARLY]: {
-    price: Platform.OS === 'ios' ? 39.99 : 39.99,
-    currency: Platform.OS === 'ios' ? 'USD' : 'USD',
-    period: 'year' as const,
-  },
-};
 
 // ============================================================================
 // SUBSCRIPTION STATES

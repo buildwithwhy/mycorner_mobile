@@ -14,9 +14,6 @@ import Purchases, {
 import {
   ENTITLEMENTS,
   DEV_MODE,
-  SubscriptionState,
-  DEFAULT_SUBSCRIPTION_STATE,
-  ProductId,
 } from '../config/subscriptions';
 import {
   REVENUECAT_API_KEY_IOS,
@@ -133,20 +130,6 @@ export const logoutUser = async (): Promise<void> => {
 // ============================================================================
 
 /**
- * Get current customer info from RevenueCat
- */
-export const getCustomerInfo = async (): Promise<CustomerInfo | null> => {
-  if (!isInitialized) return null;
-
-  try {
-    return await Purchases.getCustomerInfo();
-  } catch (error) {
-    logError('Failed to get customer info', error);
-    return null;
-  }
-};
-
-/**
  * Check if user has active Pro subscription
  */
 export const checkIsProUser = async (): Promise<boolean> => {
@@ -162,45 +145,6 @@ export const checkIsProUser = async (): Promise<boolean> => {
   } catch (error) {
     logError('Failed to check pro status', error);
     return false;
-  }
-};
-
-/**
- * Get detailed subscription state
- */
-export const getSubscriptionState = async (): Promise<SubscriptionState> => {
-  if (DEV_MODE.BYPASS_SUBSCRIPTION) {
-    return {
-      ...DEFAULT_SUBSCRIPTION_STATE,
-      status: 'active',
-      isProUser: true,
-    };
-  }
-
-  if (!isInitialized) {
-    return DEFAULT_SUBSCRIPTION_STATE;
-  }
-
-  try {
-    const customerInfo = await Purchases.getCustomerInfo();
-    const proEntitlement = customerInfo.entitlements.active[ENTITLEMENTS.PREMIUM];
-
-    if (!proEntitlement) {
-      return DEFAULT_SUBSCRIPTION_STATE;
-    }
-
-    return {
-      status: 'active',
-      productId: proEntitlement.productIdentifier as ProductId,
-      expiresAt: proEntitlement.expirationDate
-        ? new Date(proEntitlement.expirationDate)
-        : null,
-      willRenew: proEntitlement.willRenew,
-      isProUser: true,
-    };
-  } catch (error) {
-    logError('Failed to get subscription state', error);
-    return DEFAULT_SUBSCRIPTION_STATE;
   }
 };
 
@@ -363,9 +307,7 @@ export default {
   getInitializationError,
   loginUser,
   logoutUser,
-  getCustomerInfo,
   checkIsProUser,
-  getSubscriptionState,
   getOfferings,
   purchasePackage,
   restorePurchases,

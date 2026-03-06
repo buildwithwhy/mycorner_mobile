@@ -572,10 +572,6 @@ const styles = StyleSheet.create({
     color: COLORS.gray900,
     marginBottom: SPACING.lg,
   },
-  addressInput: {
-    height: 80,
-    textAlignVertical: 'top',
-  },
   autocompleteContainer: {
     flex: 1,
     zIndex: 1,

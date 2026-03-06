@@ -131,24 +131,3 @@ export const getSession = async () => {
   return { data, error };
 };
 
-// Get current user
-export const getCurrentUser = async () => {
-  const { data, error } = await supabase.auth.getUser();
-  return { data, error };
-};
-
-// Reset password
-export const resetPassword = async (email: string) => {
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'mycorner://auth/reset-password',
-  });
-  return { data, error };
-};
-
-// Update password
-export const updatePassword = async (newPassword: string) => {
-  const { data, error } = await supabase.auth.updateUser({
-    password: newPassword,
-  });
-  return { data, error };
-};
