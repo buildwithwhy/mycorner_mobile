@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -7,10 +7,14 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSpots } from '../hooks/useLocalSpots';
+import { useItinerary } from '../hooks/useItinerary';
 import { CategoryChips } from '../components/explore/CategoryChips';
 import { CuratedSection } from '../components/explore/CuratedSection';
 import { NearbySection } from '../components/explore/NearbySection';
+import { ItineraryBar } from '../components/explore/ItineraryBar';
+import { ItineraryView } from '../components/explore/ItineraryView';
 import { getNeighborhoodCoordinates } from '../data/coordinates';
+import { shareItinerary } from '../utils/sharing';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import type { LocalSpot } from '../types';
 
@@ -19,6 +23,7 @@ export default function ExploreScreen() {
   const route = useRoute<RouteProp<RootStackParamList, 'Explore'>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { neighborhood } = route.params;
+  const [showItinerary, setShowItinerary] = useState(false);
 
   const {
     curatedSpots,
@@ -28,12 +33,49 @@ export default function ExploreScreen() {
     setSelectedCategory,
   } = useLocalSpots(neighborhood.id);
 
+  const {
+    stops,
+    addStop,
+    removeStop,
+    clearItinerary,
+    optimizeRoute,
+    isInItinerary,
+    totalWalkTime,
+    totalDistance,
+  } = useItinerary();
+
   const coords = getNeighborhoodCoordinates(neighborhood.id);
   const neighborhoodCoords = { lat: coords.latitude, lng: coords.longitude };
 
-  // Placeholder itinerary functions for now (Tier 3 wires these up)
-  const isInItinerary = useCallback((_spotId: string) => false, []);
-  const handleToggleItinerary = useCallback((_spot: LocalSpot) => {}, []);
+  const handleToggleItinerary = useCallback((spot: LocalSpot) => {
+    if (isInItinerary(spot.id)) {
+      removeStop(spot.id);
+    } else {
+      addStop(spot);
+    }
+  }, [isInItinerary, addStop, removeStop]);
+
+  const handleShareItinerary = useCallback(() => {
+    shareItinerary(
+      {
+        id: '',
+        neighborhoodId: neighborhood.id,
+        cityId: neighborhood.cityId,
+        name: `${neighborhood.name} Day Out`,
+        stops,
+        totalWalkTime,
+        totalDistance,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      },
+      neighborhood.name,
+    );
+  }, [neighborhood, stops, totalWalkTime, totalDistance]);
+
+  const handleClear = useCallback(() => {
+    clearItinerary();
+    setShowItinerary(false);
+  }, [clearItinerary]);
 
   return (
     <View style={styles.container}>
@@ -87,8 +129,30 @@ export default function ExploreScreen() {
           onToggleItinerary={handleToggleItinerary}
         />
 
-        <View style={{ height: SPACING.xxxl }} />
+        {/* Bottom spacing for itinerary bar */}
+        <View style={{ height: stops.length > 0 ? 120 : SPACING.xxxl }} />
       </ScrollView>
+
+      {/* Itinerary Bar */}
+      <ItineraryBar
+        stopCount={stops.length}
+        totalWalkTime={totalWalkTime}
+        onPress={() => setShowItinerary(true)}
+      />
+
+      {/* Itinerary Full View */}
+      <ItineraryView
+        visible={showItinerary}
+        onClose={() => setShowItinerary(false)}
+        stops={stops}
+        totalWalkTime={totalWalkTime}
+        totalDistance={totalDistance}
+        neighborhoodName={neighborhood.name}
+        onRemoveStop={removeStop}
+        onOptimize={optimizeRoute}
+        onShare={handleShareItinerary}
+        onClear={handleClear}
+      />
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import { Share, Platform } from 'react-native';
 import { Neighborhood } from '../data/neighborhoods';
+import type { Itinerary } from '../types';
 import logger from './logger';
 
 /**
@@ -83,6 +84,37 @@ export async function shareComparison(neighborhoods: Neighborhood[], currencySym
     return result.action === Share.sharedAction;
   } catch (error) {
     logger.error('Error sharing comparison:', error);
+    return false;
+  }
+}
+
+/**
+ * Share an itinerary via native share sheet
+ */
+export async function shareItinerary(
+  itinerary: Itinerary,
+  neighborhoodName: string,
+): Promise<boolean> {
+  const header = `My ${neighborhoodName} Itinerary (${itinerary.stops.length} stops)\n`;
+
+  const stops = itinerary.stops.map((stop, i) => {
+    const walkInfo = stop.walkTimeFromPrevious
+      ? ` (${stop.walkTimeFromPrevious} walk)`
+      : '';
+    return `${i + 1}. ${stop.spot.name}${walkInfo}`;
+  }).join('\n');
+
+  const footer = itinerary.totalWalkTime
+    ? `\nTotal walk: ${itinerary.totalWalkTime}`
+    : '';
+
+  const message = `${header}\n${stops}${footer}\n\nPlanned with MyCorner`;
+
+  try {
+    const result = await Share.share({ message });
+    return result.action === Share.sharedAction;
+  } catch (error) {
+    logger.error('Error sharing itinerary:', error);
     return false;
   }
 }
