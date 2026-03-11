@@ -85,3 +85,59 @@ export interface DestinationRow {
   longitude: number;
   transport_mode?: string;
 }
+
+// ============================================================================
+// LOCAL SPOTS
+// ============================================================================
+
+export type SpotCategory =
+  | 'cafe'
+  | 'restaurant'
+  | 'bar'
+  | 'park'
+  | 'market'
+  | 'museum'
+  | 'shop'
+  | 'landmark'
+  | 'other';
+
+export type SpotSource = 'curated' | 'google_places';
+
+export interface LocalSpot {
+  id: string;
+  neighborhoodId: string;
+  name: string;
+  category: SpotCategory;
+  description?: string;
+  address?: string;
+  location: { lat: number; lng: number };
+  rating?: number;
+  priceLevel?: number;
+  source: SpotSource;
+  placeId?: string;
+  editorial?: string;
+  tags?: string[];
+}
+
+// ============================================================================
+// ITINERARIES
+// ============================================================================
+
+export interface ItineraryStop {
+  spot: LocalSpot;
+  order: number;
+  walkTimeFromPrevious?: string;
+  distanceFromPrevious?: number;
+}
+
+export interface Itinerary {
+  id: string;
+  neighborhoodId: string;
+  cityId: string;
+  name: string;
+  stops: ItineraryStop[];
+  totalWalkTime?: string;
+  totalDistance?: number;
+  createdAt: number;
+  updatedAt: number;
+}

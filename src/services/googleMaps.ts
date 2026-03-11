@@ -171,6 +171,114 @@ const toRad = (degrees: number): number => {
 };
 
 /**
+ * Google Place type to app SpotCategory mapping
+ */
+const GOOGLE_TYPE_TO_CATEGORY: Record<string, import('../types').SpotCategory> = {
+  cafe: 'cafe',
+  bakery: 'cafe',
+  restaurant: 'restaurant',
+  meal_delivery: 'restaurant',
+  meal_takeaway: 'restaurant',
+  bar: 'bar',
+  night_club: 'bar',
+  park: 'park',
+  museum: 'museum',
+  art_gallery: 'museum',
+  shopping_mall: 'shop',
+  store: 'shop',
+  book_store: 'shop',
+  clothing_store: 'shop',
+  tourist_attraction: 'landmark',
+  church: 'landmark',
+  city_hall: 'landmark',
+  library: 'landmark',
+};
+
+const mapGoogleTypeToCategory = (types: string[]): import('../types').SpotCategory => {
+  for (const type of types) {
+    if (GOOGLE_TYPE_TO_CATEGORY[type]) {
+      return GOOGLE_TYPE_TO_CATEGORY[type];
+    }
+  }
+  return 'other';
+};
+
+/**
+ * Nearby Search - Find places near a location
+ * Uses the Places Nearby Search API (same API key as autocomplete/details)
+ */
+export type NearbyPlaceType =
+  | 'cafe' | 'restaurant' | 'bar' | 'park' | 'museum'
+  | 'shopping_mall' | 'tourist_attraction'
+  | 'night_club' | 'bakery' | 'book_store';
+
+export interface NearbyPlaceResult {
+  id: string;
+  placeId: string;
+  name: string;
+  category: import('../types').SpotCategory;
+  location: { lat: number; lng: number };
+  address?: string;
+  rating?: number;
+  priceLevel?: number;
+  openNow?: boolean;
+  types: string[];
+}
+
+export const searchNearbyPlaces = async (
+  location: { lat: number; lng: number },
+  options?: {
+    radius?: number;
+    type?: NearbyPlaceType;
+    keyword?: string;
+    maxResults?: number;
+  }
+): Promise<NearbyPlaceResult[]> => {
+  try {
+    const radius = options?.radius ?? 800;
+    const maxResults = options?.maxResults ?? 10;
+
+    let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=${radius}&key=${GOOGLE_MAPS_API_KEY}`;
+
+    if (options?.type) {
+      url += `&type=${options.type}`;
+    }
+    if (options?.keyword) {
+      url += `&keyword=${encodeURIComponent(options.keyword)}`;
+    }
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === 'OK' && data.results) {
+      return data.results.slice(0, maxResults).map((place: any) => ({
+        id: place.place_id,
+        placeId: place.place_id,
+        name: place.name,
+        category: mapGoogleTypeToCategory(place.types || []),
+        location: {
+          lat: place.geometry.location.lat,
+          lng: place.geometry.location.lng,
+        },
+        address: place.vicinity,
+        rating: place.rating,
+        priceLevel: place.price_level,
+        openNow: place.opening_hours?.open_now,
+        types: place.types || [],
+      }));
+    }
+
+    if (data.status !== 'ZERO_RESULTS') {
+      logger.error('Nearby search failed:', data.status);
+    }
+    return [];
+  } catch (error) {
+    logger.error('Error searching nearby places:', error);
+    return [];
+  }
+};
+
+/**
  * Get Directions between two locations
  * Returns route information including duration and distance
  */
