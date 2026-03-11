@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../../constants/theme';
 import type { ItineraryStop } from '../../types';
+import { ItineraryMap } from './ItineraryMap';
 
 const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   cafe: 'cafe-outline',
@@ -80,6 +81,9 @@ function ItineraryViewInner({
             <Text style={styles.summaryText}>{stops.length} stops</Text>
           </View>
         </View>
+
+        {/* Map Preview */}
+        {stops.length >= 2 && <ItineraryMap stops={stops} />}
 
         {/* Stops List */}
         <ScrollView style={styles.stopsList} showsVerticalScrollIndicator={false}>
