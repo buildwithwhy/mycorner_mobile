@@ -1,6 +1,7 @@
 import { Share, Platform } from 'react-native';
 import { Neighborhood } from '../data/neighborhoods';
 import type { Itinerary } from '../types';
+import { getExploreSummary } from '../data/exploreSummaries';
 import logger from './logger';
 
 /**
@@ -89,29 +90,47 @@ export async function shareComparison(neighborhoods: Neighborhood[], currencySym
 }
 
 /**
+ * Generate a deep link URL for exploring a neighborhood
+ */
+export function getExploreDeepLink(neighborhoodId: string): string {
+  return `https://mycorner.app/n/${neighborhoodId}/explore`;
+}
+
+/**
  * Share an itinerary via native share sheet
  */
 export async function shareItinerary(
   itinerary: Itinerary,
   neighborhoodName: string,
+  neighborhoodId: string,
 ): Promise<boolean> {
-  const header = `My ${neighborhoodName} Itinerary (${itinerary.stops.length} stops)\n`;
+  const walkSummary = itinerary.totalWalkTime
+    ? `, ${itinerary.totalWalkTime} walk`
+    : '';
+  const header = `My ${neighborhoodName} Day Out \u2014 ${itinerary.stops.length} stops${walkSummary}`;
+
+  const summary = getExploreSummary(neighborhoodId);
+  const blurb = summary ? `\n\n\u201c${summary.blurb}\u201d` : '';
 
   const stops = itinerary.stops.map((stop, i) => {
     const walkInfo = stop.walkTimeFromPrevious
-      ? ` (${stop.walkTimeFromPrevious} walk)`
+      ? ` \u00b7 ${stop.walkTimeFromPrevious} walk`
       : '';
     return `${i + 1}. ${stop.spot.name}${walkInfo}`;
   }).join('\n');
 
-  const footer = itinerary.totalWalkTime
-    ? `\nTotal walk: ${itinerary.totalWalkTime}`
-    : '';
+  const url = getExploreDeepLink(neighborhoodId);
+  const cta = `Explore ${neighborhoodName} on MyCorner \ud83d\udc47\n${url}`;
 
-  const message = `${header}\n${stops}${footer}\n\nPlanned with MyCorner`;
+  const message = `${header}${blurb}\n\n${stops}\n\n${cta}`;
 
   try {
-    const result = await Share.share({ message });
+    const result = await Share.share(
+      Platform.select({
+        ios: { message, url },
+        default: { message },
+      }) as { message: string; url?: string },
+    );
     return result.action === Share.sharedAction;
   } catch (error) {
     logger.error('Error sharing itinerary:', error);

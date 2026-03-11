@@ -76,6 +76,7 @@ export default function ExploreScreen() {
         updatedAt: Date.now(),
       },
       neighborhood.name,
+      neighborhood.id,
     );
   }, [neighborhood, stops, totalWalkTime, totalDistance]);
 
