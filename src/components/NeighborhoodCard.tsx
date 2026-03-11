@@ -5,7 +5,6 @@ import { Neighborhood } from '../data/neighborhoods';
 import { NeighborhoodStatus } from '../contexts/AppContext';
 import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, BOROUGH_COLORS } from '../constants/theme';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
-import { shareNeighborhood } from '../utils/sharing';
 import NeighborhoodStats from './NeighborhoodStats';
 
 export type ViewMode = 'list' | 'card';
@@ -27,6 +26,7 @@ interface NeighborhoodCardProps {
   isInComparison: boolean;
   onToggleComparison: () => void;
   onAddToPlaces: (neighborhoodId: string) => void; // Lifted modal handling to parent
+  onExplore?: () => void;
   viewMode?: ViewMode;
   photoCount?: number;
   firstPhotoUri?: string | null;
@@ -42,6 +42,7 @@ function NeighborhoodCard({
   isInComparison,
   onToggleComparison,
   onAddToPlaces,
+  onExplore,
   viewMode = 'list',
   photoCount = 0,
   firstPhotoUri = null,
@@ -72,9 +73,9 @@ function NeighborhoodCard({
     onAddToPlaces(neighborhood.id);
   }, [onAddToPlaces, neighborhood.id]);
 
-  const handleShare = useCallback(() => {
-    shareNeighborhood(neighborhood, currencySymbol);
-  }, [neighborhood, currencySymbol]);
+  const handleExplore = useCallback(() => {
+    onExplore?.();
+  }, [onExplore]);
 
   // Card view renders with hero image
   if (viewMode === 'card') {
@@ -157,12 +158,12 @@ function NeighborhoodCard({
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cardViewActionButton}
-            onPress={handleShare}
-            accessibilityLabel="Share"
+            onPress={handleExplore}
+            accessibilityLabel="Explore local spots"
             accessibilityRole="button"
           >
             <Ionicons
-              name="share-outline"
+              name="compass-outline"
               size={16}
               color={COLORS.gray400}
             />
@@ -253,12 +254,12 @@ function NeighborhoodCard({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.cardActionButton}
-          onPress={handleShare}
-          accessibilityLabel="Share"
+          onPress={handleExplore}
+          accessibilityLabel="Explore local spots"
           accessibilityRole="button"
         >
           <Ionicons
-            name="share-outline"
+            name="compass-outline"
             size={18}
             color={COLORS.gray500}
           />

@@ -114,6 +114,7 @@ export default function HomeScreen() {
         isInComparison={comparison.includes(neighborhood.id)}
         onAddToPlaces={handleAddToPlaces}
         onToggleComparison={() => handleToggleComparison(neighborhood.id)}
+        onExplore={() => navigation.navigate('Explore', { neighborhood })}
         viewMode={viewMode}
         photoCount={neighborhoodPhotos.length}
         firstPhotoUri={neighborhoodPhotos[0] || null}

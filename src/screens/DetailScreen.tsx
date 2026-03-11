@@ -247,6 +247,22 @@ export default function DetailScreen() {
             </View>
           </View>
 
+          {/* Explore Local Spots CTA */}
+          <TouchableOpacity
+            style={styles.exploreCta}
+            onPress={() => navigation.navigate('Explore', { neighborhood })}
+            activeOpacity={0.7}
+          >
+            <View style={styles.exploreCtaIcon}>
+              <Ionicons name="compass" size={24} color={COLORS.primary} />
+            </View>
+            <View style={styles.exploreCtaText}>
+              <Text style={styles.exploreCtaTitle}>Explore Local Spots</Text>
+              <Text style={styles.exploreCtaSubtitle}>Cafes, restaurants, parks & more</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+          </TouchableOpacity>
+
           {/* Ratings */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { marginBottom: SPACING.md }]}>Ratings</Text>
@@ -439,5 +455,38 @@ const styles = StyleSheet.create({
   // Ratings
   ratingsGrid: {
     gap: SPACING.sm,
+  },
+
+  // Explore CTA
+  exploreCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.lg,
+    marginBottom: SPACING.xl,
+    ...SHADOWS.small,
+  },
+  exploreCtaIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SPACING.md,
+  },
+  exploreCtaText: {
+    flex: 1,
+  },
+  exploreCtaTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '600',
+    color: COLORS.gray900,
+    marginBottom: 2,
+  },
+  exploreCtaSubtitle: {
+    fontSize: FONT_SIZES.sm,
+    color: COLORS.gray500,
   },
 });

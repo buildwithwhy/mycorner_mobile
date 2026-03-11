@@ -3,15 +3,13 @@ import type { Neighborhood } from '../data/neighborhoods';
 export type RootStackParamList = {
   Main: undefined;
   Detail: { neighborhood: Neighborhood };
+  Explore: { neighborhood: Neighborhood };
   Destinations: undefined;
   Login: undefined;
   SignUp: undefined;
   Paywall: { source?: string; feature?: string };
   Preferences: undefined;
   Matcher: undefined;
-  // Phase 2 (uncomment when implementing)
-  // Businesses: { neighborhoodId: string };
-  // Announcements: undefined;
 };
 
 export type TabParamList = {

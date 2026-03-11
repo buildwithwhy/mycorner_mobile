@@ -24,6 +24,7 @@ import type { RootStackParamList, TabParamList } from './types';
 const MapScreen = lazy(() => import('../screens/MapScreen'));
 const DetailScreen = lazy(() => import('../screens/DetailScreen'));
 const DestinationsScreen = lazy(() => import('../screens/DestinationsScreen'));
+const ExploreScreen = lazy(() => import('../screens/ExploreScreen'));
 
 // Loading fallback component
 function ScreenLoader() {
@@ -60,6 +61,16 @@ function LazyDestinationsScreen() {
     <ErrorBoundary>
       <Suspense fallback={<ScreenLoader />}>
         <DestinationsScreen />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
+function LazyExploreScreen() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<ScreenLoader />}>
+        <ExploreScreen />
       </Suspense>
     </ErrorBoundary>
   );
@@ -133,6 +144,7 @@ const linking: LinkingOptions<RootStackParamList> = {
         },
       },
       Detail: 'neighborhood/:id',
+      Explore: 'neighborhood/:id/explore',
       Destinations: 'destinations',
       Preferences: 'preferences',
       Paywall: 'paywall',
@@ -157,6 +169,7 @@ export default function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={TabNavigator} />
         <Stack.Screen name="Detail" component={LazyDetailScreen} />
+        <Stack.Screen name="Explore" component={LazyExploreScreen} />
         <Stack.Screen name="Destinations" component={LazyDestinationsScreen} />
         <Stack.Screen name="Preferences" component={PreferencesScreen} />
         <Stack.Screen name="Matcher" component={MatcherScreen} />
