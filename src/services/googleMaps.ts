@@ -204,6 +204,77 @@ const mapGoogleTypeToCategory = (types: string[]): import('../types').SpotCatego
 };
 
 /**
+ * Google Place types to exclude from Explore results.
+ * These are irrelevant for local day trips and neighborhood exploration.
+ */
+const EXCLUDED_TYPES = new Set([
+  'lodging',
+  'hotel',
+  'motel',
+  'resort_hotel',
+  'real_estate_agency',
+  'travel_agency',
+  'insurance_agency',
+  'car_dealer',
+  'car_rental',
+  'car_repair',
+  'car_wash',
+  'gas_station',
+  'parking',
+  'atm',
+  'bank',
+  'dentist',
+  'doctor',
+  'hospital',
+  'pharmacy',
+  'physiotherapist',
+  'veterinary_care',
+  'lawyer',
+  'accounting',
+  'funeral_home',
+  'storage',
+  'moving_company',
+  'locksmith',
+  'electrician',
+  'plumber',
+  'roofing_contractor',
+]);
+
+/**
+ * Generic place names to filter out (city names, boroughs, etc.)
+ * These appear because the Nearby Search returns the locality itself as a result.
+ */
+const GENERIC_NAME_PATTERNS = [
+  // Major cities
+  /^london$/i,
+  /^new york$/i,
+  /^new york city$/i,
+  /^manhattan$/i,
+  /^brooklyn$/i,
+  // Common generic results
+  /^city of /i,
+  /^borough of /i,
+  /^london borough of /i,
+];
+
+const isExcludedPlace = (place: { name: string; types: string[] }): boolean => {
+  // Exclude if any type matches the excluded set
+  if (place.types.some((t) => EXCLUDED_TYPES.has(t))) return true;
+
+  // Exclude if name matches a generic/city pattern
+  if (GENERIC_NAME_PATTERNS.some((pattern) => pattern.test(place.name))) return true;
+
+  // Exclude purely administrative results (no useful category)
+  const adminOnlyTypes = ['locality', 'political', 'administrative_area_level_1', 'administrative_area_level_2', 'country'];
+  if (place.types.length > 0 && place.types.every((t) => adminOnlyTypes.includes(t) || t === 'point_of_interest' || t === 'establishment')) {
+    // Has ONLY admin/generic types — likely a city/area result, not a real business
+    if (place.types.every((t) => adminOnlyTypes.includes(t))) return true;
+  }
+
+  return false;
+};
+
+/**
  * Nearby Search - Find places near a location
  * Uses the Places Nearby Search API (same API key as autocomplete/details)
  */
@@ -251,7 +322,11 @@ export const searchNearbyPlaces = async (
     const data = await response.json();
 
     if (data.status === 'OK' && data.results) {
-      return data.results.slice(0, maxResults).map((place: any) => ({
+      const filtered = data.results.filter(
+        (place: any) => !isExcludedPlace({ name: place.name, types: place.types || [] })
+      );
+
+      return filtered.slice(0, maxResults).map((place: any) => ({
         id: place.place_id,
         placeId: place.place_id,
         name: place.name,

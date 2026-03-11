@@ -289,6 +289,12 @@ export default function MapScreen() {
                 color={comparison.includes(selectedNeighborhoodData.id) ? COLORS.primary : COLORS.gray500}
               />
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={() => navigation.navigate('Explore', { neighborhood: selectedNeighborhoodData })}
+            >
+              <Ionicons name="compass-outline" size={20} color={COLORS.gray500} />
+            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
