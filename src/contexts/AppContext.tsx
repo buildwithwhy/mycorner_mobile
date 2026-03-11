@@ -15,6 +15,10 @@ import {
   CityProvider,
   useCity,
 } from './CityContext';
+import {
+  ItineraryProvider,
+  useItineraries,
+} from './ItineraryContext';
 
 // Re-export types for backward compatibility
 export type { NeighborhoodStatus, Destination, TransportMode } from '../types';
@@ -29,7 +33,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       <StatusComparisonProvider>
         <NotesRatingsProvider>
           <DestinationsProvider>
-            {children}
+            <ItineraryProvider>
+              {children}
+            </ItineraryProvider>
           </DestinationsProvider>
         </NotesRatingsProvider>
       </StatusComparisonProvider>
@@ -42,3 +48,4 @@ export { useStatusComparison } from './StatusComparisonContext';
 export { useNotesRatings } from './NotesRatingsContext';
 export { useDestinations } from './DestinationsContext';
 export { useCity } from './CityContext';
+export { useItineraries } from './ItineraryContext';

@@ -4,6 +4,7 @@ import type { NearbyPlaceResult } from '../services/googleMaps';
 import { getCuratedSpots } from '../data/curatedSpots';
 import { searchNearbyPlaces } from '../services/googleMaps';
 import { getNeighborhoodCoordinates } from '../data/coordinates';
+import { useFeatureAccess } from './useFeatureAccess';
 
 interface UseLocalSpotsReturn {
   curatedSpots: LocalSpot[];
@@ -29,6 +30,8 @@ const mapToLocalSpot = (result: NearbyPlaceResult, neighborhoodId: string): Loca
 });
 
 export function useLocalSpots(neighborhoodId: string): UseLocalSpotsReturn {
+  const { getLimit } = useFeatureAccess();
+  const nearbyLimit = getLimit('full_nearby_results') ?? 20;
   const [allNearbySpots, setAllNearbySpots] = useState<LocalSpot[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,11 +93,13 @@ export function useLocalSpots(neighborhoodId: string): UseLocalSpotsReturn {
     return allCuratedSpots.filter((s) => s.category === selectedCategory);
   }, [allCuratedSpots, selectedCategory]);
 
-  // Filter nearby spots by selected category
+  // Filter nearby spots by selected category and apply limit
   const nearbySpots = useMemo(() => {
-    if (selectedCategory === 'all') return allNearbySpots;
-    return allNearbySpots.filter((s) => s.category === selectedCategory);
-  }, [allNearbySpots, selectedCategory]);
+    const filtered = selectedCategory === 'all'
+      ? allNearbySpots
+      : allNearbySpots.filter((s) => s.category === selectedCategory);
+    return filtered.slice(0, nearbyLimit);
+  }, [allNearbySpots, selectedCategory, nearbyLimit]);
 
   // Re-fetch Google Places data
   const refresh = useCallback(() => {

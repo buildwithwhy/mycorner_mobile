@@ -88,9 +88,9 @@ export type FeatureKey =
   | 'add_notes'
   | 'add_photos'
   | 'sharing'
-  // Screen-level gates (Phase 2 readiness)
-  | 'screen_businesses'
-  | 'screen_announcements';
+  | 'explore_spots'
+  | 'full_nearby_results'
+  | 'save_itinerary';
 
 export interface FeatureDefinition {
   name: string;
@@ -158,18 +158,28 @@ export const FEATURES: Record<FeatureKey, FeatureDefinition> = {
     proLimit: undefined, // Unlimited
   },
 
-  // Phase 2 screen gates (not yet active)
-  screen_businesses: {
-    name: 'Local Businesses',
-    description: 'Discover local businesses in each neighborhood',
+  // Explore & Itinerary features
+  explore_spots: {
+    name: 'Explore Local Spots',
+    description: 'Discover local businesses and landmarks',
     requiresPro: false,
     requiresLogin: false,
   },
-  screen_announcements: {
-    name: 'Announcements',
-    description: 'Community announcements and updates',
-    requiresPro: false,
+  full_nearby_results: {
+    name: 'Full Search Results',
+    description: 'See all nearby places, not just the top 5',
+    requiresPro: true,
     requiresLogin: false,
+    freeLimit: 5,
+    proLimit: 20,
+  },
+  save_itinerary: {
+    name: 'Save Itineraries',
+    description: 'Save and revisit your planned routes',
+    requiresPro: false,
+    requiresLogin: true,
+    freeLimit: 1,
+    proLimit: undefined,
   },
 };
 

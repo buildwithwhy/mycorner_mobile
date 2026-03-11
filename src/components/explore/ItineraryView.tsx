@@ -27,6 +27,7 @@ interface ItineraryViewProps {
   onRemoveStop: (spotId: string) => void;
   onOptimize: () => void;
   onShare: () => void;
+  onSave: () => void;
   onClear: () => void;
 }
 
@@ -40,6 +41,7 @@ function ItineraryViewInner({
   onRemoveStop,
   onOptimize,
   onShare,
+  onSave,
   onClear,
 }: ItineraryViewProps) {
   const insets = useSafeAreaInsets();
@@ -132,11 +134,14 @@ function ItineraryViewInner({
         <View style={[styles.footer, { paddingBottom: insets.bottom + SPACING.md }]}>
           <TouchableOpacity style={styles.optimizeButton} onPress={onOptimize}>
             <Ionicons name="shuffle" size={18} color={COLORS.primary} />
-            <Text style={styles.optimizeText}>Optimize Route</Text>
+            <Text style={styles.optimizeText}>Optimize</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.saveButton} onPress={onSave}>
+            <Ionicons name="bookmark-outline" size={18} color={COLORS.white} />
+            <Text style={styles.saveText}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.clearButton} onPress={onClear}>
             <Ionicons name="trash-outline" size={18} color={COLORS.error} />
-            <Text style={styles.clearText}>Clear</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -296,19 +301,27 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.primary,
   },
-  clearButton: {
+  saveButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
     paddingVertical: 12,
+    borderRadius: BORDER_RADIUS.sm,
+    backgroundColor: COLORS.primary,
+  },
+  saveText: {
+    fontSize: FONT_SIZES.base,
+    fontWeight: '600',
+    color: COLORS.white,
+  },
+  clearButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
     paddingHorizontal: SPACING.lg,
     borderRadius: BORDER_RADIUS.sm,
     backgroundColor: COLORS.errorLight,
-  },
-  clearText: {
-    fontSize: FONT_SIZES.base,
-    fontWeight: '600',
-    color: COLORS.error,
   },
 });

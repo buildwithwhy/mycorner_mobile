@@ -15,6 +15,8 @@ import { ItineraryBar } from '../components/explore/ItineraryBar';
 import { ItineraryView } from '../components/explore/ItineraryView';
 import { getNeighborhoodCoordinates } from '../data/coordinates';
 import { shareItinerary } from '../utils/sharing';
+import { useItineraries } from '../contexts/AppContext';
+import { useToast } from '../contexts/ToastContext';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import type { LocalSpot } from '../types';
 
@@ -24,6 +26,8 @@ export default function ExploreScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { neighborhood } = route.params;
   const [showItinerary, setShowItinerary] = useState(false);
+  const { saveItinerary: persistItinerary } = useItineraries();
+  const { showToast } = useToast();
 
   const {
     curatedSpots,
@@ -71,6 +75,22 @@ export default function ExploreScreen() {
       neighborhood.name,
     );
   }, [neighborhood, stops, totalWalkTime, totalDistance]);
+
+  const handleSaveItinerary = useCallback(() => {
+    if (stops.length === 0) return;
+    persistItinerary({
+      id: `${neighborhood.id}-${Date.now()}`,
+      neighborhoodId: neighborhood.id,
+      cityId: neighborhood.cityId,
+      name: `${neighborhood.name} Day Out`,
+      stops,
+      totalWalkTime,
+      totalDistance,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+    showToast('Itinerary saved', 'checkmark-circle');
+  }, [neighborhood, stops, totalWalkTime, totalDistance, persistItinerary, showToast]);
 
   const handleClear = useCallback(() => {
     clearItinerary();
@@ -151,6 +171,7 @@ export default function ExploreScreen() {
         onRemoveStop={removeStop}
         onOptimize={optimizeRoute}
         onShare={handleShareItinerary}
+        onSave={handleSaveItinerary}
         onClear={handleClear}
       />
     </View>
