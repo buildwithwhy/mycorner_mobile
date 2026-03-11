@@ -11,6 +11,8 @@ import { useItinerary } from '../hooks/useItinerary';
 import { CategoryChips } from '../components/explore/CategoryChips';
 import { CuratedSection } from '../components/explore/CuratedSection';
 import { NearbySection } from '../components/explore/NearbySection';
+import { NeighborhoodExploreSummary } from '../components/explore/NeighborhoodExploreSummary';
+import { getExploreSummary } from '../data/exploreSummaries';
 import { ItineraryBar } from '../components/explore/ItineraryBar';
 import { ItineraryView } from '../components/explore/ItineraryView';
 import { getNeighborhoodCoordinates } from '../data/coordinates';
@@ -50,6 +52,7 @@ export default function ExploreScreen() {
 
   const coords = getNeighborhoodCoordinates(neighborhood.id);
   const neighborhoodCoords = { lat: coords.latitude, lng: coords.longitude };
+  const exploreSummary = getExploreSummary(neighborhood.id);
 
   const handleToggleItinerary = useCallback((spot: LocalSpot) => {
     if (isInItinerary(spot.id)) {
@@ -132,6 +135,11 @@ export default function ExploreScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
+        {/* Neighborhood Summary */}
+        {exploreSummary && (
+          <NeighborhoodExploreSummary summary={exploreSummary} />
+        )}
+
         {/* Editor's Picks */}
         <CuratedSection
           spots={curatedSpots}
