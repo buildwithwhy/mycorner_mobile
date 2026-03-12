@@ -28,4 +28,4 @@ export const getCuratedSpots = (neighborhoodId: string): LocalSpot[] => {
   return spotsByNeighborhood.get(neighborhoodId) ?? EMPTY;
 };
 
-export { londonCuratedSpots, newYorkCuratedSpots };
+

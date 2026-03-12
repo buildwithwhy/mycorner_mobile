@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LocalSpot, SpotCategory } from '../../types';
+import { LocalSpot } from '../../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../../constants/theme';
+import { CATEGORY_ICONS } from '../../constants/categories';
 
 interface SpotCardProps {
   spot: LocalSpot;
@@ -11,18 +12,6 @@ interface SpotCardProps {
   onAddToItinerary?: () => void;
   onRemoveFromItinerary?: () => void;
 }
-
-const CATEGORY_ICONS: Record<SpotCategory, keyof typeof Ionicons.glyphMap> = {
-  cafe: 'cafe-outline',
-  restaurant: 'restaurant-outline',
-  bar: 'beer-outline',
-  park: 'leaf-outline',
-  market: 'cart-outline',
-  museum: 'business-outline',
-  shop: 'bag-outline',
-  landmark: 'flag-outline',
-  other: 'pin-outline',
-};
 
 function SpotCardComponent({
   spot,

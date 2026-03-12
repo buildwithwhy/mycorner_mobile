@@ -111,9 +111,14 @@ export function useItinerary(): UseItineraryReturn {
     setSpots((prev) => nearestNeighborSort(prev));
   }, []);
 
+  const spotIdSet = useMemo(
+    () => new Set(spots.map((s) => s.id)),
+    [spots],
+  );
+
   const isInItinerary = useCallback((spotId: string) => {
-    return spots.some((s) => s.id === spotId);
-  }, [spots]);
+    return spotIdSet.has(spotId);
+  }, [spotIdSet]);
 
   return {
     stops,
