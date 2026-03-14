@@ -68,14 +68,18 @@ export default function MapScreen() {
   // Request location permission and get initial location
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === 'granted') {
-        setLocationPermission(true);
-        const location = await Location.getCurrentPositionAsync({});
-        setUserLocation({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        });
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          setLocationPermission(true);
+          const location = await Location.getCurrentPositionAsync({});
+          setUserLocation({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          });
+        }
+      } catch {
+        // Location services may be off at the OS level — continue without user location
       }
     })();
   }, []);
@@ -132,24 +136,28 @@ export default function MapScreen() {
 
   // Center map on user's location
   const centerOnUserLocation = async () => {
-    if (!locationPermission) {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
-      setLocationPermission(true);
+    try {
+      if (!locationPermission) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') return;
+        setLocationPermission(true);
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+
+      mapRef.current?.animateToRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.02,
+      }, 500);
+    } catch {
+      // Location services may be off — silently fail
     }
-
-    const location = await Location.getCurrentPositionAsync({});
-    setUserLocation({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
-
-    mapRef.current?.animateToRegion({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      latitudeDelta: 0.02,
-      longitudeDelta: 0.02,
-    }, 500);
   };
 
   const currentStatus = selectedNeighborhood ? status[selectedNeighborhood] || null : null;
