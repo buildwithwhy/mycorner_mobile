@@ -33,7 +33,7 @@ module.exports = {
   expo: {
     name: currentEnv.name,
     slug: "mycorner",
-    version: "1.1.0",
+    version: "1.1.1",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
@@ -47,7 +47,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: currentEnv.bundleIdentifier,
-      buildNumber: "9",
+      buildNumber: "10",
       config: {
         usesNonExemptEncryption: false,
         // iOS uses Apple Maps for display, but needs Google API key for Places/Geocoding
@@ -55,7 +55,7 @@ module.exports = {
     },
     android: {
       package: currentEnv.package,
-      versionCode: 5,
+      versionCode: 6,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"

@@ -7,8 +7,10 @@ import logger from './logger';
 /**
  * Generate a deep link URL for a neighborhood
  */
+const MARKETING_URL = 'https://kallidao.com/productlab/mycorner';
+
 export function getNeighborhoodDeepLink(neighborhoodId: string): string {
-  return `https://mycorner.app/n/${neighborhoodId}`;
+  return MARKETING_URL;
 }
 
 /**
@@ -34,7 +36,7 @@ export async function shareNeighborhood(neighborhood: Neighborhood, currencySymb
 ${affordabilitySymbol} | ${stats}
 Highlights: ${highlights}
 
-See ${neighborhood.name} on MyCorner \ud83d\udc47\n${url}`;
+Download MyCorner \ud83d\udc47\n${url}`;
 
   try {
     const result = await Share.share(
@@ -78,7 +80,7 @@ export async function shareComparison(neighborhoods: Neighborhood[], currencySym
  * Generate a deep link URL for exploring a neighborhood
  */
 export function getExploreDeepLink(neighborhoodId: string): string {
-  return `https://mycorner.app/n/${neighborhoodId}/explore`;
+  return MARKETING_URL;
 }
 
 /**
@@ -105,7 +107,7 @@ export async function shareItinerary(
   }).join('\n');
 
   const url = getExploreDeepLink(neighborhoodId);
-  const cta = `Explore ${neighborhoodName} on MyCorner \ud83d\udc47\n${url}`;
+  const cta = `Download MyCorner \ud83d\udc47\n${url}`;
 
   const message = `${header}${blurb}\n\n${stops}\n\n${cta}`;
 
