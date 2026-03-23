@@ -21,7 +21,7 @@ import logger from '../utils/logger';
 export default function LoginScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
-  const { signIn, signInWithGoogle, session } = useAuth();
+  const { signIn, signInWithGoogle, signInWithApple, isAppleSignInAvailable, session } = useAuth();
 
   // When session becomes valid, navigate back (user logged in successfully)
   // Only do this if we're on the Login screen in the stack (not rendered inline by Profile tab)
@@ -74,6 +74,20 @@ export default function LoginScreen() {
       Alert.alert('Google Login Failed', errorMessage);
     }
     // Successfully signed in - navigation will happen automatically via AuthContext
+  };
+
+  const handleAppleLogin = async () => {
+    setLoading(true);
+    const { error } = await signInWithApple();
+    setLoading(false);
+
+    if (error) {
+      const errorMessage = (error as Error).message || 'An error occurred';
+      if (errorMessage.includes('cancelled')) {
+        return;
+      }
+      Alert.alert('Apple Login Failed', errorMessage);
+    }
   };
 
   return (
@@ -155,6 +169,20 @@ export default function LoginScreen() {
             style={styles.googleButton}
             textStyle={styles.googleButtonText}
           />
+
+          {isAppleSignInAvailable && (
+            <Button
+              title="Continue with Apple"
+              onPress={handleAppleLogin}
+              variant="outline"
+              icon="logo-apple"
+              disabled={loading}
+              fullWidth
+              size="large"
+              style={styles.appleButton}
+              textStyle={styles.appleButtonText}
+            />
+          )}
 
           <View style={styles.footer}>
             <Body color={COLORS.gray500}>Don't have an account? </Body>
@@ -246,9 +274,17 @@ const styles = StyleSheet.create({
   },
   googleButton: {
     borderColor: COLORS.gray300,
+    marginBottom: SPACING.md,
   },
   googleButtonText: {
     color: COLORS.gray900,
+  },
+  appleButton: {
+    backgroundColor: '#000000',
+    borderColor: '#000000',
+  },
+  appleButtonText: {
+    color: '#FFFFFF',
   },
   footer: {
     flexDirection: 'row',

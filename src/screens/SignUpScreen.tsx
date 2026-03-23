@@ -23,7 +23,7 @@ export default function SignUpScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
-  const { signUp, signInWithGoogle, session } = useAuth();
+  const { signUp, signInWithGoogle, signInWithApple, isAppleSignInAvailable, session } = useAuth();
 
   // When session becomes valid, navigate back (user signed up successfully)
   useEffect(() => {
@@ -77,6 +77,20 @@ export default function SignUpScreen() {
 
     if (error) {
       Alert.alert('Google Sign Up Failed', error.message || 'An error occurred');
+    }
+  };
+
+  const handleAppleSignUp = async () => {
+    setLoading(true);
+    const { error } = await signInWithApple();
+    setLoading(false);
+
+    if (error) {
+      const errorMessage = (error as Error).message || 'An error occurred';
+      if (errorMessage.includes('cancelled')) {
+        return;
+      }
+      Alert.alert('Apple Sign Up Failed', errorMessage);
     }
   };
 
@@ -176,6 +190,17 @@ export default function SignUpScreen() {
             <Ionicons name="logo-google" size={20} color={COLORS.error} />
             <Text style={styles.googleButtonText}>Continue with Google</Text>
           </TouchableOpacity>
+
+          {isAppleSignInAvailable && (
+            <TouchableOpacity
+              style={styles.appleButton}
+              onPress={handleAppleSignUp}
+              disabled={loading}
+            >
+              <Ionicons name="logo-apple" size={20} color="#FFFFFF" />
+              <Text style={styles.appleButtonText}>Continue with Apple</Text>
+            </TouchableOpacity>
+          )}
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already have an account? </Text>
@@ -285,9 +310,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.gray300,
     gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   googleButtonText: {
     color: COLORS.gray900,
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '600',
+  },
+  appleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+    borderRadius: BORDER_RADIUS.md,
+    paddingVertical: SPACING.lg,
+    borderWidth: 1,
+    borderColor: '#000000',
+    gap: SPACING.sm,
+  },
+  appleButtonText: {
+    color: '#FFFFFF',
     fontSize: FONT_SIZES.lg,
     fontWeight: '600',
   },

@@ -1,5 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { Platform } from 'react-native';
 import { supabase } from './client';
 import logger from '../../utils/logger';
 
@@ -118,6 +120,53 @@ export const signInWithGoogle = async () => {
     return { data: null, error: err };
   }
 };
+
+// Sign in with Apple (native on iOS)
+export const signInWithApple = async () => {
+  try {
+    const credential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+
+    if (!credential.identityToken) {
+      return { data: null, error: { message: 'No identity token received from Apple' } };
+    }
+
+    const { data, error } = await supabase.auth.signInWithIdToken({
+      provider: 'apple',
+      token: credential.identityToken,
+    });
+
+    if (error) {
+      logger.error('Supabase Apple sign-in error:', error);
+      return { data: null, error };
+    }
+
+    // Apple only sends the name on the first sign-in, so update profile if available
+    if (credential.fullName?.givenName) {
+      const fullName = [credential.fullName.givenName, credential.fullName.familyName]
+        .filter(Boolean)
+        .join(' ');
+      await supabase.auth.updateUser({
+        data: { full_name: fullName },
+      });
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    if (err.code === 'ERR_REQUEST_CANCELED') {
+      return { data: null, error: { message: 'Sign in was cancelled' } };
+    }
+    logger.error('Apple sign-in exception:', err);
+    return { data: null, error: err };
+  }
+};
+
+// Check if Apple sign-in is available (iOS 13+)
+export const isAppleSignInAvailable = Platform.OS === 'ios';
 
 // Sign out
 export const signOut = async () => {

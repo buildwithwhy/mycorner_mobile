@@ -5,6 +5,8 @@ import {
   signInWithEmail,
   signUpWithEmail,
   signInWithGoogle,
+  signInWithApple,
+  isAppleSignInAvailable,
   signOut as supabaseSignOut,
   getSession,
 } from '../services/supabase';
@@ -18,6 +20,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | Error | null }>;
+  signInWithApple: () => Promise<{ error: AuthError | Error | null }>;
+  isAppleSignInAvailable: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -28,6 +32,8 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
   signInWithGoogle: async () => ({ error: null }),
+  signInWithApple: async () => ({ error: null }),
+  isAppleSignInAvailable: false,
   signOut: async () => {},
 });
 
@@ -107,6 +113,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error as AuthError | Error | null };
   };
 
+  const handleSignInWithApple = async (): Promise<{ error: AuthError | Error | null }> => {
+    const { error } = await signInWithApple();
+    return { error: error as AuthError | Error | null };
+  };
+
   const signOut = async () => {
     // Track sign out before clearing session
     posthog?.capture('user_signed_out');
@@ -124,6 +135,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signUp,
     signInWithGoogle: handleSignInWithGoogle,
+    signInWithApple: handleSignInWithApple,
+    isAppleSignInAvailable,
     signOut,
   };
 

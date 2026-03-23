@@ -47,7 +47,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: currentEnv.bundleIdentifier,
-      buildNumber: "10",
+      buildNumber: "11",
       config: {
         usesNonExemptEncryption: false,
         // iOS uses Apple Maps for display, but needs Google API key for Places/Geocoding
@@ -74,6 +74,7 @@ module.exports = {
     plugins: [
       "expo-font",
       "expo-splash-screen",
+      "expo-apple-authentication",
       [
         "expo-location",
         {

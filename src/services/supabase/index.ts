@@ -9,6 +9,8 @@ export {
   signUpWithEmail,
   signInWithEmail,
   signInWithGoogle,
+  signInWithApple,
+  isAppleSignInAvailable,
   signOut,
   getSession,
 } from './auth';
