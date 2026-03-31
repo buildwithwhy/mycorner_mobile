@@ -35,6 +35,7 @@ export default function ExploreScreen() {
     curatedSpots,
     nearbySpots,
     isLoading,
+    error: nearbyError,
     selectedCategory,
     setSelectedCategory,
   } = useLocalSpots(neighborhood.id);
@@ -153,6 +154,7 @@ export default function ExploreScreen() {
         <NearbySection
           spots={nearbySpots}
           isLoading={isLoading}
+          error={nearbyError}
           neighborhoodCoords={neighborhoodCoords}
           isInItinerary={isInItinerary}
           onToggleItinerary={handleToggleItinerary}

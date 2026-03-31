@@ -55,10 +55,10 @@ module.exports = {
     },
     android: {
       package: currentEnv.package,
-      versionCode: 6,
+      versionCode: 7,
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
-        backgroundColor: "#ffffff"
+        backgroundColor: "#5D8A8A"
       },
       edgeToEdgeEnabled: false,
       predictiveBackGestureEnabled: false,

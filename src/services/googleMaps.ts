@@ -4,6 +4,29 @@
 import { GOOGLE_MAPS_API_KEY } from '../../config';
 import logger from '../utils/logger';
 
+/** Shape of a single result from Google Places Nearby Search API */
+interface GooglePlaceResult {
+  place_id: string;
+  name: string;
+  types: string[];
+  geometry: { location: { lat: number; lng: number } };
+  vicinity?: string;
+  rating?: number;
+  price_level?: number;
+  opening_hours?: { open_now?: boolean };
+}
+
+/** Shape of a prediction from Google Places Autocomplete API */
+interface PlacePrediction {
+  place_id: string;
+  description: string;
+  structured_formatting: {
+    main_text: string;
+    secondary_text: string;
+  };
+  types: string[];
+}
+
 /**
  * Geocoding Service - Convert addresses to coordinates
  */
@@ -74,7 +97,7 @@ export const getPlacePredictions = async (
     types?: string[];
     components?: string; // e.g., 'country:gb'
   }
-): Promise<any[]> => {
+): Promise<PlacePrediction[]> => {
   try {
     let url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${GOOGLE_MAPS_API_KEY}`;
 
@@ -322,11 +345,11 @@ export const searchNearbyPlaces = async (
     const data = await response.json();
 
     if (data.status === 'OK' && data.results) {
-      const filtered = data.results.filter(
-        (place: any) => !isExcludedPlace({ name: place.name, types: place.types || [] })
+      const filtered = (data.results as GooglePlaceResult[]).filter(
+        (place) => !isExcludedPlace({ name: place.name, types: place.types || [] })
       );
 
-      return filtered.slice(0, maxResults).map((place: any) => ({
+      return filtered.slice(0, maxResults).map((place) => ({
         id: place.place_id,
         placeId: place.place_id,
         name: place.name,

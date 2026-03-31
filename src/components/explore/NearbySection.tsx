@@ -9,6 +9,7 @@ import { SpotCardSkeleton } from './SpotCardSkeleton';
 interface NearbySectionProps {
   spots: LocalSpot[];
   isLoading: boolean;
+  error?: string | null;
   neighborhoodCoords: { lat: number; lng: number };
   isInItinerary: (spotId: string) => boolean;
   onToggleItinerary: (spot: LocalSpot) => void;
@@ -28,6 +29,7 @@ function calculateDistanceKm(
 function NearbySectionComponent({
   spots,
   isLoading,
+  error,
   neighborhoodCoords,
   isInItinerary,
   onToggleItinerary,
@@ -78,8 +80,16 @@ function NearbySectionComponent({
         <View>{spots.map(renderSpot)}</View>
       )}
 
+      {/* Error State */}
+      {!isLoading && error && (
+        <View style={styles.emptyState}>
+          <Ionicons name="cloud-offline-outline" size={32} color={COLORS.gray400} />
+          <Text style={styles.emptyText}>Couldn't load nearby places</Text>
+        </View>
+      )}
+
       {/* Empty State */}
-      {!isLoading && spots.length === 0 && (
+      {!isLoading && !error && spots.length === 0 && (
         <View style={styles.emptyState}>
           <Ionicons name="location-outline" size={32} color={COLORS.gray400} />
           <Text style={styles.emptyText}>No places found nearby</Text>

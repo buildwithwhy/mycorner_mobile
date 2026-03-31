@@ -29,6 +29,24 @@ const mapToLocalSpot = (result: NearbyPlaceResult, neighborhoodId: string): Loca
   placeId: result.placeId,
 });
 
+// Simple in-memory cache for Google Places results (30 minute TTL)
+const CACHE_TTL_MS = 30 * 60 * 1000;
+const nearbyCache = new Map<string, { spots: LocalSpot[]; timestamp: number }>();
+
+function getCachedNearby(neighborhoodId: string): LocalSpot[] | null {
+  const entry = nearbyCache.get(neighborhoodId);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    nearbyCache.delete(neighborhoodId);
+    return null;
+  }
+  return entry.spots;
+}
+
+function setCachedNearby(neighborhoodId: string, spots: LocalSpot[]): void {
+  nearbyCache.set(neighborhoodId, { spots, timestamp: Date.now() });
+}
+
 export function useLocalSpots(neighborhoodId: string): UseLocalSpotsReturn {
   const { getLimit } = useFeatureAccess();
   const nearbyLimit = getLimit('full_nearby_results') ?? 20;
@@ -53,6 +71,15 @@ export function useLocalSpots(neighborhoodId: string): UseLocalSpotsReturn {
     let cancelled = false;
 
     const fetchNearby = async () => {
+      // Check cache first (skip cache on manual refresh)
+      if (fetchTrigger === 0) {
+        const cached = getCachedNearby(neighborhoodId);
+        if (cached) {
+          setAllNearbySpots(cached);
+          return;
+        }
+      }
+
       setIsLoading(true);
       setError(null);
 
@@ -66,7 +93,9 @@ export function useLocalSpots(neighborhoodId: string): UseLocalSpotsReturn {
         // Ignore stale responses
         if (cancelled || requestId !== activeRequestRef.current) return;
 
-        setAllNearbySpots(results.map((r) => mapToLocalSpot(r, neighborhoodId)));
+        const spots = results.map((r) => mapToLocalSpot(r, neighborhoodId));
+        setCachedNearby(neighborhoodId, spots);
+        setAllNearbySpots(spots);
       } catch (err) {
         if (cancelled || requestId !== activeRequestRef.current) return;
 

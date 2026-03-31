@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -59,6 +59,13 @@ export default function DetailScreen() {
   const [editingMetric, setEditingMetric] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const notesSectionY = useRef(0);
+  const noteScrollTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(() => {
+    return () => {
+      if (noteScrollTimerRef.current) clearTimeout(noteScrollTimerRef.current);
+    };
+  }, []);
 
   // Photo management hook (handles permissions, picking, taking, deleting)
   const { handleAddPhoto, handleDeletePhoto } = usePhotoManagement(
@@ -290,7 +297,7 @@ export default function DetailScreen() {
                   onNotePress={() => {
                     setEditingMetric(null);
                     scrollViewRef.current?.scrollTo({ y: HERO_HEIGHT + notesSectionY.current, animated: true });
-                    setTimeout(() => {
+                    noteScrollTimerRef.current = setTimeout(() => {
                       requireAuth('notes', () => setIsEditingNote(true));
                     }, 400);
                   }}

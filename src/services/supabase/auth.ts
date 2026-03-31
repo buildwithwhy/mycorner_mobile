@@ -156,8 +156,8 @@ export const signInWithApple = async () => {
     }
 
     return { data, error: null };
-  } catch (err: any) {
-    if (err.code === 'ERR_REQUEST_CANCELED') {
+  } catch (err: unknown) {
+    if (err instanceof Error && 'code' in err && (err as { code: string }).code === 'ERR_REQUEST_CANCELED') {
       return { data: null, error: { message: 'Sign in was cancelled' } };
     }
     logger.error('Apple sign-in exception:', err);
