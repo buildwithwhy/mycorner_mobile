@@ -53,28 +53,54 @@ export function useFilteredNeighborhoods(
     return scoreAndSortNeighborhoods(filtered, preferences);
   }, [filtered, preferences, hasCustomPreferences]);
 
+  // Group sub-neighborhoods after their parent in sorted order
+  const groupSubNeighborhoods = (sorted: Neighborhood[]): Neighborhood[] => {
+    const parents = sorted.filter((n) => !n.parentId);
+    const childrenByParent = new Map<string, Neighborhood[]>();
+    for (const n of sorted) {
+      if (n.parentId) {
+        const list = childrenByParent.get(n.parentId) || [];
+        list.push(n);
+        childrenByParent.set(n.parentId, list);
+      }
+    }
+    const result: Neighborhood[] = [];
+    for (const parent of parents) {
+      result.push(parent);
+      const children = childrenByParent.get(parent.id);
+      if (children) result.push(...children);
+    }
+    // Include orphaned sub-neighborhoods (parent filtered out by search/filters)
+    for (const n of sorted) {
+      if (n.parentId && !result.includes(n)) result.push(n);
+    }
+    return result;
+  };
+
   // Sort filtered neighborhoods
   const filteredNeighborhoods = useMemo(() => {
     if (sortBy === 'bestMatch' && scoredNeighborhoods) {
-      return scoredNeighborhoods;
+      return groupSubNeighborhoods(scoredNeighborhoods);
     }
 
     const toSort = [...filtered];
 
     if (sortBy === 'name') {
-      return toSort.sort((a, b) => a.name.localeCompare(b.name));
+      toSort.sort((a, b) => a.name.localeCompare(b.name));
+      return groupSubNeighborhoods(toSort);
     }
 
     const metricKey = sortBy as MetricKey;
     if (SORTABLE_METRICS.some((m) => m.key === metricKey)) {
-      return toSort.sort((a, b) => {
+      toSort.sort((a, b) => {
         const aVal = a[metricKey as keyof Neighborhood] as number;
         const bVal = b[metricKey as keyof Neighborhood] as number;
         return bVal - aVal;
       });
+      return groupSubNeighborhoods(toSort);
     }
 
-    return toSort;
+    return groupSubNeighborhoods(toSort);
   }, [filtered, sortBy, scoredNeighborhoods]);
 
   // Derive match percentages from already-scored data (no re-scoring)

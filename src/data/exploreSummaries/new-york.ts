@@ -181,4 +181,125 @@ export const newYorkExploreSummaries: Record<string, ExploreSummary> = {
       'Tottenville is New York\'s southernmost tip — a quiet beach town with a conference house from colonial times, shoreline walks, and a Main Street that feels a world away from Manhattan.',
     highlightChips: ['Conference House', 'Beach walks', 'Main Street', 'Coastal views'],
   },
+  // Sub-neighborhoods
+  // ny-31 - Lincoln Square
+  'ny-31': {
+    blurb:
+      'Lincoln Square is the cultural crown of the Upper West Side — Lincoln Center hosts opera, ballet, and jazz nightly, Columbus Avenue is lined with brunch spots, and Central Park\'s Sheep Meadow is steps away.',
+    highlightChips: ['Lincoln Center', 'Metropolitan Opera', 'Columbus Avenue', 'Central Park'],
+  },
+  // ny-32 - Morningside Heights
+  'ny-32': {
+    blurb:
+      'Morningside Heights is a college-town oasis in Manhattan — Columbia University sets the tone, the Cathedral of St. John the Divine is breathtaking, and Tom\'s Restaurant (yes, that one from Seinfeld) is still serving.',
+    highlightChips: ['Columbia University', 'Cathedral of St. John', 'Tom\'s Restaurant', 'Morningside Park'],
+  },
+  // ny-33 - Yorkville
+  'ny-33': {
+    blurb:
+      'Yorkville is the Upper East Side\'s quieter, homier side — old German and Hungarian bakeries still dot the streets, Carl Schurz Park offers East River sunsets, and the Second Avenue Subway made it easier than ever to reach.',
+    highlightChips: ['Carl Schurz Park', 'European bakeries', 'Gracie Mansion', 'East River views'],
+  },
+  // ny-34 - Lenox Hill
+  'ny-34': {
+    blurb:
+      'Lenox Hill is refined Upper East Side living — the Frick Collection is an intimate alternative to the mega-museums, Park Avenue is pristine, and the dining along Lexington Avenue is quietly excellent.',
+    highlightChips: ['Frick Collection', 'Park Avenue', 'Lexington dining', 'Central Park access'],
+  },
+  // ny-35 - West Village
+  'ny-35': {
+    blurb:
+      'The West Village is Manhattan\'s most romantic neighborhood — cobblestone streets, tiny jazz bars, celebrity-chef restaurants, and the historic Stonewall Inn. Bleecker Street is a destination in itself.',
+    highlightChips: ['Bleecker Street', 'Cobblestones', 'Stonewall Inn', 'Hudson River Park'],
+  },
+  // ny-36 - NoHo
+  'ny-36': {
+    blurb:
+      'NoHo is a tiny pocket of loft architecture and high-end taste — Bond Street restaurants, the landmark Merchant\'s House Museum, and some of Manhattan\'s most beautiful cast-iron facades.',
+    highlightChips: ['Bond Street', 'Merchant\'s House', 'Loft architecture', 'Designer shops'],
+  },
+  // ny-37 - Alphabet City
+  'ny-37': {
+    blurb:
+      'Alphabet City is the East Village\'s wilder east end — Avenues A through D pack in community gardens, Latin bodegas, dive bars, and some of the city\'s most authentic nightlife. Tompkins Square anchors it all.',
+    highlightChips: ['Community gardens', 'Avenue B nightlife', 'Tompkins Square', 'Latin food'],
+  },
+  // ny-38 - St. Marks Place
+  'ny-38': {
+    blurb:
+      'St. Marks Place is three blocks of pure NYC energy — once the heart of punk and counterculture, now a neon-lit strip of Japanese curry houses, quirky shops, and tattoo parlors that still buzzes until 2 AM.',
+    highlightChips: ['Japanese eateries', 'Punk history', 'Late-night culture', 'Quirky shops'],
+  },
+  // ny-39 - East Harlem
+  'ny-39': {
+    blurb:
+      'East Harlem, known as El Barrio, is the heart of NYC\'s Puerto Rican culture — vibrant murals, La Marqueta market, El Museo del Barrio, and some of the most authentic Latin food in the city.',
+    highlightChips: ['El Museo del Barrio', 'La Marqueta', 'Puerto Rican food', 'Street murals'],
+  },
+  // ny-40 - Sugar Hill
+  'ny-40': {
+    blurb:
+      'Sugar Hill earned its name in the Harlem Renaissance when living here was the "sweet life" — Duke Ellington and Langston Hughes called it home. Today, elegant rowhouses and the Sugar Hill Museum keep the legacy alive.',
+    highlightChips: ['Sugar Hill Museum', 'Harlem Renaissance', 'Historic rowhouses', 'St. Nicholas Park'],
+  },
+  // ny-41 - South Williamsburg
+  'ny-41': {
+    blurb:
+      'South Williamsburg is defined by its Hasidic Jewish community — kosher bakeries, traditional shops, and Peter Luger Steak House, one of the most famous steakhouses in the country, all in a few walkable blocks.',
+    highlightChips: ['Peter Luger', 'Hasidic culture', 'Kosher bakeries', 'Williamsburg Bridge'],
+  },
+  // ny-42 - East Williamsburg
+  'ny-42': {
+    blurb:
+      'East Williamsburg is where Brooklyn\'s creative scene gets raw — warehouse venues like House of Yes, emerging galleries, craft distilleries, and some of the city\'s most exciting underground events.',
+    highlightChips: ['House of Yes', 'Warehouse parties', 'Craft distilleries', 'Gallery openings'],
+  },
+  // ny-43 - Gowanus
+  'ny-43': {
+    blurb:
+      'Gowanus is Brooklyn\'s creative-industrial frontier — the canal is being cleaned up while breweries, maker spaces, and shuffleboard clubs fill the warehouses. It\'s gritty, fun, and evolving fast.',
+    highlightChips: ['Gowanus Canal', 'Breweries', 'Royal Palms', 'Maker spaces'],
+  },
+  // ny-44 - South Slope
+  'ny-44': {
+    blurb:
+      'South Slope is Park Slope\'s more relaxed younger sibling — quiet tree-lined blocks, neighborhood coffee shops, proximity to Green-Wood Cemetery\'s stunning grounds, and a strong community feel.',
+    highlightChips: ['Green-Wood Cemetery', 'Local cafes', 'Quiet residential', 'Prospect Park'],
+  },
+  // ny-45 - Prospect Heights
+  'ny-45': {
+    blurb:
+      'Prospect Heights is where culture and green space collide — the Brooklyn Museum and Botanic Garden sit on its doorstep, Vanderbilt Avenue is a foodie strip, and Barclays Center brings the concerts.',
+    highlightChips: ['Brooklyn Museum', 'Botanic Garden', 'Vanderbilt Avenue', 'Barclays Center'],
+  },
+  // ny-46 - Weeksville
+  'ny-46': {
+    blurb:
+      'Weeksville is a neighbourhood steeped in history — one of America\'s first free Black communities, the Heritage Center preserves original 1830s houses, and the area maintains a strong sense of community pride.',
+    highlightChips: ['Weeksville Heritage Center', 'Historic houses', 'Community spirit', 'Black history'],
+  },
+  // ny-47 - Ditmars
+  'ny-47': {
+    blurb:
+      'Ditmars is Astoria\'s crown — the final stop on the N/W line opens onto Astoria Park with its Olympic-sized pool and Hell Gate Bridge views. The Greek restaurants here are among the best in the city.',
+    highlightChips: ['Astoria Park', 'Greek dining', 'Hell Gate Bridge', 'Olympic pool'],
+  },
+  // ny-48 - Steinway
+  'ny-48': {
+    blurb:
+      'Steinway Street is Astoria\'s global corridor — named for the piano factory that once defined it, it\'s now the heart of NYC\'s Egyptian community with hookah lounges, Middle Eastern bakeries, and international markets.',
+    highlightChips: ['Steinway Street', 'Egyptian food', 'Hookah lounges', 'Middle Eastern bakeries'],
+  },
+  // ny-49 - Hunters Point
+  'ny-49': {
+    blurb:
+      'Hunters Point is LIC\'s waterfront gem — Gantry Plaza State Park offers some of the best Manhattan skyline views in the city, the ferry connects to Midtown, and new restaurants line the waterfront.',
+    highlightChips: ['Gantry Plaza', 'Skyline views', 'NYC Ferry', 'Waterfront dining'],
+  },
+  // ny-50 - Court Square
+  'ny-50': {
+    blurb:
+      'Court Square is the arts and transit heart of Long Island City — MoMA PS1 is the draw, multiple subway lines converge here, and the surrounding blocks mix galleries, coffee shops, and converted industrial spaces.',
+    highlightChips: ['MoMA PS1', 'Transit hub', 'Gallery district', 'Court Square Park'],
+  },
 };

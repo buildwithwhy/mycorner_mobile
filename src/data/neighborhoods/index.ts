@@ -6,6 +6,7 @@ export interface Neighborhood {
   cityId: string;
   name: string;
   borough: string;
+  parentId?: string; // Optional: ID of parent neighborhood (for sub-neighborhoods)
   affordability: number; // 1-5 (1 = expensive, 5 = affordable)
   safety: number; // 1-5
   transit: number; // 1-5

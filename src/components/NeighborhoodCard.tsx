@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Neighborhood } from '../data/neighborhoods';
+import { Neighborhood, getNeighborhoodById } from '../data/neighborhoods';
 import { NeighborhoodStatus } from '../contexts/AppContext';
 import { COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS, BOROUGH_COLORS } from '../constants/theme';
 import { getNeighborhoodImage } from '../assets/neighborhood-images';
@@ -51,6 +51,11 @@ function NeighborhoodCard({
 }: NeighborhoodCardProps) {
   const statusInfo = currentStatus ? STATUS_CONFIG[currentStatus] : null;
   const hasPhotos = photoCount > 0;
+  const subtitle = useMemo(() => {
+    if (!neighborhood.parentId) return neighborhood.borough;
+    const parent = getNeighborhoodById(neighborhood.parentId);
+    return parent ? `${neighborhood.borough} · in ${parent.name}` : neighborhood.borough;
+  }, [neighborhood.parentId, neighborhood.borough]);
 
   // Memoize borough color to avoid recalculating on every render
   const boroughColor = useMemo(
@@ -125,7 +130,7 @@ function NeighborhoodCard({
           {/* Content Section */}
           <View style={styles.cardViewContent}>
             <Text style={styles.cardViewTitle}>{neighborhood.name}</Text>
-            <Text style={styles.cardViewBorough}>{neighborhood.borough}</Text>
+            <Text style={styles.cardViewBorough}>{subtitle}</Text>
             <NeighborhoodStats neighborhood={neighborhood} variant="compact" currencySymbol={currencySymbol} />
           </View>
         </TouchableOpacity>
@@ -201,7 +206,7 @@ function NeighborhoodCard({
                 </View>
               )}
             </View>
-            <Text style={styles.cardBorough}>{neighborhood.borough}</Text>
+            <Text style={styles.cardBorough}>{subtitle}</Text>
           </View>
           {statusInfo && (
             <View style={[styles.statusBadge, { backgroundColor: `${statusInfo.color}15` }]}>

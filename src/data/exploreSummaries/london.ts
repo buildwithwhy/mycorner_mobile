@@ -241,4 +241,119 @@ export const londonExploreSummaries: Record<string, ExploreSummary> = {
       'Crystal Palace sits on a hilltop with panoramic views, a park full of Victorian dinosaur sculptures, a triangle of independent shops and restaurants, and a thriving community feel.',
     highlightChips: ['Dinosaur sculptures', 'Crystal Palace Park', 'The Triangle', 'Panoramic views'],
   },
+  // --- Sub-neighborhoods ---
+  // 41 - Canada Water (parent: Bermondsey)
+  '41': {
+    blurb:
+      'Canada Water is reinventing itself around the striking library and old dock basin. The Jubilee line gets you to Canary Wharf in two minutes, and the emerging town centre adds new cafes and shops every month.',
+    highlightChips: ['Canada Water Library', 'Jubilee line', 'Dock basin', 'New town centre'],
+  },
+  // 42 - Surrey Quays (parent: Bermondsey)
+  '42': {
+    blurb:
+      'Surrey Quays wraps around the old timber docks — now a peaceful waterside walk and ecological park. The big retail park covers everyday needs, but the real charm is the quiet dockside strolls.',
+    highlightChips: ['Surrey Water', 'Ecological park', 'Waterside walks', 'Retail park'],
+  },
+  // 43 - Rotherhithe (parent: Bermondsey)
+  '43': {
+    blurb:
+      'Rotherhithe is one of London\'s hidden riverside gems — the Mayflower pub where the Pilgrims set sail, the Brunel Museum in the Thames Tunnel shaft, and a peaceful stretch of the Thames Path.',
+    highlightChips: ['Mayflower pub', 'Brunel Museum', 'Thames Path', 'Pilgrim history'],
+  },
+  // 44 - Chalk Farm (parent: Camden)
+  '44': {
+    blurb:
+      'Chalk Farm offers Camden\'s creativity without the tourist crush. The Roundhouse hosts world-class performances, Chalk Farm Road is lined with independent restaurants, and the canal towpath is right outside.',
+    highlightChips: ['The Roundhouse', 'Chalk Farm Road', 'Canal towpath', 'Independent dining'],
+  },
+  // 45 - Primrose Hill (parent: Camden)
+  '45': {
+    blurb:
+      'Climb the hill for one of London\'s greatest panoramas — the city skyline laid out before you. Below, the pastel-painted village high street has boutique bookshops, patisseries, and celebrity-magnet cafes.',
+    highlightChips: ['Hilltop panorama', 'Village high street', 'Regent\'s Park', 'Boutique shops'],
+  },
+  // 46 - Blackheath (parent: Greenwich)
+  '46': {
+    blurb:
+      'Blackheath is one of south-east London\'s most desirable villages — the wide open heath is perfect for kite flying, and the village centre has excellent independent restaurants, a bookshop, and weekend farmers market.',
+    highlightChips: ['The heath', 'Village restaurants', 'Farmers market', 'Georgian terraces'],
+  },
+  // 47 - Cutty Sark (parent: Greenwich)
+  '47': {
+    blurb:
+      'The Cutty Sark area is the beating heart of maritime Greenwich — the restored clipper ship, the foot tunnel under the Thames, the covered market, and the grand approach to the Old Royal Naval College.',
+    highlightChips: ['Cutty Sark ship', 'Greenwich Market', 'Foot tunnel', 'Naval College'],
+  },
+  // 48 - Highbury (parent: Islington)
+  '48': {
+    blurb:
+      'Highbury is leafy, residential Islington at its best — Highbury Fields is one of the borough\'s finest green spaces, the Victorian and Edwardian terraces are beautiful, and the old Arsenal stadium is now a striking housing development.',
+    highlightChips: ['Highbury Fields', 'Arsenal heritage', 'Victorian terraces', 'Quiet streets'],
+  },
+  // 49 - Barnsbury (parent: Islington)
+  '49': {
+    blurb:
+      'Barnsbury\'s handsome Georgian squares feel a world away from busy Upper Street, just minutes walk south. Thornhill Road has a small cluster of excellent restaurants, and Cloudesley Square is one of Islington\'s prettiest.',
+    highlightChips: ['Georgian squares', 'Thornhill Road dining', 'Cloudesley Square', 'Quiet village feel'],
+  },
+  // 50 - London Fields (parent: Hackney Central)
+  '50': {
+    blurb:
+      'London Fields is the ultimate East London Saturday — Broadway Market overflowing with street food, the heated lido packed year-round, and pub gardens spilling onto the park edges.',
+    highlightChips: ['Broadway Market', 'London Fields Lido', 'Pub gardens', 'Craft coffee'],
+  },
+  // 51 - Victoria Park Village (parent: Hackney Central)
+  '51': {
+    blurb:
+      'Victoria Park Village is the gentler side of Hackney — a small parade of independent shops and cafes on the western edge of London\'s oldest public park, with boating, markets, and tree-lined avenues.',
+    highlightChips: ['Victoria Park', 'Boating lake', 'Village parade', 'Sunday market'],
+  },
+  // 52 - Olympic Park (parent: Stratford)
+  '52': {
+    blurb:
+      'Queen Elizabeth Olympic Park is east London\'s green lung — the Velodrome, London Stadium, and Aquatics Centre sit alongside wildflower meadows, playgrounds, and the Orbit tower with its record-breaking slide.',
+    highlightChips: ['Velodrome', 'London Stadium', 'Orbit slide', 'Wildflower meadows'],
+  },
+  // 53 - Maryland (parent: Stratford)
+  '53': {
+    blurb:
+      'Maryland is a quiet residential pocket with its own Elizabeth line station, giving it direct connections to the West End and Heathrow. It\'s more affordable than central Stratford and just a short walk from the Olympic Park.',
+    highlightChips: ['Elizabeth line', 'Affordable living', 'Local shops', 'Olympic Park access'],
+  },
+  // 54 - Southfields (parent: Wandsworth)
+  '54': {
+    blurb:
+      'Southfields is best known for its "Grid" — a network of streets packed with independent cafes, bakeries, and boutiques. Wimbledon Park is on the doorstep and the District line whisks you into central London.',
+    highlightChips: ['The Grid', 'Wimbledon Park', 'Independent cafes', 'District line'],
+  },
+  // 55 - East Putney (parent: Wandsworth)
+  '55': {
+    blurb:
+      'East Putney sits between Wandsworth and Putney proper, with its own District line station and easy access to the Thames towpath. Leafy residential streets, good schools, and a relaxed pace of life.',
+    highlightChips: ['District line', 'Thames towpath', 'Leafy streets', 'Riverside access'],
+  },
+  // 56 - East Dulwich (parent: Dulwich)
+  '56': {
+    blurb:
+      'East Dulwich\'s Lordship Lane is one of south London\'s great high streets — packed with independent restaurants, delis, and wine bars. The Sunday farmers market and Peckham Rye Park round out a perfect weekend.',
+    highlightChips: ['Lordship Lane', 'Farmers market', 'Wine bars', 'Peckham Rye Park'],
+  },
+  // 57 - Herne Hill (parent: Dulwich)
+  '57': {
+    blurb:
+      'Herne Hill straddles the border of Lambeth and Southwark with Brockwell Park as its centrepiece — the lido, the walled garden, and the hilltop views are all exceptional. The Sunday market on the old station is a local institution.',
+    highlightChips: ['Brockwell Park', 'Brockwell Lido', 'Sunday market', 'Half Moon pub'],
+  },
+  // 58 - Blackhorse Road (parent: Walthamstow)
+  '58': {
+    blurb:
+      'Blackhorse Road is Walthamstow\'s creative edge — the Blackhorse Workshop makerspace, the reservoirs, and the Walthamstow Wetlands nature reserve make it a unique blend of industry, nature, and community.',
+    highlightChips: ['Walthamstow Wetlands', 'Blackhorse Workshop', 'Reservoirs', 'Creative studios'],
+  },
+  // 59 - Wood Street (parent: Walthamstow)
+  '59': {
+    blurb:
+      'Wood Street is the quieter, more villagey end of Walthamstow — close to Epping Forest for walks, with its own Overground station and the Wood Street Walls street art trail brightening up the high street.',
+    highlightChips: ['Epping Forest', 'Wood Street Walls', 'Village feel', 'Overground station'],
+  },
 };

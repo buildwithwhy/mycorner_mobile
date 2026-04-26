@@ -35,6 +35,27 @@ export const newYorkCoordinates: Record<string, { latitude: number; longitude: n
   // Staten Island
   'ny-29': { latitude: 40.6433, longitude: -74.0735 }, // St. George
   'ny-30': { latitude: 40.5075, longitude: -74.2477 }, // Tottenville
+  // Sub-neighborhoods
+  'ny-31': { latitude: 40.7725, longitude: -73.9835 }, // Lincoln Square
+  'ny-32': { latitude: 40.8100, longitude: -73.9622 }, // Morningside Heights
+  'ny-33': { latitude: 40.7764, longitude: -73.9490 }, // Yorkville
+  'ny-34': { latitude: 40.7685, longitude: -73.9620 }, // Lenox Hill
+  'ny-35': { latitude: 40.7338, longitude: -74.0060 }, // West Village
+  'ny-36': { latitude: 40.7263, longitude: -73.9925 }, // NoHo
+  'ny-37': { latitude: 40.7230, longitude: -73.9780 }, // Alphabet City
+  'ny-38': { latitude: 40.7290, longitude: -73.9878 }, // St. Marks Place
+  'ny-39': { latitude: 40.7945, longitude: -73.9425 }, // East Harlem
+  'ny-40': { latitude: 40.8260, longitude: -73.9470 }, // Sugar Hill
+  'ny-41': { latitude: 40.7005, longitude: -73.9570 }, // South Williamsburg
+  'ny-42': { latitude: 40.7105, longitude: -73.9380 }, // East Williamsburg
+  'ny-43': { latitude: 40.6740, longitude: -73.9880 }, // Gowanus
+  'ny-44': { latitude: 40.6620, longitude: -73.9830 }, // South Slope
+  'ny-45': { latitude: 40.6775, longitude: -73.9685 }, // Prospect Heights
+  'ny-46': { latitude: 40.6690, longitude: -73.9345 }, // Weeksville
+  'ny-47': { latitude: 40.7720, longitude: -73.9120 }, // Ditmars
+  'ny-48': { latitude: 40.7618, longitude: -73.9155 }, // Steinway
+  'ny-49': { latitude: 40.7420, longitude: -73.9565 }, // Hunters Point
+  'ny-50': { latitude: 40.7475, longitude: -73.9440 }, // Court Square
 };
 
 // Default NYC center coordinates

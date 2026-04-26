@@ -40,6 +40,26 @@ export const londonCoordinates: Record<string, { latitude: number; longitude: nu
   '38': { latitude: 51.4946, longitude: -0.0994 }, // Elephant & Castle
   '39': { latitude: 51.5225, longitude: -0.1545 }, // Marylebone
   '40': { latitude: 51.4185, longitude: -0.0728 }, // Crystal Palace
+  // Sub-neighborhoods
+  '41': { latitude: 51.4979, longitude: -0.0498 }, // Canada Water
+  '42': { latitude: 51.4935, longitude: -0.0465 }, // Surrey Quays
+  '43': { latitude: 51.5010, longitude: -0.0518 }, // Rotherhithe
+  '44': { latitude: 51.5427, longitude: -0.1510 }, // Chalk Farm
+  '45': { latitude: 51.5395, longitude: -0.1602 }, // Primrose Hill
+  '46': { latitude: 51.4676, longitude: 0.0085 }, // Blackheath
+  '47': { latitude: 51.4831, longitude: -0.0101 }, // Cutty Sark
+  '48': { latitude: 51.5522, longitude: -0.0982 }, // Highbury
+  '49': { latitude: 51.5420, longitude: -0.1103 }, // Barnsbury
+  '50': { latitude: 51.5415, longitude: -0.0584 }, // London Fields
+  '51': { latitude: 51.5365, longitude: -0.0445 }, // Victoria Park Village
+  '52': { latitude: 51.5460, longitude: -0.0137 }, // Olympic Park
+  '53': { latitude: 51.5465, longitude: 0.0050 }, // Maryland
+  '54': { latitude: 51.4445, longitude: -0.2060 }, // Southfields
+  '55': { latitude: 51.4578, longitude: -0.2060 }, // East Putney
+  '56': { latitude: 51.4540, longitude: -0.0770 }, // East Dulwich
+  '57': { latitude: 51.4530, longitude: -0.0940 }, // Herne Hill
+  '58': { latitude: 51.5830, longitude: -0.0410 }, // Blackhorse Road
+  '59': { latitude: 51.5905, longitude: -0.0030 }, // Wood Street
 };
 
 // Default London center coordinates

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
+import MapView, { Marker, Polygon, Polyline, PROVIDER_GOOGLE, PROVIDER_DEFAULT, type Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,7 @@ import { COLORS, DESTINATION_COLORS, STATUS_CONFIG, SPACING, BORDER_RADIUS, FONT
 import NeighborhoodStats from '../components/NeighborhoodStats';
 import SignInPromptModal from '../components/SignInPromptModal';
 import StatusPickerModal from '../components/StatusPickerModal';
+import { getNeighborhoodBoundary } from '../data/boundaries';
 
 // Memoized marker component — only re-renders when its own props change
 const MapMarker = React.memo(function MapMarker({
@@ -63,7 +64,18 @@ export default function MapScreen() {
   const [showStatusPicker, setShowStatusPicker] = useState(false);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
+  const [showBoundaries, setShowBoundaries] = useState(false);
   const mapRef = useRef<MapView>(null);
+
+  // Track zoom level for boundaries and sub-neighborhoods
+  const [zoomDelta, setZoomDelta] = useState(selectedCity.region.latitudeDelta);
+  const showBoundariesThreshold = 0.15;
+  const showSubNeighborhoodsThreshold = 0.05;
+
+  const handleRegionChange = useCallback((region: Region) => {
+    setShowBoundaries(region.latitudeDelta < showBoundariesThreshold);
+    setZoomDelta(region.latitudeDelta);
+  }, []);
 
   // Request location permission and get initial location
   useEffect(() => {
@@ -91,6 +103,12 @@ export default function MapScreen() {
       setSelectedNeighborhood(null); // Clear selection when switching cities
     }
   }, [selectedCity.id]);
+
+  // Filter neighborhoods: show sub-neighborhoods only when zoomed in
+  const visibleNeighborhoods = useMemo(() => {
+    if (zoomDelta < showSubNeighborhoodsThreshold) return cityNeighborhoods;
+    return cityNeighborhoods.filter((n) => !n.parentId);
+  }, [cityNeighborhoods, zoomDelta]);
 
   // Memoize neighborhood coordinates to avoid recalculating on every render
   const neighborhoodCoords = useMemo(() => {
@@ -181,8 +199,27 @@ export default function MapScreen() {
         showsUserLocation
         showsMyLocationButton
         mapPadding={{ top: 120, right: 0, bottom: 0, left: 0 }}
+        onRegionChangeComplete={handleRegionChange}
       >
-        {cityNeighborhoods.map((neighborhood) => (
+        {/* Neighborhood boundary polygons */}
+        {showBoundaries && visibleNeighborhoods.map((neighborhood) => {
+          const boundary = getNeighborhoodBoundary(neighborhood.id, selectedCity.id);
+          if (!boundary) return null;
+          const isSelected = selectedNeighborhood === neighborhood.id;
+          return (
+            <Polygon
+              key={`boundary-${neighborhood.id}`}
+              coordinates={boundary}
+              fillColor={isSelected ? 'rgba(93, 138, 138, 0.25)' : 'rgba(93, 138, 138, 0.08)'}
+              strokeColor={isSelected ? COLORS.primary : 'rgba(93, 138, 138, 0.4)'}
+              strokeWidth={isSelected ? 2 : 1}
+              tappable
+              onPress={() => setSelectedNeighborhood(neighborhood.id)}
+            />
+          );
+        })}
+
+        {visibleNeighborhoods.map((neighborhood) => (
           <MapMarker
             key={neighborhood.id}
             neighborhood={neighborhood}
