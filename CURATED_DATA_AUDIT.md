@@ -501,3 +501,19 @@ ok 320 · wrong_address 55 · closed 107 · not_found 31 · uncertain 3
 - `curated-ny5-9` Kaffe 1668 → 275 Greenwich St, New York, NY 10007 — Cafe still operates at 275 Greenwich St but has been rebranded as 'Kaffe Are' (Yelp June 2
 - `curated-ny13-9` Iris Cafe — Original Iris Cafe was at 16 Columbia Pl (now CLOSED per Yelp 2025); relocated to Brooklyn
 
+
+---
+
+## not_found round (re-verified second pass) — APPLIED
+
+Of the 104 first-pass `not_found`, a thorough second pass found 28% were false negatives. Applied:
+- **Deleted 76** (73 confirmed fabricated + 3 real-but-closed)
+- **Address-fixed 20** (real venues, wrong address — incl. Lahpet → Bermondsey Street)
+- **Kept 1** (Dynamo — real & OK), **held 2 uncertain**
+
+### ⚠️ 5 flagged — need manual decision (skipped, NOT changed)
+- `curated-32-9` Department of Coffee — real chain (14+ branches) but none on Chiswick High Rd; no single correct address
+- `curated-42-7` Coffee@33 — real, but in **Brighton**, not Surrey Quays → likely remove
+- `curated-47-7` Drury Tea & Coffee — Covent Garden retail shop now closed; HQ/roastery in Woolwich
+- `curated-ny24-3` Samosa Shack — real, but in **Kingston NY (Hudson Valley)**, not NYC → likely remove
+- `curated-ny39-9` Love Coffee NYC — mobile coffee truck, no fixed address
