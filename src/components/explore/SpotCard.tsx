@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LocalSpot } from '../../types';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, SHADOWS } from '../../constants/theme';
 import { CATEGORY_ICONS } from '../../constants/categories';
+import { SpotTags } from './SpotTags';
 
 interface SpotCardProps {
   spot: LocalSpot;
@@ -69,15 +70,7 @@ function SpotCardComponent({
         ) : null}
 
         {/* Tags */}
-        {spot.tags && spot.tags.length > 0 && (
-          <View style={styles.tagsRow}>
-            {spot.tags.map((tag) => (
-              <View key={tag} style={styles.tagChip}>
-                <Text style={styles.tagText}>{tag}</Text>
-              </View>
-            ))}
-          </View>
-        )}
+        <SpotTags tags={spot.tags} containerStyle={styles.tagsRow} />
       </View>
 
       {/* Right: Add/Remove Button */}
@@ -159,20 +152,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     marginTop: SPACING.sm,
-    gap: SPACING.xs,
-  },
-  tagChip: {
-    backgroundColor: COLORS.gray100,
-    borderRadius: BORDER_RADIUS.round,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-  },
-  tagText: {
-    fontSize: FONT_SIZES.xs,
-    color: COLORS.gray600,
   },
   actionButton: {
     width: 32,
