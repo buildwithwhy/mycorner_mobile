@@ -104,7 +104,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-4-2',
-    neighborhoodId: '4',
+    neighborhoodId: '31',
     name: 'Regent\'s Canal Walk',
     category: 'landmark',
     description: 'Scenic towpath walk from Camden Lock to King\'s Cross or Little Venice',
@@ -230,7 +230,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-15-3',
-    neighborhoodId: '15',
+    neighborhoodId: '31',
     name: 'Sadler\'s Wells',
     category: 'landmark',
     description: 'World-leading dance theatre hosting contemporary and classical performances',
@@ -332,7 +332,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-2-3',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'Clapham Old Town',
     category: 'landmark',
     description: 'Charming village centre with Georgian buildings, pubs, and independent shops',
@@ -405,18 +405,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'Cold pint, canal view, wood-fired pizza. The perfect Hackney Wick afternoon.',
     tags: ['craft beer', 'pizza', 'canal-side', 'outdoor'],
-  },
-  {
-    id: 'curated-7-2',
-    neighborhoodId: '7',
-    name: 'Stour Space',
-    category: 'cafe',
-    description: 'Artist-run cafe and gallery space overlooking the canal',
-    address: '7 Roach Road, E3 2PA',
-    location: { lat: 51.5456, lng: -0.0231 },
-    source: 'curated',
-    editorial: 'Art exhibitions, live music, and a great all-day brunch menu right on the canal.',
-    tags: ['art', 'brunch', 'canal-side', 'creative'],
   },
   {
     id: 'curated-7-3',
@@ -598,7 +586,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-13-3',
-    neighborhoodId: '13',
+    neighborhoodId: '56',
     name: 'Blue Mountain Cafe',
     category: 'cafe',
     description: 'Beloved local brunch spot with a sunny terrace on Lordship Lane',
@@ -674,7 +662,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-16-3',
-    neighborhoodId: '16',
+    neighborhoodId: '25',
     name: 'Chez Bruce',
     category: 'restaurant',
     description: 'Consistently voted one of London\'s favourite neighbourhood restaurants',
@@ -980,7 +968,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   // === FULHAM (id: 27) ===
   {
     id: 'curated-27-1',
-    neighborhoodId: '27',
+    neighborhoodId: '23',
     name: 'Bishops Park',
     category: 'park',
     description: 'Thames-side park with a lake, gardens, and views of Putney Bridge',
@@ -1042,7 +1030,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-28-3',
-    neighborhoodId: '28',
+    neighborhoodId: '58',
     name: 'Walthamstow Wetlands',
     category: 'park',
     description: 'Nature reserve on Victorian reservoirs with birdwatching and walking trails',
@@ -1103,18 +1091,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'The best-value food in London. Sri Lankan hoppers, Punjabi dosas, and craft beer under one roof.',
     tags: ['food market', 'South Asian', 'affordable', 'craft beer'],
-  },
-  {
-    id: 'curated-30-2',
-    neighborhoodId: '30',
-    name: 'Tooting Bec Lido',
-    category: 'landmark',
-    description: 'One of Europe\'s largest outdoor swimming pools, open since 1906',
-    address: 'Tooting Bec Road, SW16 1RU',
-    location: { lat: 51.4376, lng: -0.1469 },
-    source: 'curated',
-    editorial: 'A hundred-metre pool of unheated water. Bracing in winter, glorious in summer. A rite of passage.',
-    tags: ['swimming', 'lido', 'outdoor', 'historic'],
   },
   {
     id: 'curated-30-3',
@@ -1334,7 +1310,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-36-3',
-    neighborhoodId: '36',
+    neighborhoodId: '40',
     name: 'Brown & Green',
     category: 'cafe',
     description: 'Popular brunch cafe in the Horniman Museum gardens with panoramic views',
@@ -1360,7 +1336,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-37-2',
-    neighborhoodId: '37',
+    neighborhoodId: '23',
     name: 'Dynamo',
     category: 'cafe',
     description: 'Cycling-themed specialty coffee shop and bike workshop',
@@ -1574,7 +1550,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   // === CLAPHAM (id: 2) — additional spots ===
   {
     id: 'curated-2-4',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'Trinity',
     category: 'restaurant',
     description: 'Michelin-starred modern European restaurant on Clapham Old Town',
@@ -1586,7 +1562,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-2-5',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'Bistro Union',
     category: 'restaurant',
     description: 'Relaxed all-day bistro from the Trinity team with seasonal British food',
@@ -1598,7 +1574,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-2-6',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'The Windmill on the Common',
     category: 'bar',
     description: 'Young\'s pub with a massive beer garden overlooking Clapham Common',
@@ -1610,7 +1586,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-2-7',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'The Alexandra',
     category: 'bar',
     description: 'Stylish pub on Clapham Common with craft beer and elevated pub food',
@@ -1622,7 +1598,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-2-8',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'Aquum',
     category: 'bar',
     description: 'Sleek cocktail bar tucked underneath Clapham High Street',
@@ -1634,7 +1610,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-2-9',
-    neighborhoodId: '2',
+    neighborhoodId: '37',
     name: 'Brickwood Coffee & Bread',
     category: 'cafe',
     description: 'Aussie-style brunch cafe with specialty coffee and epic pancake stacks',
@@ -1658,18 +1634,6 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
 
   // === BRIXTON (id: 3) — additional spots ===
-  {
-    id: 'curated-3-4',
-    neighborhoodId: '3',
-    name: 'Franco Manca',
-    category: 'restaurant',
-    description: 'The original sourdough pizza spot that started the chain, inside Brixton Market',
-    address: '20 Atlantic Road, Brixton, London SW9 8JD',
-    location: { lat: 51.462676, lng: -0.113854 },
-    source: 'curated',
-    editorial: 'Where it all began. The original is still the best — proper sourdough pizza for a few quid.',
-    tags: ['pizza', 'sourdough', 'affordable', 'original'],
-  },
   {
     id: 'curated-3-5',
     neighborhoodId: '3',
@@ -1770,7 +1734,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-4-6',
-    neighborhoodId: '4',
+    neighborhoodId: '39',
     name: 'Chin Chin Labs',
     category: 'restaurant',
     description: 'Pioneering liquid nitrogen ice cream parlour in Camden Market',
@@ -2189,18 +2153,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     tags: ['air-conditioned-likely', 'Japanese', 'sushi', 'yakitori', 'village'],
   },
   {
-    id: 'curated-10-6',
-    neighborhoodId: '10',
-    name: 'San Lorenzo Fuoriporta',
-    category: 'restaurant',
-    description: 'Authentic Italian neighbourhood restaurant loved by locals',
-    address: '38 Wimbledon Hill Road, SW19 7PA',
-    location: { lat: 51.4353, lng: -0.2087 },
-    source: 'curated',
-    editorial: 'Genuinely Italian — the pasta is handmade and the welcome is warm. A Wimbledon favourite.',
-    tags: ['Italian', 'pasta', 'neighbourhood', 'family-run'],
-  },
-  {
     id: 'curated-10-7',
     neighborhoodId: '10',
     name: 'The Dog & Fox',
@@ -2262,7 +2214,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-10-12',
-    neighborhoodId: '10',
+    neighborhoodId: '16',
     name: 'Story Coffee Wimbledon',
     category: 'cafe',
     description: 'Independent specialty coffee shop with a warm neighbourhood feel',
@@ -2309,18 +2261,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'A secret garden hidden behind the railway. Coffee, cake, and fairy lights among the flowers.',
     tags: ['garden cafe', 'community', 'hidden gem', 'outdoor'],
-  },
-  {
-    id: 'curated-11-9',
-    neighborhoodId: '11',
-    name: 'Pamela',
-    category: 'cafe',
-    description: 'Retro-styled specialty coffee shop on Kingsland Road',
-    address: '428 Kingsland Road, E8 4AA',
-    location: { lat: 51.5480, lng: -0.0762 },
-    source: 'curated',
-    editorial: 'Excellent specialty coffee with a playful retro aesthetic. The pastries are seriously good.',
-    tags: ['specialty coffee', 'retro', 'pastries', 'Kingsland Road'],
   },
 
   // === CANARY WHARF (id: 12) — additional spots ===
@@ -2460,7 +2400,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-13-8',
-    neighborhoodId: '13',
+    neighborhoodId: '56',
     name: 'The Herne Tavern',
     category: 'bar',
     description: 'Friendly local pub by East Dulwich station with craft beer',
@@ -2484,7 +2424,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-13-10',
-    neighborhoodId: '13',
+    neighborhoodId: '56',
     name: 'Gail\'s East Dulwich',
     category: 'cafe',
     description: 'Artisan bakery with sourdough, pastries, and specialty coffee',
@@ -2496,7 +2436,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-13-11',
-    neighborhoodId: '13',
+    neighborhoodId: '56',
     name: 'Bean & Hop',
     category: 'cafe',
     description: 'Specialty coffee and craft beer in a relaxed Lordship Lane setting',
@@ -2570,7 +2510,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-14-12',
-    neighborhoodId: '14',
+    neighborhoodId: '3',
     name: 'F. Mondays',
     category: 'cafe',
     description: 'Colourful cafe in East Village with great brunch and smoothie bowls',
@@ -2632,7 +2572,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-15-11',
-    neighborhoodId: '15',
+    neighborhoodId: '22',
     name: 'Electric Coffee Co',
     category: 'cafe',
     description: 'Tiny specialty coffee shop near Angel tube with excellent pour-overs',
@@ -2682,7 +2622,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-16-8',
-    neighborhoodId: '16',
+    neighborhoodId: '54',
     name: 'The Pig & Whistle',
     category: 'bar',
     description: 'Relaxed Young\'s pub near Wandsworth Common with outdoor seating',
@@ -2694,7 +2634,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-16-11',
-    neighborhoodId: '16',
+    neighborhoodId: '23',
     name: 'The Dynamo',
     category: 'cafe',
     description: 'Cycling cafe and workshop serving specialty coffee and brunch',
@@ -2952,7 +2892,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-19-11',
-    neighborhoodId: '19',
+    neighborhoodId: '2',
     name: 'Story Coffee',
     category: 'cafe',
     description: 'Friendly neighbourhood cafe in a converted Victorian shop',
@@ -3002,7 +2942,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-20-10',
-    neighborhoodId: '20',
+    neighborhoodId: '49',
     name: 'Blue Legume',
     category: 'cafe',
     description: 'Beloved all-day cafe with hearty brunches and a family-friendly atmosphere',
@@ -3114,7 +3054,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   // === EALING (id: 22) — additional spots ===
   {
     id: 'curated-22-4',
-    neighborhoodId: '22',
+    neighborhoodId: '39',
     name: 'Sushi Atelier',
     category: 'restaurant',
     description: 'High-quality sushi and Japanese small plates on Ealing Broadway',
@@ -3174,7 +3114,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-22-9',
-    neighborhoodId: '22',
+    neighborhoodId: '23',
     name: 'Ground Coffee Society',
     category: 'cafe',
     description: 'Specialty coffee with a beautiful industrial-chic interior',
@@ -3460,7 +3400,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-27-9',
-    neighborhoodId: '27',
+    neighborhoodId: '6',
     name: 'Farm Girl Cafe',
     category: 'cafe',
     description: 'Health-conscious cafe with superfood bowls, specialty coffee, and a pink interior',
@@ -3472,7 +3412,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-27-10',
-    neighborhoodId: '27',
+    neighborhoodId: '33',
     name: 'Arapina Bakery',
     category: 'cafe',
     description: 'Greek-inspired bakery with sourdough, pastries, and strong coffee',
@@ -3495,18 +3435,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'The bacon jam that launched a thousand imitators. Creative British cooking in a relaxed setting.',
     tags: ['British', 'creative', 'bacon jam', 'seasonal'],
-  },
-  {
-    id: 'curated-28-5',
-    neighborhoodId: '28',
-    name: 'Froth & Rind',
-    category: 'restaurant',
-    description: 'Craft beer and artisan cheese bar on Orford Road',
-    address: '37 Orford Road, Walthamstow, E17 9NL',
-    location: { lat: 51.582625, lng: -0.012088 },
-    source: 'curated',
-    editorial: 'Beer and cheese — two of life\'s great pleasures, expertly paired under one roof.',
-    tags: ['cheese', 'craft beer', 'artisan', 'Orford Road'],
   },
   {
     id: 'curated-28-6',
@@ -3570,7 +3498,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-28-11',
-    neighborhoodId: '28',
+    neighborhoodId: '26',
     name: 'Dark Arts Coffee',
     category: 'cafe',
     description: 'Heavy metal-themed specialty roastery and cafe',
@@ -3605,18 +3533,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'A Kensington institution with genuine warmth. The garden is a hidden oasis.',
     tags: ['British', 'neighbourhood', 'garden', 'charming'],
-  },
-  {
-    id: 'curated-29-6',
-    neighborhoodId: '29',
-    name: 'Kensington Wine Rooms',
-    category: 'restaurant',
-    description: 'Wine bar and restaurant with Enomatic dispensers and European food',
-    address: '127-129 Kensington Church Street, W8 7LP',
-    location: { lat: 51.5046, lng: -0.1940 },
-    source: 'curated',
-    editorial: 'Over 150 wines available by the glass via self-pour machines. A wine lover\'s playground.',
-    tags: ['wine bar', 'European', 'self-pour', 'date night'],
   },
   {
     id: 'curated-29-7',
@@ -3755,18 +3671,6 @@ export const londonCuratedSpots: LocalSpot[] = [
 
   // === ANGEL (id: 31) — additional spots ===
   {
-    id: 'curated-31-4',
-    neighborhoodId: '31',
-    name: 'Oldroyd',
-    category: 'restaurant',
-    description: 'Intimate neighbourhood bistro with a daily-changing menu from Tom Oldroyd',
-    address: '344 Upper Street, N1 0PD',
-    location: { lat: 51.5479, lng: -0.1036 },
-    source: 'curated',
-    editorial: 'Small plates, big flavours. The daily-changing menu keeps regulars coming back again and again.',
-    tags: ['bistro', 'small plates', 'seasonal', 'intimate'],
-  },
-  {
     id: 'curated-31-5',
     neighborhoodId: '31',
     name: 'Afghan Kitchen',
@@ -3804,7 +3708,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-31-10',
-    neighborhoodId: '31',
+    neighborhoodId: '39',
     name: 'Department of Coffee and Social Affairs',
     category: 'cafe',
     description: 'Specialty coffee shop on Leather Lane with excellent baristas',
@@ -4100,7 +4004,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-35-11',
-    neighborhoodId: '35',
+    neighborhoodId: '11',
     name: 'Allpress Espresso Dalston',
     category: 'cafe',
     description: 'New Zealand roastery serving exceptional coffee near Stoke Newington',
@@ -4174,7 +4078,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-36-11',
-    neighborhoodId: '36',
+    neighborhoodId: '46',
     name: 'Le Delice',
     category: 'cafe',
     description: 'French bakery and cafe with freshly baked croissants and coffee',
@@ -4197,18 +4101,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'MasterChef winner Tim Anderson\'s Japanese comfort food. The ramen and karaage chicken are superb.',
     tags: ['Japanese', 'ramen', 'MasterChef', 'soul food'],
-  },
-  {
-    id: 'curated-37-5',
-    neighborhoodId: '37',
-    name: 'Clapham Tandoori',
-    category: 'restaurant',
-    description: 'Beloved neighbourhood Indian with classic curries and BYO',
-    address: '10 Clapham Common South Side, Clapham, London SW4 7AA',
-    location: { lat: 51.461452, lng: -0.137943 },
-    source: 'curated',
-    editorial: 'An honest neighbourhood curry house. BYO, generous portions, and a warm welcome every time.',
-    tags: ['Indian', 'BYO', 'classic', 'neighbourhood'],
   },
   {
     id: 'curated-37-6',
@@ -4236,7 +4128,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-37-8',
-    neighborhoodId: '37',
+    neighborhoodId: '38',
     name: 'The Tommyfield',
     category: 'bar',
     description: 'Craft beer bar with rotating taps and a cosy industrial interior',
@@ -4295,18 +4187,6 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'An old-school pub holding its own amid the regeneration. Friendly, honest, and affordable.',
     tags: ['air-conditioned-likely', 'pub', 'traditional', 'affordable', 'local'],
-  },
-  {
-    id: 'curated-38-9',
-    neighborhoodId: '38',
-    name: 'Tupi Coffee',
-    category: 'cafe',
-    description: 'Brazilian-run specialty coffee shop with excellent espresso',
-    address: 'Castle Square, SE17 1FY',
-    location: { lat: 51.4945, lng: -0.1000 },
-    source: 'curated',
-    editorial: 'Brazilian-roasted coffee with real passion. The espresso is outstanding.',
-    tags: ['specialty coffee', 'Brazilian', 'espresso', 'passionate'],
   },
   {
     id: 'curated-38-11',
@@ -4398,7 +4278,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   // === CRYSTAL PALACE (id: 40) — additional spots ===
   {
     id: 'curated-40-4',
-    neighborhoodId: '40',
+    neighborhoodId: '33',
     name: 'Brickfields',
     category: 'restaurant',
     description: 'Neighbourhood restaurant with seasonal European cooking and natural wines',
@@ -4533,20 +4413,8 @@ export const londonCuratedSpots: LocalSpot[] = [
 
   // === SURREY QUAYS (id: 42) ===
   {
-    id: 'curated-42-1',
-    neighborhoodId: '42',
-    name: 'Hawker House',
-    category: 'restaurant',
-    description: 'Street food hall with global vendors in a huge warehouse space',
-    address: 'Canada Street, Rotherhithe, London SE16 7PJ',
-    location: { lat: 51.497639, lng: -0.043885 },
-    source: 'curated',
-    editorial: 'A rotating cast of street food vendors under one roof. Always something new to try.',
-    tags: ['street food', 'food hall', 'global', 'casual'],
-  },
-  {
     id: 'curated-42-2',
-    neighborhoodId: '42',
+    neighborhoodId: '21',
     name: 'Lahpet',
     category: 'restaurant',
     description: 'Burmese restaurant bringing tea leaf salads and rich curries to South London',
@@ -4558,7 +4426,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-42-4',
-    neighborhoodId: '42',
+    neighborhoodId: '43',
     name: 'The Blacksmith Arms',
     category: 'bar',
     description: 'Cosy Victorian corner pub with real ales and a lovely beer garden',
@@ -4570,7 +4438,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-42-5',
-    neighborhoodId: '42',
+    neighborhoodId: '43',
     name: 'The Old Salt Quay',
     category: 'bar',
     description: 'Waterfront pub overlooking the docks with outdoor seating and pub classics',
@@ -4656,7 +4524,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-43-8',
-    neighborhoodId: '43',
+    neighborhoodId: '12',
     name: 'Time & Tide Cafe',
     category: 'cafe',
     description: 'Laid-back cafe with views over the river walk, serving specialty coffee and sandwiches',
@@ -4668,7 +4536,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-43-9',
-    neighborhoodId: '43',
+    neighborhoodId: '3',
     name: 'Platform Cafe',
     category: 'cafe',
     description: 'Community-minded cafe near the overground station with good coffee and toasties',
@@ -4839,20 +4707,8 @@ export const londonCuratedSpots: LocalSpot[] = [
     tags: ['cupcakes', 'bakery', 'vintage', 'treats'],
   },
   {
-    id: 'curated-45-8',
-    neighborhoodId: '45',
-    name: 'Ripe Kitchen',
-    category: 'cafe',
-    description: 'Health-conscious cafe with smoothie bowls, salads, and house-baked cakes',
-    address: '136 Regents Park Road, Primrose Hill, London NW1 8XL',
-    location: { lat: 51.54086, lng: -0.157211 },
-    source: 'curated',
-    editorial: 'Fresh, vibrant food that makes you feel good. The smoothie bowls are a colourful work of art.',
-    tags: ['healthy', 'smoothie bowls', 'salads', 'coffee'],
-  },
-  {
     id: 'curated-45-9',
-    neighborhoodId: '45',
+    neighborhoodId: '15',
     name: 'Euphorium Bakery',
     category: 'cafe',
     description: 'Artisan bakery-cafe with sourdough loaves, pastries, and strong coffee',
@@ -5136,7 +4992,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-49-7',
-    neighborhoodId: '49',
+    neighborhoodId: '19',
     name: 'The Pear Tree Cafe',
     category: 'cafe',
     description: 'Charming park cafe in Barnsbury\'s Thornhill Square gardens with outdoor seating',
@@ -5420,7 +5276,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   // === MARYLAND (id: 53) ===
   {
     id: 'curated-53-1',
-    neighborhoodId: '53',
+    neighborhoodId: '14',
     name: 'Yard Sale Pizza Leytonstone',
     category: 'restaurant',
     description: 'Beloved East London pizzeria with wood-fired bases and generous toppings',
@@ -5432,7 +5288,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-53-6',
-    neighborhoodId: '53',
+    neighborhoodId: '14',
     name: 'Tap East',
     category: 'bar',
     description: 'Microbrewery and taproom in Westfield Stratford with house-brewed beers',
@@ -5444,7 +5300,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-53-8',
-    neighborhoodId: '53',
+    neighborhoodId: '52',
     name: 'Yardarm Cafe',
     category: 'cafe',
     description: 'Friendly neighbourhood cafe with brunch, flat whites, and fresh juices',
@@ -5470,7 +5326,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-54-2',
-    neighborhoodId: '54',
+    neighborhoodId: '25',
     name: 'Chez Bruce',
     category: 'restaurant',
     description: 'Acclaimed neighbourhood restaurant with French-Mediterranean cooking and a legendary cheese trolley',
@@ -5506,7 +5362,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-54-6',
-    neighborhoodId: '54',
+    neighborhoodId: '2',
     name: 'The County Arms',
     category: 'bar',
     description: 'Popular Wandsworth pub with an upstairs Thai kitchen and weekend sport',
@@ -5518,7 +5374,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-54-8',
-    neighborhoodId: '54',
+    neighborhoodId: '30',
     name: 'Milk Teeth',
     category: 'cafe',
     description: 'Family-friendly cafe with excellent flat whites, babycinos, and homemade cakes',
@@ -5592,7 +5448,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-55-8',
-    neighborhoodId: '55',
+    neighborhoodId: '23',
     name: 'Brickwood Coffee & Bread',
     category: 'cafe',
     description: 'Aussie-inspired brunch cafe with flat whites, avocado smash, and sourdough toast',
@@ -5630,7 +5486,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-56-2',
-    neighborhoodId: '56',
+    neighborhoodId: '36',
     name: 'Babur',
     category: 'restaurant',
     description: 'Award-winning Indian restaurant with inventive dishes that go far beyond the usual',
@@ -5776,7 +5632,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-57-7',
-    neighborhoodId: '57',
+    neighborhoodId: '9',
     name: 'Lumberjack Cafe',
     category: 'cafe',
     description: 'Rustic brunch cafe with hearty portions, specialty coffee, and a cabin-like feel',
@@ -5826,7 +5682,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-58-2',
-    neighborhoodId: '58',
+    neighborhoodId: '26',
     name: 'Uchi',
     category: 'restaurant',
     description: 'Authentic Japanese restaurant with sushi, ramen, and izakaya-style small plates',
@@ -5874,7 +5730,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-58-9',
-    neighborhoodId: '58',
+    neighborhoodId: '28',
     name: 'Hucks Cafe',
     category: 'cafe',
     description: 'Laid-back cafe on the marshes path with outdoor seating, coffee, and toasties',
@@ -5936,7 +5792,7 @@ export const londonCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-59-6',
-    neighborhoodId: '59',
+    neighborhoodId: '58',
     name: 'Exale Brewing Taproom',
     category: 'bar',
     description: 'Independent microbrewery taproom with rotating house beers and guest taps',
@@ -5969,5 +5825,29 @@ export const londonCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'More than just a corner shop. The deli counter and coffee make this a daily destination.',
     tags: ['deli', 'coffee', 'corner shop', 'neighbourhood'],
+  },
+  {
+    id: 'curated-41-8',
+    neighborhoodId: '41',
+    name: 'Corner Corner',
+    category: 'bar',
+    description: 'Converted-warehouse food hall, bar and events space',
+    address: 'Maritime Street, Canada Water, SE16 7LL',
+    location: { lat: 51.49632, lng: -0.04771 },
+    source: 'curated',
+    editorial: 'A big Canada Water warehouse with food vendors, bars and a busy events programme. Air-conditioned.',
+    tags: ['air-conditioned', 'food hall', 'events', 'drinks'],
+  },
+  {
+    id: 'curated-41-9',
+    neighborhoodId: '41',
+    name: 'Leadbelly\'s Bar & Kitchen',
+    category: 'bar',
+    description: 'Bar and kitchen on Deal Porter Square',
+    address: 'Montreal House, Deal Porter Square, SE16 7AQ',
+    location: { lat: 51.49824, lng: -0.04871 },
+    source: 'curated',
+    editorial: 'Relaxed bar and kitchen in the Canada Water development. Air-conditioned.',
+    tags: ['air-conditioned', 'cocktails', 'casual'],
   },
 ];

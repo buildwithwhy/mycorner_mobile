@@ -633,18 +633,6 @@ export const newYorkCuratedSpots: LocalSpot[] = [
 
   // === GREENPOINT (id: ny-15) ===
   {
-    id: 'curated-ny15-1',
-    neighborhoodId: 'ny-15',
-    name: 'Archestratus Books + Foods',
-    category: 'shop',
-    description: 'Cookbook-only bookshop with a tiny café serving baked goods and coffee',
-    address: '160 Huron Street, Brooklyn, NY 11222',
-    location: { lat: 40.7278, lng: -73.9504 },
-    source: 'curated',
-    editorial: 'A cookbook lover\'s paradise. Grab a pastry, browse, and leave with five new books.',
-    tags: ['bookshop', 'cafe', 'food lovers', 'independent'],
-  },
-  {
     id: 'curated-ny15-2',
     neighborhoodId: 'ny-15',
     name: 'Transmitter Park',
@@ -2424,18 +2412,6 @@ export const newYorkCuratedSpots: LocalSpot[] = [
     editorial: 'Browse books, grab a coffee, sit in the window. A Fort Greene ritual.',
     tags: ['bookshop', 'coffee', 'independent', 'browsing'],
   },
-  {
-    id: 'curated-ny18-11',
-    neighborhoodId: 'ny-18',
-    name: 'Hunger Pang',
-    category: 'cafe',
-    description: 'Asian-inspired cafe with creative drinks and Taiwanese-influenced snacks',
-    address: '1021 Church Avenue, Brooklyn, NY 11218',
-    location: { lat: 40.647037, lng: -73.969694 },
-    source: 'curated',
-    editorial: 'Bubble tea done right, plus inventive Asian-fusion snacks. A welcome addition to Fort Greene.',
-    tags: ['bubble tea', 'Asian-inspired', 'snacks', 'creative'],
-  },
 
   // === BEDFORD-STUYVESANT (id: ny-19) — additional spots ===
   {
@@ -3747,18 +3723,6 @@ export const newYorkCuratedSpots: LocalSpot[] = [
     source: 'curated',
     editorial: 'Distillery tours, barrel-aged cocktails, and a full menu. A unique piece of NYC history revived.',
     tags: ['distillery', 'whiskey', 'American', 'unique experience'],
-  },
-  {
-    id: 'curated-ny36-3',
-    neighborhoodId: 'ny-36',
-    name: 'Bohemian',
-    category: 'restaurant',
-    description: 'Unmarked Japanese restaurant behind a butcher shop, accessible by referral only',
-    address: '57 Great Jones Street, New York, NY 10012',
-    location: { lat: 40.7265, lng: -73.9930 },
-    source: 'curated',
-    editorial: 'A hidden door, a whispered referral, and some of the most inventive Japanese food in the city. Worth the mystery.',
-    tags: ['Japanese', 'hidden', 'speakeasy dining', 'unique'],
   },
   // --- Bars ---
   {
