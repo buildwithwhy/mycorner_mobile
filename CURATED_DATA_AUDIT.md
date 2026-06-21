@@ -517,3 +517,14 @@ Of the 104 first-pass `not_found`, a thorough second pass found 28% were false n
 - `curated-47-7` Drury Tea & Coffee — Covent Garden retail shop now closed; HQ/roastery in Woolwich
 - `curated-ny24-3` Samosa Shack — real, but in **Kingston NY (Hudson Valley)**, not NYC → likely remove
 - `curated-ny39-9` Love Coffee NYC — mobile coffee truck, no fixed address
+
+---
+
+## Flagged removal + geocoding round — APPLIED
+
+- **Removed the 5 flagged spots** (different-city / unfixable): Department of Coffee, Coffee@33, Drury Tea & Coffee, Samosa Shack, Love Coffee NYC.
+- **Geocoded the 179 address-fixed spots** via OpenStreetMap Nominatim (Google Maps keys are all billing-disabled/expired — see below). Updated **131** coordinates; **48 unresolved** keep their prior (stale) coords and need manual attention:
+  curated-14-2, 38-3, 3-11, 9-10, 10-10, 12-10, 12-11, 14-5, 14-12, 15-11, 22-10, 24-10, 28-10, 28-11, 30-10, 33-4, 35-11, 36-6, 43-9, 45-8, 52-3, 52-8, 53-6, 54-3, 54-8, 55-9, 58-5, 59-6, and NY: ny21-3, ny23-3, ny6-12, ny8-9, ny11-12, ny16-5, ny21-9, ny21-11, ny23-6, ny23-7, ny23-11, ny24-8, ny29-5, ny29-10, ny31-8, ny40-1, ny47-1, ny47-5, ny47-7, ny47-9.
+
+### ⚠️ Google Maps billing is OFF
+All Maps API keys (dev/staging/production, iOS+Android) return `REQUEST_DENIED — billing not enabled` (staging key is expired). This means the app's live Places/Directions/Geocoding calls are currently failing at runtime too. Needs fixing before release; geocoding above can be re-run on Google for better accuracy once resolved.
