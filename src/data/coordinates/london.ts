@@ -46,7 +46,6 @@ export const londonCoordinates: Record<string, { latitude: number; longitude: nu
   '44': { latitude: 51.5427, longitude: -0.1510 }, // Chalk Farm
   '45': { latitude: 51.5395, longitude: -0.1602 }, // Primrose Hill
   '46': { latitude: 51.4676, longitude: 0.0085 }, // Blackheath
-  '47': { latitude: 51.4831, longitude: -0.0101 }, // Cutty Sark
   '48': { latitude: 51.5522, longitude: -0.0982 }, // Highbury
   '49': { latitude: 51.5420, longitude: -0.1103 }, // Barnsbury
   '50': { latitude: 51.5415, longitude: -0.0584 }, // London Fields
@@ -58,6 +57,26 @@ export const londonCoordinates: Record<string, { latitude: number; longitude: nu
   '57': { latitude: 51.4530, longitude: -0.0940 }, // Herne Hill
   '58': { latitude: 51.5830, longitude: -0.0410 }, // Blackhorse Road
   '59': { latitude: 51.5905, longitude: -0.0030 }, // Wood Street
+  '60': { latitude: 51.5136, longitude: -0.1365 }, // Soho
+  '61': { latitude: 51.5117, longitude: -0.124 }, // Covent Garden
+  '62': { latitude: 51.5215, longitude: -0.1366 }, // Fitzrovia
+  '63': { latitude: 51.5219, longitude: -0.128 }, // Bloomsbury
+  '64': { latitude: 51.5265, longitude: -0.1079 }, // Clerkenwell
+  '65': { latitude: 51.5116, longitude: -0.1478 }, // Mayfair
+  '66': { latitude: 51.4975, longitude: -0.1357 }, // Westminster
+  '67': { latitude: 51.5134, longitude: -0.089 }, // City of London
+  '68': { latitude: 51.504, longitude: -0.1116 }, // South Bank
+  '69': { latitude: 51.516, longitude: -0.1749 }, // Paddington
+  '70': { latitude: 51.4907, longitude: -0.1404 }, // Pimlico
+  '71': { latitude: 51.4869, longitude: -0.17 }, // Chelsea
+  '72': { latitude: 51.5042, longitude: -0.0564 }, // Wapping
+  '73': { latitude: 51.4912, longitude: -0.2237 }, // Hammersmith
+  '74': { latitude: 51.5052, longitude: -0.2247 }, // Shepherd's Bush
+  '75': { latitude: 51.4741, longitude: -0.093 }, // Camberwell
+  '76': { latitude: 51.5045, longitude: -0.09 }, // Borough
+  '77': { latitude: 51.5148, longitude: -0.0651 }, // Whitechapel
+  '78': { latitude: 51.4862, longitude: -0.1217 }, // Vauxhall
+  '79': { latitude: 51.5316, longitude: -0.1236 }, // King's Cross
 };
 
 // Default London center coordinates
