@@ -45,3 +45,6 @@ yarn-error.*
 /android
 posthog-wizard-installation-error-*.log
 .idea/
+
+# generated boundary preview
+scripts/.cache/

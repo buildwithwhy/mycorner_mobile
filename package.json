@@ -11,6 +11,9 @@
     "ios": "APP_ENV=development expo start --ios",
     "web": "APP_ENV=development expo start --web",
     "clear": "APP_ENV=development expo start --clear",
+    "boundaries": "node scripts/generate-boundaries.js",
+    "boundaries:fetch-water": "node scripts/fetch-thames-water.js",
+    "boundaries:preview": "node scripts/preview-boundaries.js",
     "build:dev:sim": "eas build --profile development --platform ios",
     "build:dev:device": "eas build --profile development:device --platform ios",
     "build:preview": "eas build --profile preview --platform all",
@@ -62,6 +65,7 @@
     "@expo/ngrok": "^4.1.3",
     "@types/react": "~19.1.0",
     "eas-cli": "^16.28.0",
+    "polygon-clipping": "^0.15.7",
     "sharp": "^0.34.5",
     "typescript": "~5.9.2"
   },
