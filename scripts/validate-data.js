@@ -20,6 +20,7 @@ const DATA_FILES = {
   coordinates: ['src/data/coordinates/london.ts', 'src/data/coordinates/new-york.ts'],
   boundaries: ['src/data/boundaries/london.ts', 'src/data/boundaries/new-york.ts'],
   exploreSummaries: ['src/data/exploreSummaries/london.ts', 'src/data/exploreSummaries/new-york.ts'],
+  imagePrompts: 'neighborhood-image-prompts.txt',
   imageMap: 'src/utils/neighborhoodImages.ts',
   imageAssetDir: 'src/assets/neighborhood-images',
 };
@@ -46,10 +47,14 @@ function splitArrayRecords(source) {
   return records;
 }
 
-// Quoted string field, honoring escaped quotes inside the value.
+// Quoted string field, single or double quoted (double quotes appear in the data
+// when a value contains an apostrophe, e.g. "St John's Wood"), honoring escaped
+// quotes inside the value.
 function stringField(record, name) {
-  const m = record.match(new RegExp(`${name}:\\s*'((?:[^'\\\\]|\\\\.)*)'`));
-  return m ? m[1].replace(/\\(.)/g, '$1') : undefined;
+  const m = record.match(
+    new RegExp(`${name}:\\s*('(?:[^'\\\\]|\\\\.)*'|"(?:[^"\\\\]|\\\\.)*")`),
+  );
+  return m ? m[1].slice(1, -1).replace(/\\(.)/g, '$1') : undefined;
 }
 
 function parseNeighborhoodRecords(source) {
@@ -57,7 +62,31 @@ function parseNeighborhoodRecords(source) {
     id: stringField(r, 'id'),
     name: stringField(r, 'name'),
     parentId: stringField(r, 'parentId'),
+    cityId: stringField(r, 'cityId'),
   }));
+}
+
+// neighborhood-image-prompts.txt — sections headed "LONDON|NEW YORK NEIGHBORHOODS (N)"
+// with per-neighborhood entries "--- N. Name ---". Returns the prompt names scoped by
+// city (City of London vs NY names can collide, e.g. Chelsea) plus the counts declared
+// in each section header, so stale header numbers get flagged too.
+function parsePromptNames(source) {
+  const byCity = { london: new Set(), 'new-york': new Set() };
+  const declared = {};
+  let current = null;
+  for (const line of source.split(/\r?\n/)) {
+    const section = line.match(/^(LONDON|NEW YORK) NEIGHBORHOODS \((\d+)\)\s*$/);
+    if (section) {
+      current = section[1] === 'LONDON' ? 'london' : 'new-york';
+      declared[current] = parseInt(section[2], 10);
+      continue;
+    }
+    if (/^\s*END OF PROMPTS/.test(line)) current = null;
+    if (!current) continue;
+    const entry = line.match(/^---\s*\d+\.\s*(.+?)\s*---\s*$/);
+    if (entry) byCity[current].add(entry[1]);
+  }
+  return { byCity, declared };
 }
 
 function parseSpotRecords(source) {
@@ -166,8 +195,34 @@ function runChecks(ctx, { strict = false } = {}) {
       add('explore-summary-parents', 'error', `no explore summary for parent neighborhood ${label}`, nb.id);
     }
 
+    // Prompts file coverage — checked only when the prompts context was loaded.
+    if (ctx.promptNames) {
+      const city = nb.cityId;
+      const names = city && ctx.promptNames.byCity[city];
+      if (!names) {
+        add('prompts-coverage', 'error', `no prompt section for city of neighborhood ${label}`, nb.id);
+      } else if (!nb.name || !names.has(nb.name)) {
+        add('prompts-coverage', 'error', `no image prompt for ${label}`, nb.id);
+      }
+    }
+
     if (!ctx.imageNames.has(nb.id)) {
       add('hero-image', 'error', `no hero image reference for ${label}`, nb.id);
+    }
+  }
+
+  // Header counts in the prompts file must match the entries actually parsed.
+  if (ctx.promptNames) {
+    for (const [city, declaredCount] of Object.entries(ctx.promptNames.declared)) {
+      const actual = ctx.promptNames.byCity[city].size;
+      if (declaredCount !== undefined && declaredCount !== actual) {
+        add(
+          'prompts-coverage',
+          'warning',
+          `prompts file header for ${city} declares ${declaredCount} entries but ${actual} were parsed`,
+          city,
+        );
+      }
     }
   }
 
@@ -223,6 +278,7 @@ const CHECKS = [
   { name: 'curated-spot-coverage', description: 'at least one curated spot' },
   { name: 'explore-summary-parents', description: 'every parent neighborhood has an explore summary' },
   { name: 'hero-image', description: 'hero image reference for every neighborhood' },
+  { name: 'prompts-coverage', description: 'every neighborhood has an image prompt' },
   { name: 'spot-ids-unique', description: 'curated spot ids are unique' },
   { name: 'spot-neighborhood-resolves', description: 'every spot neighborhoodId resolves' },
   { name: 'spot-place-id', description: 'every spot carries a google placeId' },
@@ -260,6 +316,7 @@ function main() {
     DATA_FILES.boundaries.flatMap((f) => Object.entries(parseBoundaryMap(readRepoFile(f)))),
   );
   const summaries = new Set(DATA_FILES.exploreSummaries.flatMap((f) => parseSummaryKeys(readRepoFile(f))));
+  const promptNames = parsePromptNames(readRepoFile(DATA_FILES.imagePrompts));
   const imageMap = parseImageMap(readRepoFile(DATA_FILES.imageMap));
   // An image reference counts only when the asset file exists on disk next to it.
   const coveredImages = new Set(
@@ -267,7 +324,7 @@ function main() {
   );
 
   const findings = runChecks(
-    { neighborhoods, spots, coordinates, boundaries, summaries, imageNames: coveredImages },
+    { neighborhoods, spots, coordinates, boundaries, summaries, promptNames, imageNames: coveredImages },
     { strict },
   );
 
@@ -300,6 +357,7 @@ module.exports = {
   stringField,
   parseNeighborhoodRecords,
   parseSpotRecords,
+  parsePromptNames,
   parseCoordinateMap,
   parseBoundaryMap,
   parseSummaryKeys,
