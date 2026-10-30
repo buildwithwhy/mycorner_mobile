@@ -82,8 +82,49 @@ path anywhere in this repo that sends anything.
 
 ### Freshness exceptions (`freshness/YYYY-MM-DD/<slug>.json`)
 
-Written by the freshness auditor; the exact schema lands with that script. Same
-conventions apply: one record per file, evidence block, human edits `status`.
+Written by `scripts/freshness-auditor.ts`; one file per exception, named
+`<subjectId>-<kind>.json`. Kinds mirror the audit taxonomy in
+CURATED_DATA_AUDIT.md plus stale events:
+
+| kind | Meaning |
+|---|---|
+| `spot-closed` | Places reports `CLOSED_PERMANENTLY` (or `CLOSED_TEMPORARILY`) for a confident name match |
+| `spot-name-drift` | Listing at the curated location now has a materially different name |
+| `spot-address-drift` | Confident name match but > 250 m from the curated coordinates |
+| `spot-not-found` | No listing (or no plausible name match) near the curated location |
+| `spot-uncertain` | Ambiguous match — reviewer judgment needed |
+| `event-stale` | Event past `verifiedAt` + 90 days, or a dated event whose schedule has passed |
+
+```json
+{
+  "kind": "spot-closed",
+  "subject": { "type": "spot", "id": "curated-2-2", "neighborhoodId": "2", "name": "The Dairy" },
+  "detail": "Places reports business_status CLOSED_PERMANENTLY for a confident name match.",
+  "evidence": {
+    "checkedAt": "2026-11-02T08:00:00Z",
+    "placesStatus": "OK",
+    "businessStatus": "CLOSED_PERMANENTLY",
+    "placesName": "The Dairy",
+    "placesAddress": "15 The Pavement, London",
+    "nameSimilarity": 1.0,
+    "distanceMeters": 12
+  },
+  "status": "open"
+}
+```
+
+Status lifecycle: `open | resolved | dismissed` — a human edits `status` in the
+queue PR. API-level failures (`REQUEST_DENIED`, quota errors) are never queued:
+they are `spot-unverifiable` run notes, because an API problem is not evidence
+about a spot.
+
+Run it:
+
+```bash
+bun scripts/freshness-auditor.ts                       # dry run: events-only audit, no network
+bun scripts/freshness-auditor.ts --fixtures=path.json  # dry run against canned Places responses
+bun scripts/freshness-auditor.ts --live                # real Places calls (billing + key required)
+```
 
 ## Promotion path
 

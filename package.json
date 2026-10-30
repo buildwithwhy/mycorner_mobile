@@ -28,7 +28,8 @@
     "build:prod:android": "eas build --profile production --platform android",
     "submit:ios": "eas submit --platform ios",
     "submit:android": "eas submit --platform android",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:auditor": "bun scripts/queue/freshness.fixture.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
