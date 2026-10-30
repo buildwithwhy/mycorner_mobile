@@ -48,3 +48,4 @@ posthog-wizard-installation-error-*.log
 
 # generated boundary preview
 scripts/.cache/
+bun.lock
