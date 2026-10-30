@@ -86,6 +86,17 @@ export interface DestinationRow {
   transport_mode?: string;
 }
 
+export interface ItineraryDbRow {
+  itinerary_id: string;
+  neighborhood_id: string;
+  city_id: string;
+  name: string;
+  stops: ItineraryStop[];
+  total_walk_time: string | null;
+  total_distance: number | null;
+  client_updated_at: number;
+}
+
 // ============================================================================
 // LOCAL SPOTS
 // ============================================================================
