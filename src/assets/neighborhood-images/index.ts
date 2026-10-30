@@ -1,9 +1,10 @@
-// Auto-generated neighborhood image mappings
-// Maps neighborhood ID to the bundled image asset
+// Auto-generated neighborhood image mappings — regenerate with:
+//   node scripts/rename-neighborhood-images.js
+// Maps neighborhood ID to the bundled image asset.
 
 import { ImageSourcePropType } from 'react-native';
 
-// London neighborhoods
+// London neighborhoods (IDs 1 to 79)
 const shoreditch = require('./shoreditch.webp');
 const clapham = require('./clapham.webp');
 const brixton = require('./brixton.webp');
@@ -44,8 +45,44 @@ const claphamNorth = require('./clapham-north.webp');
 const elephantAndCastle = require('./elephant-and-castle.webp');
 const marylebone = require('./marylebone.webp');
 const crystalPalace = require('./crystal-palace.webp');
+const canadaWater = require('./canada-water.webp');
+const rotherhithe = require('./rotherhithe.webp');
+const chalkFarm = require('./chalk-farm.webp');
+const primroseHill = require('./primrose-hill.webp');
+const blackheath = require('./blackheath.webp');
+const highbury = require('./highbury.webp');
+const barnsbury = require('./barnsbury.webp');
+const londonFields = require('./london-fields.webp');
+const victoriaParkVillage = require('./victoria-park-village.webp');
+const olympicPark = require('./olympic-park.webp');
+const southfields = require('./southfields.webp');
+const eastPutney = require('./east-putney.webp');
+const eastDulwich = require('./east-dulwich.webp');
+const herneHill = require('./herne-hill.webp');
+const blackhorseRoad = require('./blackhorse-road.webp');
+const woodStreet = require('./wood-street.webp');
+const sohoLondon = require('./soho-london.webp');
+const coventGarden = require('./covent-garden.webp');
+const fitzrovia = require('./fitzrovia.webp');
+const bloomsbury = require('./bloomsbury.webp');
+const clerkenwell = require('./clerkenwell.webp');
+const mayfair = require('./mayfair.webp');
+const westminster = require('./westminster.webp');
+const cityOfLondon = require('./city-of-london.webp');
+const southBank = require('./south-bank.webp');
+const paddington = require('./paddington.webp');
+const pimlico = require('./pimlico.webp');
+const chelseaLondon = require('./chelsea-london.webp');
+const wapping = require('./wapping.webp');
+const hammersmith = require('./hammersmith.webp');
+const shepherdsBush = require('./shepherds-bush.webp');
+const camberwell = require('./camberwell.webp');
+const borough = require('./borough.webp');
+const whitechapel = require('./whitechapel.webp');
+const vauxhall = require('./vauxhall.webp');
+const kingsCross = require('./kings-cross.webp');
 
-// New York neighborhoods
+// New York neighborhoods (IDs ny-1 to ny-50)
 const upperWestSide = require('./upper-west-side.webp');
 const upperEastSide = require('./upper-east-side.webp');
 const greenwichVillage = require('./greenwich-village.webp');
@@ -76,10 +113,30 @@ const riverdale = require('./riverdale.webp');
 const fordham = require('./fordham.webp');
 const stGeorge = require('./st-george.webp');
 const tottenville = require('./tottenville.webp');
+const lincolnSquare = require('./lincoln-square.webp');
+const morningsideHeights = require('./morningside-heights.webp');
+const yorkville = require('./yorkville.webp');
+const lenoxHill = require('./lenox-hill.webp');
+const westVillage = require('./west-village.webp');
+const noho = require('./noho.webp');
+const alphabetCity = require('./alphabet-city.webp');
+const stMarksPlace = require('./st-marks-place.webp');
+const eastHarlem = require('./east-harlem.webp');
+const sugarHill = require('./sugar-hill.webp');
+const southWilliamsburg = require('./south-williamsburg.webp');
+const eastWilliamsburg = require('./east-williamsburg.webp');
+const gowanus = require('./gowanus.webp');
+const southSlope = require('./south-slope.webp');
+const prospectHeights = require('./prospect-heights.webp');
+const weeksville = require('./weeksville.webp');
+const ditmars = require('./ditmars.webp');
+const steinway = require('./steinway.webp');
+const huntersPoint = require('./hunters-point.webp');
+const courtSquare = require('./court-square.webp');
 
 // Map neighborhood ID to image
 export const neighborhoodImages: Record<string, ImageSourcePropType> = {
-  // London (IDs 1-40)
+  // London (IDs 1 to 79)
   '1': shoreditch,
   '2': clapham,
   '3': brixton,
@@ -120,7 +177,44 @@ export const neighborhoodImages: Record<string, ImageSourcePropType> = {
   '38': elephantAndCastle,
   '39': marylebone,
   '40': crystalPalace,
-  // New York (IDs ny-1 to ny-30)
+  '41': canadaWater,
+  '43': rotherhithe,
+  '44': chalkFarm,
+  '45': primroseHill,
+  '46': blackheath,
+  '48': highbury,
+  '49': barnsbury,
+  '50': londonFields,
+  '51': victoriaParkVillage,
+  '52': olympicPark,
+  '54': southfields,
+  '55': eastPutney,
+  '56': eastDulwich,
+  '57': herneHill,
+  '58': blackhorseRoad,
+  '59': woodStreet,
+  '60': sohoLondon,
+  '61': coventGarden,
+  '62': fitzrovia,
+  '63': bloomsbury,
+  '64': clerkenwell,
+  '65': mayfair,
+  '66': westminster,
+  '67': cityOfLondon,
+  '68': southBank,
+  '69': paddington,
+  '70': pimlico,
+  '71': chelseaLondon,
+  '72': wapping,
+  '73': hammersmith,
+  '74': shepherdsBush,
+  '75': camberwell,
+  '76': borough,
+  '77': whitechapel,
+  '78': vauxhall,
+  '79': kingsCross,,
+
+  // New York (IDs ny-1 to ny-50)
   'ny-1': upperWestSide,
   'ny-2': upperEastSide,
   'ny-3': greenwichVillage,
@@ -151,6 +245,26 @@ export const neighborhoodImages: Record<string, ImageSourcePropType> = {
   'ny-28': fordham,
   'ny-29': stGeorge,
   'ny-30': tottenville,
+  'ny-31': lincolnSquare,
+  'ny-32': morningsideHeights,
+  'ny-33': yorkville,
+  'ny-34': lenoxHill,
+  'ny-35': westVillage,
+  'ny-36': noho,
+  'ny-37': alphabetCity,
+  'ny-38': stMarksPlace,
+  'ny-39': eastHarlem,
+  'ny-40': sugarHill,
+  'ny-41': southWilliamsburg,
+  'ny-42': eastWilliamsburg,
+  'ny-43': gowanus,
+  'ny-44': southSlope,
+  'ny-45': prospectHeights,
+  'ny-46': weeksville,
+  'ny-47': ditmars,
+  'ny-48': steinway,
+  'ny-49': huntersPoint,
+  'ny-50': courtSquare,,
 };
 
 export const getNeighborhoodImage = (id: string): ImageSourcePropType | undefined => {
