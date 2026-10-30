@@ -48,16 +48,22 @@ function nearestNb(p, centers) { let best = null; for (const nb of ALL_NB) { con
 // 1) iterative nearest-center reassignment (your "spots must fit inside" rule) so every
 //    spot sits in its nearest cell; with central neighborhoods now present, central spots
 //    stuck in far neighborhoods come home.
+//    This is a London-era data-repair heuristic: with dense tight-knit neighborhoods
+//    (New York) it never settles — spots inside their own cell ping-pong to a nearer
+//    center and back across runs. Cities can disable it (reassignToNearestCenter: false)
+//    and rely on the final containment pass, which is idempotent by construction.
 for (const s of spots) s.orig = s.nb;
 let centers = centersFrom(spots);
-for (let iter = 0; iter < 6; iter++) {
-  let changed = 0;
-  for (const s of spots) {
-    const nr = nearestNb(s, centers);
-    if (nr.nb !== s.nb && nr.d < hav(s, centers[s.nb]) - 0.15) { s.nb = nr.nb; changed++; }
+if (CITY.reassignToNearestCenter) {
+  for (let iter = 0; iter < 6; iter++) {
+    let changed = 0;
+    for (const s of spots) {
+      const nr = nearestNb(s, centers);
+      if (nr.nb !== s.nb && nr.d < hav(s, centers[s.nb]) - 0.15) { s.nb = nr.nb; changed++; }
+    }
+    centers = centersFrom(spots);
+    if (!changed) break;
   }
-  centers = centersFrom(spots);
-  if (!changed) break;
 }
 // (reassigned computed after the final point-in-polygon pass below)
 
@@ -136,7 +142,10 @@ for (const orph of orphans) {
   if (!target || !cells[target]) continue;
   const tRing = cells[target].map(toLL).map(p => [p.lng, p.lat]); tRing.push(tRing[0]);
   let u; try { u = pc.union([tRing], [orph]); } catch (e) { u = null; }
-  if (u && u.length) { const o2 = u.map(p => p[0]).sort((a, b) => ringArea(b) - ringArea(a)); cells[target] = o2[0].map(([lng, lat]) => toXY({ lng, lat })); }
+  // accept only when the orphan actually merged with the target cell: a MultiPolygon
+  // result means the orphan is a separate landmass, and keeping its largest outer ring
+  // would replace the target's own cell with the orphan (cell displacement).
+  if (u && u.length === 1) { const o2 = u.map(p => p[0]).sort((a, b) => ringArea(b) - ringArea(a)); cells[target] = o2[0].map(([lng, lat]) => toXY({ lng, lat })); }
 }
 
 // 3) validate: each spot inside its cell

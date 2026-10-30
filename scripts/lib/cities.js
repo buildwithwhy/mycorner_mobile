@@ -15,6 +15,9 @@
  *   preview                                         — Leaflet initial view for preview-boundaries.js
  *   orphanTargets — neighborhoods that own orphaned across-water strips inside a lat/lng box
  *                     (London: Fulham's Bishops Park / Hurlingham riverside strips)
+ *   reassignToNearestCenter — nearest-center spot reassignment with a 150 m hysteresis (a
+ *                     London-era data-repair heuristic that never settles on dense cities);
+ *                     false = only the final containment pass reassigns spots (idempotent)
  *   region        — optional [south,west,north,east] clamp on the Voronoi extent (null = derive
  *                     from neighborhood sites only, the historical behavior)
  */
@@ -49,7 +52,26 @@ const CITIES = {
     minWaterAreaKm2: 0.08,
     preview: { center: [51.505, -0.06], zoom: 12 },
     orphanTargets: [{ nb: "27", latMin: 51.46, latMax: 51.485, lngMin: -0.225, lngMax: -0.185 }],
+    reassignToNearestCenter: true,
     region: null,
+  },
+  "new-york": {
+    id: "new-york",
+    label: "New York",
+    spotsFile: "src/data/curatedSpots/new-york.ts",
+    coordinatesFile: "src/data/coordinates/new-york.ts",
+    neighborhoodsFile: "src/data/neighborhoods/new-york.ts",
+    boundariesFile: "src/data/boundaries/new-york.ts",
+    outputVar: "newYorkBoundaries",
+    waterFile: "scripts/data/new-york-water.json",
+    waterLabel: "Hudson / East River",
+    lat0: 40.72,
+    overpassBbox: "40.45,-74.30,40.95,-73.70",
+    minWaterAreaKm2: 0.08,
+    preview: { center: [40.742, -73.96], zoom: 11 },
+    orphanTargets: [],
+    reassignToNearestCenter: false,
+    region: [40.45, -74.30, 40.95, -73.70],
   },
 };
 
