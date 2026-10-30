@@ -10,6 +10,7 @@ const {
   stringField,
   parseNeighborhoodRecords,
   parseSpotRecords,
+  parsePromptNames,
   parseCoordinateMap,
   parseBoundaryMap,
   parseImageMap,
@@ -71,6 +72,12 @@ test('stringField reads values and unescapes quotes', () => {
   assert.equal(stringField(record, 'missing'), undefined);
 });
 
+test('stringField reads double-quoted values (apostrophe in name)', () => {
+  const record = splitArrayRecords(`export const nb = [\n  {\n    id: "34",\n    cityId: "london",\n    name: "St John's Wood",\n  },\n];\n`)[0];
+  assert.equal(stringField(record, 'name'), "St John's Wood");
+  assert.equal(stringField(record, 'id'), '34');
+});
+
 test('parseNeighborhoodRecords extracts id, name, parentId', () => {
   const nbs = parseNeighborhoodRecords(NB_SOURCE);
   assert.deepEqual(nbs.map((n) => n.id), ['1', '2']);
@@ -121,6 +128,55 @@ test('parseImageMap reads double-quoted id -> name entries', () => {
   "ny-1": "upper-west-side",
 };`;
   assert.deepEqual(parseImageMap(src), { '1': 'shoreditch', 'ny-1': 'upper-west-side' });
+});
+
+// --- parsePromptNames ---------------------------------------------------------
+
+const PROMPTS_SOURCE = `NEIGHBORHOOD IMAGE GENERATION PROMPTS
+=====================================
+LONDON NEIGHBORHOODS (2)
+=====================================
+
+--- 1. Shoreditch ---
+Highlights: Tech hub, Street art
+
+Style sentence. Scene one.
+
+--- 2. Chelsea ---
+Highlights: King's Road
+
+Style sentence. Scene two.
+
+=====================================
+NEW YORK NEIGHBORHOODS (1)
+=====================================
+
+--- 41. Chelsea ---
+Highlights: Art galleries
+
+Style sentence. Scene three.
+
+=====================================
+END OF PROMPTS
+=====================================
+`;
+
+test('parsePromptNames scopes names by city section', () => {
+  const { byCity, declared } = parsePromptNames(PROMPTS_SOURCE);
+  assert.deepEqual([...byCity.london].sort(), ['Chelsea', 'Shoreditch']);
+  assert.deepEqual([...byCity['new-york']], ['Chelsea']);
+  assert.deepEqual(declared, { london: 2, 'new-york': 1 });
+});
+
+test('parsePromptNames stops collecting at END OF PROMPTS', () => {
+  const src = `LONDON NEIGHBORHOODS (1)
+--- 1. Real ---
+=====================================
+END OF PROMPTS
+--- 2. Fake ---
+`;
+  const { byCity } = parsePromptNames(src);
+  assert.deepEqual([...byCity.london], ['Real']);
 });
 
 // --- ringDefect --------------------------------------------------------------
@@ -177,6 +233,60 @@ function byCheck(findings, name) {
 test('runChecks: clean context yields no error findings', () => {
   const findings = runChecks(GOOD_CTX);
   assert.equal(findings.filter((f) => f.severity === 'error').length, 0);
+});
+
+test('runChecks: prompts-coverage reports the missing neighborhood by name and id', () => {
+  const ctx = {
+    ...GOOD_CTX,
+    neighborhoods: [
+      { id: '1', name: 'Shoreditch', cityId: 'london' },
+      { id: '2', name: 'Missing Vale', cityId: 'london' },
+    ],
+    promptNames: { byCity: { london: new Set(['Shoreditch']), 'new-york': new Set() }, declared: {} },
+  };
+  const f = byCheck(runChecks(ctx), 'prompts-coverage');
+  assert.equal(f.length, 1);
+  assert.equal(f[0].severity, 'error');
+  assert.match(f[0].message, /no image prompt for 2 \(Missing Vale\)/);
+});
+
+test('runChecks: prompts-coverage is skipped when prompts context is absent', () => {
+  assert.equal(byCheck(runChecks(GOOD_CTX), 'prompts-coverage').length, 0);
+});
+
+test('runChecks: prompts-coverage flags same-name neighborhoods across cities independently', () => {
+  const ctx = {
+    ...GOOD_CTX,
+    neighborhoods: [
+      { id: '1', name: 'Chelsea', cityId: 'london' },
+      { id: 'ny-6', name: 'Chelsea', cityId: 'new-york' },
+    ],
+    promptNames: {
+      byCity: { london: new Set(), 'new-york': new Set(['Chelsea']) },
+      declared: {},
+    },
+  };
+  const f = byCheck(runChecks(ctx), 'prompts-coverage');
+  assert.equal(f.length, 1);
+  assert.match(f[0].message, /no image prompt for 1/);
+});
+
+test('runChecks: prompts-coverage warns when header count does not match entries', () => {
+  const ctx = {
+    ...GOOD_CTX,
+    neighborhoods: [
+      { id: '1', name: 'A', cityId: 'london' },
+      { id: '2', name: 'B', cityId: 'london', parentId: '1' },
+    ],
+    promptNames: {
+      byCity: { london: new Set(['A', 'B']), 'new-york': new Set() },
+      declared: { london: 3, 'new-york': 0 },
+    },
+  };
+  const f = byCheck(runChecks(ctx), 'prompts-coverage');
+  assert.equal(f.length, 1);
+  assert.equal(f[0].severity, 'warning');
+  assert.match(f[0].message, /declares 3 entries but 2 were parsed/);
 });
 
 test('runChecks: missing coordinates and boundary name the neighborhood id', () => {
@@ -255,7 +365,7 @@ test('runChecks: every registry check has fired in at least one test above', () 
   // Guards the registry: a check added without coverage (or renamed away) surfaces here.
   const fired = new Set([
     ...runChecks(GOOD_CTX),
-    ...runChecks({ ...GOOD_CTX, coordinates: new Map(), boundaries: new Map(), summaries: new Set(), imageNames: new Set(), spots: [{ id: 's1', neighborhoodId: 'ghost', name: 'Story Coffee Wimbledon' }] }),
+    ...runChecks({ ...GOOD_CTX, coordinates: new Map(), boundaries: new Map(), summaries: new Set(), imageNames: new Set(), spots: [{ id: 's1', neighborhoodId: 'ghost', name: 'Story Coffee Wimbledon' }], promptNames: { byCity: { london: new Set(), 'new-york': new Set() }, declared: {} } }),
     ...runChecks({ ...GOOD_CTX, spots: [GOOD_CTX.spots[0], { ...GOOD_CTX.spots[0] }] }),
     ...runChecks(GOOD_CTX, { strict: true }),
   ].map((f) => f.check));
