@@ -21,9 +21,14 @@ This guide will help you complete the Supabase backend setup for MyCorner.
    - Copy the entire contents of `supabase-user-ratings-migration.sql`
    - Paste it into the SQL editor
    - Click **Run** to execute
+8. **NEW**: Run the itineraries migration (for itinerary cloud sync):
+   - Click **New Query** again
+   - Copy the entire contents of `supabase-itineraries-migration.sql`
+   - Paste it into the SQL editor
+   - Click **Run** to execute
 
 This will create:
-- 6 database tables (user_favorites, user_comparison, user_neighborhood_status, user_neighborhood_notes, user_destinations, user_neighborhood_ratings)
+- 7 database tables (user_favorites, user_comparison, user_neighborhood_status, user_neighborhood_notes, user_destinations, user_neighborhood_ratings, user_itineraries)
 - Row Level Security (RLS) policies to ensure users can only access their own data
 - Indexes for query performance
 - Triggers to auto-update timestamps
@@ -157,13 +162,14 @@ Once authenticated, verify that data syncing works:
 1. Add some neighborhoods to favorites
 2. Set statuses on neighborhoods (shortlist, visited, etc.)
 3. Add some notes
-4. Sign out and sign back in
-5. Verify all your data is still there
+4. Save an itinerary (it syncs to `user_itineraries`)
+5. Sign out and sign back in
+6. Verify all your data is still there
 
 You can also check the database directly in Supabase:
 
 1. Go to **Table Editor** in Supabase dashboard
-2. Check `user_favorites`, `user_neighborhood_status`, `user_neighborhood_notes` tables
+2. Check `user_favorites`, `user_neighborhood_status`, `user_neighborhood_notes`, `user_itineraries` tables
 3. Verify your user data is being saved correctly
 
 ## Troubleshooting
