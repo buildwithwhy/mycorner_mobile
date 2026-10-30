@@ -19,6 +19,15 @@ export function slugify(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+/** Queue areas. `-dry-run` variants hold fixture-based dry-run reports — the
+ *  promote path only ever reads the real directories, so dry-run output can
+ *  never enter promotion, no matter what a dry-run record contains. */
+export type QueueKind =
+  | 'spot-proposals'
+  | 'spot-proposals-dry-run'
+  | 'freshness'
+  | 'outreach';
+
 /**
  * Path for one queue record: <queueRoot>/<kind>/<YYYY-MM-DD>/<slug>.json.
  * One file per record — git diff is the human-review surface, so records are
@@ -26,7 +35,7 @@ export function slugify(name: string): string {
  */
 export function queueRecordPath(
   queueRoot: string,
-  kind: 'spot-proposals' | 'freshness' | 'outreach',
+  kind: QueueKind,
   runDate: string,
   slug: string,
 ): string {
@@ -47,7 +56,7 @@ export async function writeQueueRecord(
 }
 
 export interface RunSummary {
-  kind: 'spot-proposals' | 'freshness' | 'outreach';
+  kind: QueueKind;
   runDate: string;
   startedAt: string;
   finishedAt: string;
@@ -60,7 +69,7 @@ export interface RunSummary {
 /** Write the run summary beside the records of a batch run. */
 export async function writeRunSummary(
   queueRoot: string,
-  kind: 'spot-proposals' | 'freshness' | 'outreach',
+  kind: QueueKind,
   runDate: string,
   summary: Omit<RunSummary, 'kind' | 'runDate'>,
 ): Promise<string> {

@@ -48,4 +48,7 @@ posthog-wizard-installation-error-*.log
 
 # generated boundary preview
 scripts/.cache/
+
+# scout live-run checkpoints (resumability state, not review content)
+.scout-cache/
 bun.lock

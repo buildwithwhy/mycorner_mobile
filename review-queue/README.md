@@ -14,6 +14,7 @@ or a manual script run creates them.
 ```
 review-queue/
   spot-proposals/   YYYY-MM-DD/<slug>.json — one proposed spot per file (discovery scout)
+  spot-proposals-dry-run/   YYYY-MM-DD/<slug>.json — fixture-client dry-run reports (NOT promotable)
   freshness/        YYYY-MM-DD/<slug>.json — exceptions found by the freshness auditor
   outreach/         YYYY-MM-DD/<slug>.json — contact enrichment + drafted pitches (never sent)
 ```
@@ -48,6 +49,13 @@ utilities in `scripts/queue/batch-io.ts`) lists what the run produced.
   "status": "proposed"
 }
 ```
+
+Dry-run reports (`spot-proposals-dry-run/`) use the identical record shape but
+come from the deterministic fixture Places client: names are obviously
+synthetic ("Fixture Example …") and `evidence.placesStatus` is `FIXTURE`. The
+promotion path refuses such records — a dry-run report proves the pipeline
+(polygons, category gaps, dedupe) while Google Maps billing is off and can
+never enter `src/data/`.
 
 `insideNeighborhood` must be a real neighborhood id from `src/data/neighborhoods/`
 (London ids are numeric, New York ids are `ny-N`). `category` must be one of the
