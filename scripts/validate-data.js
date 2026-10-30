@@ -21,6 +21,8 @@ const DATA_FILES = {
   boundaries: ['src/data/boundaries/london.ts', 'src/data/boundaries/new-york.ts'],
   exploreSummaries: ['src/data/exploreSummaries/london.ts', 'src/data/exploreSummaries/new-york.ts'],
   imagePrompts: 'neighborhood-image-prompts.txt',
+  events: ['src/data/events/london.ts', 'src/data/events/new-york.ts'],
+  showcases: ['src/data/showcases/london.ts', 'src/data/showcases/new-york.ts'],
   imageMap: 'src/utils/neighborhoodImages.ts',
   imageAssetDir: 'src/assets/neighborhood-images',
 };
@@ -98,6 +100,18 @@ function parseSpotRecords(source) {
   }));
 }
 
+// Spot/event/showcase records share the array-of-literals shape; community
+// records additionally carry an ISO verifiedAt freshness stamp.
+function parseCommunityRecords(source) {
+  return splitArrayRecords(source).map((r) => ({
+    id: stringField(r, 'id'),
+    neighborhoodId: stringField(r, 'neighborhoodId'),
+    name: stringField(r, 'name'),
+    placeId: stringField(r, 'placeId'),
+    verifiedAt: stringField(r, 'verifiedAt'),
+  }));
+}
+
 // Record<string, { latitude, longitude }> — coordinates per neighborhood id.
 function parseCoordinateMap(source) {
   const map = {};
@@ -165,6 +179,8 @@ function runChecks(ctx, { strict = false } = {}) {
   const findings = [];
   const add = (check, severity, message, subject) =>
     findings.push({ check, severity, message, subject });
+
+  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
   const spotsByNb = new Map();
   for (const s of ctx.spots) {
@@ -260,6 +276,33 @@ function runChecks(ctx, { strict = false } = {}) {
     }
   }
 
+  // Community content: events and business showcases (src/data/events/,
+  // src/data/showcases/). Empty datasets pass trivially — the checks guard
+  // records once they exist.
+  const nbIdSet = new Set(ctx.neighborhoods.map((n) => n.id));
+  const checkCommunity = (records, kind) => {
+    const seen = new Map();
+    for (const r of records) {
+      const label = `${r.id}${r.name ? ` (${r.name})` : ''}`;
+      if (seen.has(r.id)) {
+        add(`${kind}-ids-unique`, 'error', `duplicate ${kind} id ${label}`, r.id);
+      } else {
+        seen.set(r.id, r.id);
+      }
+      if (!nbIdSet.has(r.neighborhoodId)) {
+        add(`${kind}-neighborhood-resolves`, 'error', `${kind} ${label} references unknown neighborhoodId '${r.neighborhoodId}'`, r.id);
+      }
+      if (!r.verifiedAt || !ISO_DATE.test(r.verifiedAt)) {
+        add(`${kind}-verified-at`, 'error', `${kind} ${label} has no verifiedAt ISO date — required freshness signal`, r.id);
+      }
+      if (kind === 'showcase' && !r.placeId) {
+        add('showcase-place-id', 'error', `showcase ${label} has no google placeId — anti-fabrication rule (showcases must anchor to a real place)`, r.id);
+      }
+    }
+  };
+  checkCommunity(ctx.events ?? [], 'event');
+  checkCommunity(ctx.showcases ?? [], 'showcase');
+
   // Known-fabricated names must never re-enter the dataset.
   for (const s of ctx.spots) {
     if (KNOWN_FABRICATED_SPOT_NAMES.includes(s.name)) {
@@ -283,6 +326,13 @@ const CHECKS = [
   { name: 'spot-neighborhood-resolves', description: 'every spot neighborhoodId resolves' },
   { name: 'spot-place-id', description: 'every spot carries a google placeId' },
   { name: 'spot-fabricated-name', description: 'no known-fabricated spot names' },
+  { name: 'event-ids-unique', description: 'event ids are unique' },
+  { name: 'event-neighborhood-resolves', description: 'every event neighborhoodId resolves' },
+  { name: 'event-verified-at', description: 'every event carries an ISO verifiedAt date' },
+  { name: 'showcase-ids-unique', description: 'showcase ids are unique' },
+  { name: 'showcase-neighborhood-resolves', description: 'every showcase neighborhoodId resolves' },
+  { name: 'showcase-verified-at', description: 'every showcase carries an ISO verifiedAt date' },
+  { name: 'showcase-place-id', description: 'every showcase carries a google placeId' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -309,6 +359,8 @@ function main() {
 
   const neighborhoods = DATA_FILES.neighborhoods.flatMap((f) => parseNeighborhoodRecords(readRepoFile(f)));
   const spots = DATA_FILES.spots.flatMap((f) => parseSpotRecords(readRepoFile(f)));
+  const events = DATA_FILES.events.flatMap((f) => parseCommunityRecords(readRepoFile(f)));
+  const showcases = DATA_FILES.showcases.flatMap((f) => parseCommunityRecords(readRepoFile(f)));
   const coordinates = new Map(
     DATA_FILES.coordinates.flatMap((f) => Object.entries(parseCoordinateMap(readRepoFile(f)))),
   );
@@ -324,11 +376,11 @@ function main() {
   );
 
   const findings = runChecks(
-    { neighborhoods, spots, coordinates, boundaries, summaries, promptNames, imageNames: coveredImages },
+    { neighborhoods, spots, coordinates, boundaries, summaries, promptNames, imageNames: coveredImages, events, showcases },
     { strict },
   );
 
-  console.log(`validate-data: ${neighborhoods.length} neighborhoods, ${spots.length} curated spots\n`);
+  console.log(`validate-data: ${neighborhoods.length} neighborhoods, ${spots.length} curated spots, ${events.length} events, ${showcases.length} showcases\n`);
   let exit = 0;
   for (const check of CHECKS) {
     const rows = findings.filter((f) => f.check === check.name);
@@ -357,6 +409,7 @@ module.exports = {
   stringField,
   parseNeighborhoodRecords,
   parseSpotRecords,
+  parseCommunityRecords,
   parsePromptNames,
   parseCoordinateMap,
   parseBoundaryMap,
