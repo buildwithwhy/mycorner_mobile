@@ -10,6 +10,7 @@ const {
   stringField,
   parseNeighborhoodRecords,
   parseSpotRecords,
+  parseCommunityRecords,
   parsePromptNames,
   parseCoordinateMap,
   parseBoundaryMap,
@@ -53,6 +54,25 @@ export const spots: LocalSpot[] = [
     id: 'curated-1-2',
     neighborhoodId: 'ny-99',
     name: 'Story Coffee Wimbledon',
+  },
+];
+`;
+
+const COMMUNITY_SOURCE = `import type { NeighborhoodEvent } from '../../types/community';
+
+export const things: NeighborhoodEvent[] = [
+  {
+    id: 'event-1-1',
+    neighborhoodId: '1',
+    name: 'Brick Lane Market',
+    verifiedAt: '2026-10-30',
+  },
+  {
+    id: 'showcase-1-1',
+    neighborhoodId: '1',
+    name: 'A Real Place',
+    placeId: 'ChIJreal1',
+    verifiedAt: '2026-10-30',
   },
 ];
 `;
@@ -351,6 +371,80 @@ test('runChecks: missing placeId is a warning by default, per-spot error under s
   assert.equal(errs[0].subject, 's2');
 });
 
+// --- community content (events / showcases) -----------------------------------
+
+const GOOD_EVENT = {
+  id: 'event-1-1',
+  neighborhoodId: '1',
+  name: 'Brick Lane Market',
+  verifiedAt: '2026-10-30',
+};
+
+test('parseCommunityRecords extracts id, neighborhoodId, name, placeId, verifiedAt', () => {
+  const records = parseCommunityRecords(COMMUNITY_SOURCE);
+  assert.deepEqual(
+    records.map((r) => ({ id: r.id, verifiedAt: r.verifiedAt, placeId: r.placeId })),
+    [
+      { id: 'event-1-1', verifiedAt: '2026-10-30', placeId: undefined },
+      { id: 'showcase-1-1', verifiedAt: '2026-10-30', placeId: 'ChIJreal1' },
+    ],
+  );
+});
+
+test('runChecks: duplicate event ids are reported', () => {
+  const findings = runChecks({ ...GOOD_CTX, events: [GOOD_EVENT, { ...GOOD_EVENT }] });
+  assert.equal(byCheck(findings, 'event-ids-unique').length, 1);
+});
+
+test('runChecks: event with unknown neighborhoodId is named', () => {
+  const findings = runChecks({
+    ...GOOD_CTX,
+    events: [{ ...GOOD_EVENT, neighborhoodId: 'ghost' }],
+  });
+  const f = byCheck(findings, 'event-neighborhood-resolves')[0];
+  assert.ok(f.message.includes("unknown neighborhoodId 'ghost'"));
+  assert.equal(f.subject, 'event-1-1');
+});
+
+test('runChecks: event without verifiedAt (or malformed) is an error', () => {
+  const findings = runChecks({
+    ...GOOD_CTX,
+    events: [{ ...GOOD_EVENT, verifiedAt: undefined }, { ...GOOD_EVENT, id: 'event-1-2', verifiedAt: 'October 2026' }],
+  });
+  assert.equal(byCheck(findings, 'event-verified-at').length, 2);
+});
+
+test('runChecks: showcase without placeId is an error (anti-fabrication)', () => {
+  const findings = runChecks({
+    ...GOOD_CTX,
+    showcases: [{ id: 'showcase-1-1', neighborhoodId: '1', name: 'A Real Place', verifiedAt: '2026-10-30' }],
+  });
+  const f = byCheck(findings, 'showcase-place-id')[0];
+  assert.equal(f.severity, 'error');
+  assert.equal(f.subject, 'showcase-1-1');
+});
+
+test('runChecks: empty community datasets pass trivially', () => {
+  const findings = runChecks({ ...GOOD_CTX, events: [], showcases: [] });
+  assert.equal(findings.filter((f) => f.severity === 'error').length, 0);
+});
+
+// --- CHECKS registry ----------------------------------------------------------
+
+test('CHECKS registry includes the community checks', () => {
+  const names = CHECKS.map((c) => c.name);
+  for (const name of [
+    'event-ids-unique',
+    'event-neighborhood-resolves',
+    'event-verified-at',
+    'showcase-ids-unique',
+    'showcase-neighborhood-resolves',
+    'showcase-verified-at',
+    'showcase-place-id',
+  ]) {
+    assert.ok(names.includes(name), `missing check: ${name}`);
+  }
+});
 test('runChecks: fabricated names from the audit blocklist are errors', () => {
   const findings = runChecks({
     ...GOOD_CTX,
@@ -368,6 +462,14 @@ test('runChecks: every registry check has fired in at least one test above', () 
     ...runChecks({ ...GOOD_CTX, coordinates: new Map(), boundaries: new Map(), summaries: new Set(), imageNames: new Set(), spots: [{ id: 's1', neighborhoodId: 'ghost', name: 'Story Coffee Wimbledon' }], promptNames: { byCity: { london: new Set(), 'new-york': new Set() }, declared: {} } }),
     ...runChecks({ ...GOOD_CTX, spots: [GOOD_CTX.spots[0], { ...GOOD_CTX.spots[0] }] }),
     ...runChecks(GOOD_CTX, { strict: true }),
+    ...runChecks({
+      ...GOOD_CTX,
+      events: [GOOD_EVENT, { ...GOOD_EVENT }, { id: 'event-1-3', neighborhoodId: 'ghost', name: 'Ghost Event', verifiedAt: 'nope' }],
+      showcases: [
+        { id: 'showcase-1-1', neighborhoodId: 'ghost', name: 'Ghost Place', verifiedAt: 'nope' },
+        { id: 'showcase-1-1', neighborhoodId: 'ghost', name: 'Ghost Place', verifiedAt: 'nope' },
+      ],
+    }),
   ].map((f) => f.check));
   for (const c of CHECKS) {
     assert.ok(fired.has(c.name), `check ${c.name} never fired in tests`);
