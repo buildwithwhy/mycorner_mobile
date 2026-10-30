@@ -1,0 +1,102 @@
+# Review queue
+
+Human-review surface for the agentic backend (spec: "Agentic round one", Stream C).
+Agents write one JSON file per record; humans review the diff in a PR and edit the
+`status` field to promote or reject. **Nothing enters `src/data/` without a human
+status edit in one of these PRs.**
+
+No server, no scheduler logic, no secrets — this directory is plain files in git.
+A PR per batch run is the review unit; a scheduled GitHub Action (dry-run by default)
+or a manual script run creates them.
+
+## Directory layout
+
+```
+review-queue/
+  spot-proposals/   YYYY-MM-DD/<slug>.json — one proposed spot per file (discovery scout)
+  freshness/        YYYY-MM-DD/<slug>.json — exceptions found by the freshness auditor
+  outreach/         YYYY-MM-DD/<slug>.json — contact enrichment + drafted pitches (never sent)
+```
+
+Batch-run directories are named `YYYY-MM-DD` (UTC date of the run) so runs sort
+chronologically and one run = one review PR. Every record file carries its own
+evidence block; the run summary (`summary.json`, written by the shared batch
+utilities in `scripts/queue/batch-io.ts`) lists what the run produced.
+
+## Record shapes
+
+### Spot proposal (`spot-proposals/YYYY-MM-DD/<slug>.json`)
+
+```json
+{
+  "proposedSpot": {
+    "name": "Perly's Cafe",
+    "googlePlaceId": "ChIJ…",
+    "address": "12 Example Street, London",
+    "lat": 51.4815,
+    "lng": -0.0583,
+    "category": "cafe",
+    "rationale": "High local rating, inside the neighborhood polygon, category under-represented here"
+  },
+  "evidence": {
+    "ratingCount": 412,
+    "rating": 4.7,
+    "insideNeighborhood": "1",
+    "checkedAt": "2026-11-02T08:00:00Z",
+    "placesStatus": "OK"
+  },
+  "status": "proposed"
+}
+```
+
+`insideNeighborhood` must be a real neighborhood id from `src/data/neighborhoods/`
+(London ids are numeric, New York ids are `ny-N`). `category` must be one of the
+app's spot categories (`cafe | restaurant | bar | park | market | museum | shop | landmark | other`).
+`placesStatus` is the verbatim Google Places response status for the check that
+produced this record — only `OK` is promotable.
+
+Status lifecycle: `proposed | approved | rejected` — a human edits `status` in the
+queue PR. `scripts/promote-spot.ts` appends records marked `approved` (with a
+`googlePlaceId` and `placesStatus: "OK"`) into `src/data/curatedSpots/`; it refuses
+everything else in code.
+
+### Outreach prep (`outreach/YYYY-MM-DD/<slug>.json`)
+
+```json
+{
+  "spotId": "perlys-cafe",
+  "contact": {
+    "phone": "+44…",
+    "website": "https://…",
+    "emailFound": null
+  },
+  "draftPitch": "Subject: Host a supper club in …",
+  "enrichedAt": "2026-11-02T08:05:00Z",
+  "status": "draft"
+}
+```
+
+Outreach is **prep only**: drafts live here, a human sends them by hand.
+Status lifecycle: `draft | ready | sent-manually`. There is deliberately no code
+path anywhere in this repo that sends anything.
+
+### Freshness exceptions (`freshness/YYYY-MM-DD/<slug>.json`)
+
+Written by the freshness auditor; the exact schema lands with that script. Same
+conventions apply: one record per file, evidence block, human edits `status`.
+
+## Promotion path
+
+```bash
+npm run promote:spot            # promotes all approved spot-proposals
+npm run promote:spot -- --dry-run
+```
+
+The script prints one line per record — promoted, or refused with the reason —
+and exits non-zero if anything was refused. Every promoted entry carries a
+provenance comment naming the queue record it came from.
+
+Shared batch-script utilities (file-per-record writing, run-date directories,
+run summaries) live in `scripts/queue/batch-io.ts`; record schemas and runtime
+validators in `scripts/queue/records.ts`. The scout, auditor, and outreach-prep
+agents all import from there so every run produces identical queue structure.
