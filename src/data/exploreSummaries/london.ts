@@ -356,4 +356,124 @@ export const londonExploreSummaries: Record<string, ExploreSummary> = {
       'Wood Street is the quieter, more villagey end of Walthamstow — close to Epping Forest for walks, with its own Overground station and the Wood Street Walls street art trail brightening up the high street.',
     highlightChips: ['Epping Forest', 'Wood Street Walls', 'Village feel', 'Overground station'],
   },
+  // 60 - Soho
+  '60': {
+    blurb:
+      'Soho is London after dark distilled — legendary bars, world-class restaurants, theatres, and the beating heart of the LGBTQ+ scene around Old Compton Street. Come for dinner, stay until the tubes stop.',
+    highlightChips: ['Nightlife', 'Dining', 'Theatres', 'Old Compton Street'],
+  },
+  // 61 - Covent Garden
+  '61': {
+    blurb:
+      'Covent Garden pairs its historic piazza — street performers, market stalls, and the Royal Opera House — with some of the West End\'s best theatres and restaurants. Arrive early to beat the crowds.',
+    highlightChips: ['The Piazza', 'Street performers', 'West End theatre', 'Shopping'],
+  },
+  // 62 - Fitzrovia
+  '62': {
+    blurb:
+      'Fitzrovia is the West End\'s laid-back sibling — Charlotte Street\'s restaurants and pubs, small galleries, and a media-scene buzz without the Soho crowds. Perfect for a long, unhurried lunch.',
+    highlightChips: ['Charlotte Street', 'Restaurant scene', 'Pubs', 'Galleries'],
+  },
+  // 63 - Bloomsbury
+  '63': {
+    blurb:
+      'Bloomsbury is literary London at its finest — leafy Georgian garden squares, the British Museum, and a dense cluster of universities and bookshops. Calm by day, quietly scholarly by night.',
+    highlightChips: ['British Museum', 'Garden squares', 'Bookshops', 'Universities'],
+  },
+  // 64 - Clerkenwell
+  '64': {
+    blurb:
+      'Clerkenwell is design-and-dining territory — converted warehouses now hold showrooms, some of London\'s best restaurants, and Exmouth Market\'s street food. Weekends are for the market; evenings are for long dinners.',
+    highlightChips: ['Exmouth Market', 'Design studios', 'Restaurants', 'Historic pubs'],
+  },
+  // 65 - Mayfair
+  '65': {
+    blurb:
+      'Mayfair is London at its most polished — grand garden squares, flagship galleries, luxury hotels, and some of the finest dining tables in the world. Window-shopping on Mount Street counts as culture.',
+    highlightChips: ['Fine dining', 'Bond Street', 'Galleries', 'Grand squares'],
+  },
+  // 66 - Westminster
+  '66': {
+    blurb:
+      'Westminster is royal and political London in a single sweep — the Abbey, Big Ben, and St James\'s Park for a green breather between landmarks. Early mornings here are blissfully quiet.',
+    highlightChips: ['Houses of Parliament', 'Westminster Abbey', "St James's Park", 'River Thames'],
+  },
+  // 67 - City of London
+  '67': {
+    blurb:
+      'The City layers two millennia into one square mile — Roman wall fragments and Wren\'s churches beneath glass towers. Weekday lunchtimes buzz; weekends let you have the streets to yourself.',
+    highlightChips: ["St Paul's", 'Skyscrapers', 'Roman wall', 'Weekend quiet'],
+  },
+  // 68 - South Bank
+  '68': {
+    blurb:
+      'The South Bank is London\'s riverside promenade of culture — the Southbank Centre, Tate Modern, and Shakespeare\'s Globe strung along a walk that\'s a destination in itself. Best experienced at golden hour.',
+    highlightChips: ['Southbank Centre', 'Tate Modern', 'Riverside walk', 'Theatres'],
+  },
+  // 69 - Paddington
+  '69': {
+    blurb:
+      'Paddington balances the practical and the pretty — a major station and the Heathrow Express, but also Little Venice\'s canal boats and Hyde Park at the end of the street. Bayswater\'s food scene is next door.',
+    highlightChips: ['Little Venice', 'Hyde Park', 'Paddington Station', 'Canal walks'],
+  },
+  // 70 - Pimlico
+  '70': {
+    blurb:
+      'Pimlico is a genteel pocket of Regency terraces and garden squares wedged between Victoria and the Thames — calmer and cheaper than Belgravia next door. Tate Britain is the local heavyweight.',
+    highlightChips: ['Tate Britain', 'Garden squares', 'Regency terraces', 'Quiet streets'],
+  },
+  // 71 - Chelsea
+  '71': {
+    blurb:
+      'Chelsea moves at a stately pace — King\'s Road boutiques, the Saatchi Gallery, and leafy stretches of the Embankment. It\'s affluent, immaculate, and entirely at peace with that.',
+    highlightChips: ["King's Road", 'Saatchi Gallery', 'Riverside', 'Boutiques'],
+  },
+  // 72 - Wapping
+  '72': {
+    blurb:
+      'Wapping keeps its docklands heritage intact — a cobbled High Street, converted warehouses, and pubs that have poured pints since the age of sail. The Thames path here is one of London\'s quietest.',
+    highlightChips: ['Riverside pubs', 'Tobacco Dock', 'Warehouse lofts', 'Thames path'],
+  },
+  // 73 - Hammersmith
+  '73': {
+    blurb:
+      'Hammersmith works hard and unwinds well — a major transport hub with the Eventim Apollo, riverside pubs, and the Thames path looping past Fulham Reach. Practical living with culture attached.',
+    highlightChips: ['Eventim Apollo', 'Riverside pubs', 'Transport hub', 'Thames path'],
+  },
+  // 74 - Shepherd's Bush
+  '74': {
+    blurb:
+      'Shepherd\'s Bush is properly mixed-up London — Westfield\'s megamall, the Green\'s independent restaurants, live music at the Empire, and great food from every continent. Unpolished and all the better for it.',
+    highlightChips: ['Westfield', 'The Green', 'The Empire', 'Diverse dining'],
+  },
+  // 75 - Camberwell
+  '75': {
+    blurb:
+      'Camberwell has an art-school heart — the Camberwell College of Arts crowd keeps the pubs, galleries, and independent dining honest, while Ruskin Park and Burgess Park keep it green. South London\'s under-the-radar pick.',
+    highlightChips: ['Camberwell Green', 'Indie dining', 'Art college', 'Burgess Park'],
+  },
+  // 76 - Borough
+  '76': {
+    blurb:
+      'Borough is food-and-history country — Borough Market\'s stalls, Shakespeare\'s Globe, Southwark Cathedral, and the Bankside riverside walk all within a few minutes of each other. Come hungry on a Saturday morning.',
+    highlightChips: ['Borough Market', "Shakespeare's Globe", 'Southwark Cathedral', 'Bankside'],
+  },
+  // 77 - Whitechapel
+  '77': {
+    blurb:
+      'Whitechapel is the East End layered deep — curry houses on Brick Lane\'s edge, Whitechapel Gallery\'s modern art, street markets, and centuries of immigrant history in every block. Raw, real, and rapidly changing.',
+    highlightChips: ['Whitechapel Gallery', 'Curry houses', 'Street markets', 'East End history'],
+  },
+  // 78 - Vauxhall
+  '78': {
+    blurb:
+      'Vauxhall is riverside London reinvented — Nine Elms\' glass towers, the Pleasure Gardens park, and a nightlife scene with serious LGBTQ+ heritage. The Victoria line makes it feel closer than it looks.',
+    highlightChips: ['Nightlife', 'Pleasure Gardens', 'Riverside', 'Nine Elms'],
+  },
+  // 79 - King's Cross
+  '79': {
+    blurb:
+      'King\'s Cross is the city\'s best comeback story — Granary Square\'s fountains, Coal Drops Yard\'s shops and restaurants, and canalside walks, all stitched around two great stations. Effortlessly connected and full of life.',
+    highlightChips: ['Granary Square', 'Coal Drops Yard', 'St Pancras', 'Canalside'],
+  },
 };
