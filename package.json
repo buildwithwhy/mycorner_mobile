@@ -14,6 +14,8 @@
     "boundaries": "node scripts/generate-boundaries.js",
     "boundaries:fetch-water": "node scripts/fetch-thames-water.js",
     "boundaries:preview": "node scripts/preview-boundaries.js",
+    "test": "node --test scripts/",
+    "validate-data": "node scripts/validate-data.js",
     "build:dev:sim": "eas build --profile development --platform ios",
     "build:dev:device": "eas build --profile development:device --platform ios",
     "build:preview": "eas build --profile preview --platform all",
