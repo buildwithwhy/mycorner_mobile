@@ -1,4 +1,11 @@
-import type { UserRatings, Destination, DestinationRow, NeighborhoodRatingRow } from '../../types';
+import type {
+  UserRatings,
+  Destination,
+  DestinationRow,
+  NeighborhoodRatingRow,
+  Itinerary,
+  ItineraryDbRow,
+} from '../../types';
 
 // Ratings: camelCase (app) -> snake_case (DB)
 export function ratingsToDb(
@@ -70,4 +77,37 @@ export function destinationUpdatesToDb(
   if (updates.longitude !== undefined) dbUpdates.longitude = updates.longitude;
   if (updates.transportMode !== undefined) dbUpdates.transport_mode = updates.transportMode;
   return dbUpdates;
+}
+
+// Itinerary: camelCase (app) -> snake_case (DB)
+// Stops are stored as JSONB (each stop embeds a full spot object), so they
+// pass through unchanged.
+export function itineraryToDb(itinerary: Itinerary, userId: string): Record<string, unknown> {
+  return {
+    user_id: userId,
+    itinerary_id: itinerary.id,
+    neighborhood_id: itinerary.neighborhoodId,
+    city_id: itinerary.cityId,
+    name: itinerary.name,
+    stops: itinerary.stops,
+    total_walk_time: itinerary.totalWalkTime ?? null,
+    total_distance: itinerary.totalDistance ?? null,
+    // Client-controlled timestamp — the last-write-wins authority for merges
+    client_updated_at: itinerary.updatedAt,
+  };
+}
+
+// Itinerary: snake_case (DB) -> camelCase (app)
+export function itineraryFromDb(row: ItineraryDbRow): Itinerary {
+  return {
+    id: row.itinerary_id,
+    neighborhoodId: row.neighborhood_id,
+    cityId: row.city_id,
+    name: row.name,
+    stops: row.stops ?? [],
+    totalWalkTime: row.total_walk_time ?? undefined,
+    totalDistance: row.total_distance ?? undefined,
+    createdAt: row.client_updated_at,
+    updatedAt: row.client_updated_at,
+  };
 }

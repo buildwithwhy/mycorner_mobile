@@ -27,7 +27,12 @@ export {
   removeDestination,
   updateDestination,
 } from './destinations';
+export { syncItineraries, getItineraries } from './itineraries';
 export { deleteUserAccount } from './account';
 
 // Transformers (for contexts that do their own row mapping)
-export { destinationFromDb, ratingsFromDb } from './transformers';
+export {
+  destinationFromDb,
+  ratingsFromDb,
+  itineraryFromDb,
+} from './transformers';
