@@ -118,7 +118,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === EAST VILLAGE (id: ny-7) ===
   {
     id: 'curated-ny7-1',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-37',
     name: 'Tompkins Square Park',
     category: 'park',
     description: 'Historic park at the heart of the East Village counterculture scene',
@@ -130,7 +130,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-2',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-38',
     name: 'Veselka',
     category: 'restaurant',
     description: 'Beloved 24-hour Ukrainian diner serving pierogies since 1954',
@@ -142,7 +142,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-3',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-38',
     name: 'St. Marks Place',
     category: 'landmark',
     description: 'Legendary block of punk history, Japanese eateries, and eclectic shops',
@@ -156,7 +156,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === WILLIAMSBURG (id: ny-11) ===
   {
     id: 'curated-ny11-1',
-    neighborhoodId: 'ny-11',
+    neighborhoodId: 'ny-41',
     name: 'Smorgasburg',
     category: 'market',
     description: 'Brooklyn\'s legendary open-air food market with 100+ vendors',
@@ -220,7 +220,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === PARK SLOPE (id: ny-14) ===
   {
     id: 'curated-ny14-1',
-    neighborhoodId: 'ny-14',
+    neighborhoodId: 'ny-44',
     name: 'Prospect Park',
     category: 'park',
     description: 'Brooklyn\'s answer to Central Park, designed by Olmsted and Vaux',
@@ -232,7 +232,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny14-2',
-    neighborhoodId: 'ny-14',
+    neighborhoodId: 'ny-20',
     name: 'Brooklyn Botanic Garden',
     category: 'park',
     description: '52-acre garden famous for its cherry blossom festival and Japanese garden',
@@ -244,7 +244,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny14-3',
-    neighborhoodId: 'ny-14',
+    neighborhoodId: 'ny-43',
     name: 'Al di Là Trattoria',
     category: 'restaurant',
     description: 'Beloved Northern Italian restaurant that helped define the Slope\'s food scene',
@@ -270,7 +270,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny21-2',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-47',
     name: 'Astoria Park',
     category: 'park',
     description: 'Waterfront park with pool, tennis courts, and stunning bridge views',
@@ -282,7 +282,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny21-3',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-47',
     name: 'Taverna Kyclades',
     category: 'restaurant',
     description: 'Legendary Greek seafood restaurant — always a queue, always worth it',
@@ -320,7 +320,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny1-3',
-    neighborhoodId: 'ny-1',
+    neighborhoodId: 'ny-32',
     name: 'Riverside Park',
     category: 'park',
     description: 'Scenic waterfront park stretching along the Hudson with gardens and trails',
@@ -370,7 +370,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny2-3',
-    neighborhoodId: 'ny-2',
+    neighborhoodId: 'ny-34',
     name: 'The Frick Collection',
     category: 'museum',
     description: 'Intimate art museum housed in a stunning Gilded Age mansion',
@@ -382,7 +382,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny2-4',
-    neighborhoodId: 'ny-2',
+    neighborhoodId: 'ny-33',
     name: 'Carl Schurz Park',
     category: 'park',
     description: 'Charming riverside park with East River promenade and Gracie Mansion',
@@ -684,7 +684,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny16-2',
-    neighborhoodId: 'ny-16',
+    neighborhoodId: 'ny-42',
     name: 'Roberta\'s',
     category: 'restaurant',
     description: 'Legendary pizza joint in a converted garage that helped put Bushwick on the map',
@@ -838,7 +838,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === LONG ISLAND CITY (id: ny-22) ===
   {
     id: 'curated-ny22-1',
-    neighborhoodId: 'ny-22',
+    neighborhoodId: 'ny-49',
     name: 'MoMA PS1',
     category: 'museum',
     description: 'Contemporary art institution in a former public school building',
@@ -876,7 +876,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny23-2',
-    neighborhoodId: 'ny-23',
+    neighborhoodId: 'ny-25',
     name: 'Flushing Meadows-Corona Park',
     category: 'park',
     description: 'Massive park home to the Unisphere, site of two World\'s Fairs',
@@ -1204,7 +1204,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny1-10',
-    neighborhoodId: 'ny-1',
+    neighborhoodId: 'ny-32',
     name: 'Hungarian Pastry Shop',
     category: 'cafe',
     description: 'Old-world cafe near Columbia with pastries, coffee, and a studious vibe',
@@ -1230,7 +1230,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === UPPER EAST SIDE (id: ny-2) — additional spots ===
   {
     id: 'curated-ny2-6',
-    neighborhoodId: 'ny-2',
+    neighborhoodId: 'ny-34',
     name: 'JG Melon',
     category: 'restaurant',
     description: 'Legendary no-frills burger joint beloved by Upper East Siders since 1972',
@@ -1242,7 +1242,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny2-8',
-    neighborhoodId: 'ny-2',
+    neighborhoodId: 'ny-34',
     name: 'Bemelmans Bar',
     category: 'bar',
     description: 'Iconic cocktail bar in The Carlyle with whimsical Madeline murals',
@@ -1254,7 +1254,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny2-9',
-    neighborhoodId: 'ny-2',
+    neighborhoodId: 'ny-33',
     name: 'Auction House',
     category: 'bar',
     description: 'Candlelit cocktail lounge with velvet seating and a Victorian parlor feel',
@@ -1266,7 +1266,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny2-10',
-    neighborhoodId: 'ny-2',
+    neighborhoodId: 'ny-33',
     name: 'The Penrose',
     category: 'bar',
     description: 'Stylish neighborhood bar with craft cocktails and a lively brunch scene',
@@ -1280,7 +1280,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === GREENWICH VILLAGE (id: ny-3) — additional spots ===
   {
     id: 'curated-ny3-4',
-    neighborhoodId: 'ny-3',
+    neighborhoodId: 'ny-35',
     name: 'I Sodi',
     category: 'restaurant',
     description: 'Tiny, no-reservations Tuscan restaurant with a devoted following',
@@ -1390,7 +1390,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny4-7',
-    neighborhoodId: 'ny-4',
+    neighborhoodId: 'ny-5',
     name: 'Ear Inn',
     category: 'bar',
     description: 'One of NYC\'s oldest bars, operating since 1817 in a Federal-style townhouse',
@@ -1562,7 +1562,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny6-9',
-    neighborhoodId: 'ny-6',
+    neighborhoodId: 'ny-35',
     name: 'Peter McManus Cafe',
     category: 'bar',
     description: 'Family-owned since 1936, one of NYC\'s oldest continuously run bars',
@@ -1586,7 +1586,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny6-12',
-    neighborhoodId: 'ny-6',
+    neighborhoodId: 'ny-35',
     name: 'Blank Street Coffee',
     category: 'cafe',
     description: 'Minimalist micro-cafe with fast, affordable specialty coffee',
@@ -1600,7 +1600,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === EAST VILLAGE (id: ny-7) — additional spots ===
   {
     id: 'curated-ny7-4',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-38',
     name: 'Momofuku Noodle Bar',
     category: 'restaurant',
     description: 'David Chang\'s original restaurant that launched a culinary empire',
@@ -1612,7 +1612,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-5',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-41',
     name: 'Hanon',
     category: 'restaurant',
     description: 'Intimate Korean-Japanese restaurant with inventive tasting menus',
@@ -1624,7 +1624,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-6',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-37',
     name: 'Death & Co',
     category: 'bar',
     description: 'Pioneering craft cocktail bar that helped define modern mixology',
@@ -1636,7 +1636,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-7',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-37',
     name: 'Amor y Amargo',
     category: 'bar',
     description: 'Tiny bitters-focused bar with inventive amaro cocktails and no beer or wine',
@@ -1648,7 +1648,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-8',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-38',
     name: 'McSorley\'s Old Ale House',
     category: 'bar',
     description: 'NYC\'s oldest bar, pouring since 1854 with only two beer options: light or dark',
@@ -1660,7 +1660,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny7-9',
-    neighborhoodId: 'ny-7',
+    neighborhoodId: 'ny-37',
     name: 'Abraço',
     category: 'cafe',
     description: 'Tiny espresso bar with some of the best coffee and olive oil cake in the city',
@@ -1734,7 +1734,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny8-9',
-    neighborhoodId: 'ny-8',
+    neighborhoodId: 'ny-38',
     name: 'Devoción',
     category: 'cafe',
     description: 'Colombian specialty roaster with a stunning greenhouse-style cafe',
@@ -1772,7 +1772,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny9-6',
-    neighborhoodId: 'ny-9',
+    neighborhoodId: 'ny-40',
     name: 'Harlem Hops',
     category: 'bar',
     description: 'Harlem\'s first Black-owned beer bar with an outstanding craft selection',
@@ -1882,7 +1882,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny10-10',
-    neighborhoodId: 'ny-10',
+    neighborhoodId: 'ny-34',
     name: 'Little Collins',
     category: 'cafe',
     description: 'Australian-style cafe with exceptional flat whites and brunch',
@@ -1908,7 +1908,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === WILLIAMSBURG (id: ny-11) — additional spots ===
   {
     id: 'curated-ny11-4',
-    neighborhoodId: 'ny-11',
+    neighborhoodId: 'ny-41',
     name: 'Lilia',
     category: 'restaurant',
     description: 'Missy Robbins\' celebrated Italian restaurant with handmade pasta in a former auto body shop',
@@ -1944,7 +1944,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny11-7',
-    neighborhoodId: 'ny-11',
+    neighborhoodId: 'ny-41',
     name: 'Westlight',
     category: 'bar',
     description: 'Rooftop bar on the 22nd floor of The William Vale with stunning panoramic views',
@@ -2054,7 +2054,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny12-9',
-    neighborhoodId: 'ny-12',
+    neighborhoodId: 'ny-17',
     name: 'Grand Army Bar',
     category: 'bar',
     description: 'Award-winning cocktail bar with a raw bar and a literary speakeasy feel',
@@ -2092,7 +2092,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === BROOKLYN HEIGHTS (id: ny-13) — additional spots ===
   {
     id: 'curated-ny13-4',
-    neighborhoodId: 'ny-13',
+    neighborhoodId: 'ny-12',
     name: 'River Café',
     category: 'restaurant',
     description: 'Iconic fine dining restaurant on a barge beneath the Brooklyn Bridge',
@@ -2166,7 +2166,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny14-11',
-    neighborhoodId: 'ny-14',
+    neighborhoodId: 'ny-44',
     name: 'Southside Coffee',
     category: 'cafe',
     description: 'Friendly neighborhood cafe with outdoor seating and dependable brews',
@@ -2206,7 +2206,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === BUSHWICK (id: ny-16) — additional spots ===
   {
     id: 'curated-ny16-4',
-    neighborhoodId: 'ny-16',
+    neighborhoodId: 'ny-42',
     name: 'Ops',
     category: 'restaurant',
     description: 'Natural wine bar and pizza spot with wood-fired pies and a chill vibe',
@@ -2218,7 +2218,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny16-5',
-    neighborhoodId: 'ny-16',
+    neighborhoodId: 'ny-24',
     name: 'Birria-Landia',
     category: 'restaurant',
     description: 'Street-side birria taco stand that became a citywide sensation',
@@ -2230,7 +2230,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny16-6',
-    neighborhoodId: 'ny-16',
+    neighborhoodId: 'ny-42',
     name: 'The Narrows',
     category: 'bar',
     description: 'Neighborhood cocktail bar with a spacious backyard and live music',
@@ -2242,7 +2242,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny16-7',
-    neighborhoodId: 'ny-16',
+    neighborhoodId: 'ny-42',
     name: 'Jupiter Disco',
     category: 'bar',
     description: 'Funky neighborhood bar with DJs, dancing, and a convivial atmosphere',
@@ -2254,7 +2254,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny16-9',
-    neighborhoodId: 'ny-16',
+    neighborhoodId: 'ny-42',
     name: 'Sey Coffee',
     category: 'cafe',
     description: 'Award-winning specialty roaster with a minimalist industrial space',
@@ -2502,7 +2502,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny20-10',
-    neighborhoodId: 'ny-20',
+    neighborhoodId: 'ny-46',
     name: 'Cafe Rue Dix',
     category: 'cafe',
     description: 'Senegalese-French cafe with excellent coffee, pastries, and West African brunch',
@@ -2516,7 +2516,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === ASTORIA (id: ny-21) — additional spots ===
   {
     id: 'curated-ny21-4',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-47',
     name: 'Vesta Trattoria',
     category: 'restaurant',
     description: 'Farm-to-table Italian restaurant with handmade pasta and a warm atmosphere',
@@ -2540,7 +2540,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny21-6',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-47',
     name: 'The Bonnie',
     category: 'bar',
     description: 'Stylish cocktail bar with creative drinks and a seasonal outdoor patio',
@@ -2552,7 +2552,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny21-7',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-47',
     name: 'Bohemian Hall & Beer Garden',
     category: 'bar',
     description: 'NYC\'s oldest beer garden, open since 1919 with a massive outdoor space',
@@ -2564,7 +2564,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny21-8',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-48',
     name: 'Sweet Afton',
     category: 'bar',
     description: 'Craft cocktail bar with a strong whiskey collection and neighborhood charm',
@@ -2576,7 +2576,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny21-9',
-    neighborhoodId: 'ny-21',
+    neighborhoodId: 'ny-47',
     name: 'Mighty Oak Roasters',
     category: 'cafe',
     description: 'Local specialty roaster with a bright Astoria cafe and excellent brews',
@@ -2602,7 +2602,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === LONG ISLAND CITY (id: ny-22) — additional spots ===
   {
     id: 'curated-ny22-5',
-    neighborhoodId: 'ny-22',
+    neighborhoodId: 'ny-50',
     name: 'Casa Enrique',
     category: 'restaurant',
     description: 'Michelin-starred Mexican restaurant with authentic Chiapas-style cooking',
@@ -2626,7 +2626,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny22-7',
-    neighborhoodId: 'ny-22',
+    neighborhoodId: 'ny-49',
     name: 'Dutch Kills',
     category: 'bar',
     description: 'Craft cocktail bar in a dim, speakeasy-style space with impeccable drinks',
@@ -2650,7 +2650,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny22-10',
-    neighborhoodId: 'ny-22',
+    neighborhoodId: 'ny-50',
     name: 'Sweetleaf Coffee Roasters',
     category: 'cafe',
     description: 'Local roaster and cafe with a gorgeous space and exceptional cold brew',
@@ -2676,7 +2676,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // === FLUSHING (id: ny-23) — additional spots ===
   {
     id: 'curated-ny23-6',
-    neighborhoodId: 'ny-23',
+    neighborhoodId: 'ny-10',
     name: 'Pocha 32',
     category: 'bar',
     description: 'Korean late-night bar and eatery serving soju cocktails and fried chicken',
@@ -2822,7 +2822,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny24-11',
-    neighborhoodId: 'ny-24',
+    neighborhoodId: 'ny-26',
     name: 'La Cabana Salvadorena',
     category: 'cafe',
     description: 'Salvadoran bakery and cafe with pupusas and strong Central American coffee',
@@ -3070,7 +3070,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny28-7',
-    neighborhoodId: 'ny-28',
+    neighborhoodId: 'ny-27',
     name: 'The Bronx Alehouse',
     category: 'bar',
     description: 'Craft beer bar near Fordham University with rotating local taps',
@@ -3156,7 +3156,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny29-7',
-    neighborhoodId: 'ny-29',
+    neighborhoodId: 'ny-30',
     name: 'Richmond Republic',
     category: 'bar',
     description: 'Stylish bar with creative cocktails and a strong local beer selection',
@@ -3261,7 +3261,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny31-7',
-    neighborhoodId: 'ny-31',
+    neighborhoodId: 'ny-1',
     name: 'Irving Farm Coffee Roasters',
     category: 'cafe',
     description: 'Local craft coffee roaster with a cozy Upper West Side outpost',
@@ -3273,7 +3273,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny31-8',
-    neighborhoodId: 'ny-31',
+    neighborhoodId: 'ny-10',
     name: 'Culture Espresso',
     category: 'cafe',
     description: 'Specialty espresso bar known for its precision-brewed coffee and cookies',
@@ -3314,7 +3314,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny32-2',
-    neighborhoodId: 'ny-32',
+    neighborhoodId: 'ny-9',
     name: 'Pisticci',
     category: 'restaurant',
     description: 'Warm neighborhood Italian with a candlelit back garden and homemade pasta',
@@ -3363,7 +3363,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny32-6',
-    neighborhoodId: 'ny-32',
+    neighborhoodId: 'ny-1',
     name: 'The Gin Mill',
     category: 'bar',
     description: 'Classic UWS bar with a strong whiskey collection and late-night hours',
@@ -3479,7 +3479,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny33-8',
-    neighborhoodId: 'ny-33',
+    neighborhoodId: 'ny-2',
     name: 'Cafe Sabarsky',
     category: 'cafe',
     description: 'Viennese cafe inside the Neue Galerie with strudel, torte, and Viennese coffee',
@@ -3648,7 +3648,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny35-6',
-    neighborhoodId: 'ny-35',
+    neighborhoodId: 'ny-3',
     name: 'Dante',
     category: 'bar',
     description: 'Historic cafe turned world-renowned cocktail bar, famous for its negroni variations',
@@ -3661,7 +3661,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny35-7',
-    neighborhoodId: 'ny-35',
+    neighborhoodId: 'ny-3',
     name: 'Stumptown Coffee Roasters',
     category: 'cafe',
     description: 'Portland-born third-wave coffee roaster with a cozy West Village location',
@@ -3739,7 +3739,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny36-6',
-    neighborhoodId: 'ny-36',
+    neighborhoodId: 'ny-38',
     name: 'Cathedrale',
     category: 'bar',
     description: 'Dramatic bar and brasserie with soaring ceilings and statement cocktails',
@@ -3764,7 +3764,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny36-9',
-    neighborhoodId: 'ny-36',
+    neighborhoodId: 'ny-35',
     name: 'Jack\'s Stir Brew Coffee',
     category: 'cafe',
     description: 'Organic fair-trade coffee roaster with a loyal downtown following',
@@ -3819,7 +3819,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny37-7',
-    neighborhoodId: 'ny-37',
+    neighborhoodId: 'ny-7',
     name: 'Ninth Street Espresso',
     category: 'cafe',
     description: 'No-frills espresso bar that helped define the NYC specialty coffee scene',
@@ -3831,7 +3831,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny37-8',
-    neighborhoodId: 'ny-37',
+    neighborhoodId: 'ny-8',
     name: 'Cafe Forgot',
     category: 'cafe',
     description: 'Charming Alphabet City cafe with vintage decor, good pastries, and natural wine',
@@ -3872,7 +3872,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny38-3',
-    neighborhoodId: 'ny-38',
+    neighborhoodId: 'ny-41',
     name: 'Hanon',
     category: 'restaurant',
     description: 'Japanese izakaya with yakitori, small plates, and sake on St. Marks Place',
@@ -3885,7 +3885,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Bars ---
   {
     id: 'curated-ny38-4',
-    neighborhoodId: 'ny-38',
+    neighborhoodId: 'ny-37',
     name: 'Please Don\'t Tell (PDT)',
     category: 'bar',
     description: 'Speakeasy cocktail bar entered through a phone booth inside Crif Dogs',
@@ -3922,7 +3922,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny38-7',
-    neighborhoodId: 'ny-38',
+    neighborhoodId: 'ny-7',
     name: 'B Cup Cafe',
     category: 'cafe',
     description: 'Quirky little cafe with strong coffee, bubble tea, and a funky East Village vibe',
@@ -3934,7 +3934,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny38-9',
-    neighborhoodId: 'ny-38',
+    neighborhoodId: 'ny-4',
     name: 'Taiyaki NYC',
     category: 'cafe',
     description: 'Japanese fish-shaped waffle cone soft serve with matcha and unique flavors',
@@ -4001,7 +4001,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny39-8',
-    neighborhoodId: 'ny-39',
+    neighborhoodId: 'ny-28',
     name: 'Mi Casa Bakery',
     category: 'cafe',
     description: 'Mexican bakery with pan dulce, tres leches, and strong coffee',
@@ -4030,7 +4030,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny40-2',
-    neighborhoodId: 'ny-40',
+    neighborhoodId: 'ny-9',
     name: 'Harlem Tavern',
     category: 'restaurant',
     description: 'Spacious neighborhood restaurant with a beer garden, comfort food, and live music',
@@ -4067,7 +4067,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny40-5',
-    neighborhoodId: 'ny-40',
+    neighborhoodId: 'ny-9',
     name: 'Ginny\'s Supper Club',
     category: 'bar',
     description: 'Swanky supper club beneath Red Rooster with live jazz and cocktails',
@@ -4080,7 +4080,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny40-7',
-    neighborhoodId: 'ny-40',
+    neighborhoodId: 'ny-9',
     name: 'Double Dutch Espresso',
     category: 'cafe',
     description: 'Bright, welcoming coffee shop that has become a Harlem morning staple',
@@ -4104,7 +4104,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny40-9',
-    neighborhoodId: 'ny-40',
+    neighborhoodId: 'ny-9',
     name: 'Silvana',
     category: 'cafe',
     description: 'Middle Eastern-inspired cafe by day, live music venue and bar downstairs by night',
@@ -4121,7 +4121,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Restaurants ---
   {
     id: 'curated-ny41-1',
-    neighborhoodId: 'ny-41',
+    neighborhoodId: 'ny-11',
     name: 'Diner',
     category: 'restaurant',
     description: 'Iconic Williamsburg restaurant in a restored dining car with a daily-changing menu',
@@ -4133,7 +4133,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny41-3',
-    neighborhoodId: 'ny-41',
+    neighborhoodId: 'ny-11',
     name: 'Peter Luger Steak House',
     category: 'restaurant',
     description: 'Legendary no-nonsense steakhouse that has been serving porterhouse since 1887',
@@ -4158,7 +4158,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny41-6',
-    neighborhoodId: 'ny-41',
+    neighborhoodId: 'ny-11',
     name: 'Maison Premiere',
     category: 'bar',
     description: 'New Orleans-inspired oyster bar and absinthe den with a lush garden patio',
@@ -4171,7 +4171,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny41-7',
-    neighborhoodId: 'ny-41',
+    neighborhoodId: 'ny-11',
     name: 'Devoción',
     category: 'cafe',
     description: 'Colombian specialty roaster with a stunning greenhouse-style cafe and fresh beans',
@@ -4237,7 +4237,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Bars ---
   {
     id: 'curated-ny42-4',
-    neighborhoodId: 'ny-42',
+    neighborhoodId: 'ny-16',
     name: 'House of Yes',
     category: 'bar',
     description: 'Legendary nightlife and performance venue with immersive events and craft cocktails',
@@ -4249,7 +4249,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny42-5',
-    neighborhoodId: 'ny-42',
+    neighborhoodId: 'ny-16',
     name: 'The Johnson\'s',
     category: 'bar',
     description: 'Divey neighborhood bar with cheap drinks, a pool table, and a living-room feel',
@@ -4274,7 +4274,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny42-8',
-    neighborhoodId: 'ny-42',
+    neighborhoodId: 'ny-16',
     name: 'Variety Coffee Roasters',
     category: 'cafe',
     description: 'Brooklyn-born roaster with a spacious East Williamsburg outpost and great espresso',
@@ -4329,7 +4329,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny43-7',
-    neighborhoodId: 'ny-43',
+    neighborhoodId: 'ny-14',
     name: 'Cafe Grumpy',
     category: 'cafe',
     description: 'Brooklyn-born specialty roaster with a Gowanus outpost and serious espresso',
@@ -4353,7 +4353,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny43-9',
-    neighborhoodId: 'ny-43',
+    neighborhoodId: 'ny-45',
     name: 'Hungry Ghost Coffee',
     category: 'cafe',
     description: 'Neighborhood coffee shop with a strong espresso program and friendly baristas',
@@ -4371,7 +4371,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Bars ---
   {
     id: 'curated-ny44-4',
-    neighborhoodId: 'ny-44',
+    neighborhoodId: 'ny-14',
     name: 'Skylark',
     category: 'bar',
     description: 'Craft cocktail bar with a vintage Americana vibe and thoughtful seasonal menu',
@@ -4420,7 +4420,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny44-9',
-    neighborhoodId: 'ny-44',
+    neighborhoodId: 'ny-43',
     name: 'Konditori',
     category: 'cafe',
     description: 'Swedish-inspired cafe with fika culture, cinnamon buns, and strong coffee',
@@ -4474,7 +4474,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny45-6',
-    neighborhoodId: 'ny-45',
+    neighborhoodId: 'ny-20',
     name: 'Tooker Alley',
     category: 'bar',
     description: 'Cozy cocktail bar specializing in classic and pre-Prohibition era drinks',
@@ -4487,7 +4487,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny45-8',
-    neighborhoodId: 'ny-45',
+    neighborhoodId: 'ny-42',
     name: 'Sey Coffee',
     category: 'cafe',
     description: 'Minimalist specialty roaster with an obsessive focus on quality and sourcing',
@@ -4505,7 +4505,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Bars ---
   {
     id: 'curated-ny46-4',
-    neighborhoodId: 'ny-46',
+    neighborhoodId: 'ny-20',
     name: 'Franklin Park',
     category: 'bar',
     description: 'Spacious neighborhood bar with a big outdoor space, craft beer, and live events',
@@ -4571,7 +4571,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny47-3',
-    neighborhoodId: 'ny-47',
+    neighborhoodId: 'ny-21',
     name: 'Kondo',
     category: 'restaurant',
     description: 'Modern Japanese restaurant with fresh sushi, izakaya dishes, and a sleek interior',
@@ -4608,7 +4608,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny47-6',
-    neighborhoodId: 'ny-47',
+    neighborhoodId: 'ny-21',
     name: 'Botte Bar',
     category: 'bar',
     description: 'Italian wine bar with an impressive selection of Italian wines and aperitivi',
@@ -4633,7 +4633,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny47-8',
-    neighborhoodId: 'ny-47',
+    neighborhoodId: 'ny-21',
     name: 'Madame Sousou',
     category: 'cafe',
     description: 'Charming Mediterranean cafe with Greek coffee, loukoumades, and pastries',
@@ -4645,7 +4645,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny47-9',
-    neighborhoodId: 'ny-47',
+    neighborhoodId: 'ny-48',
     name: 'Kinship Coffee Roasters',
     category: 'cafe',
     description: 'Astoria specialty roaster with a warm space, house-roasted beans, and great pastries',
@@ -4662,7 +4662,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Restaurants ---
   {
     id: 'curated-ny48-1',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-47',
     name: 'Koliba',
     category: 'restaurant',
     description: 'Czech and Slovak restaurant with hearty dishes, dumplings, and imported beer',
@@ -4674,7 +4674,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny48-2',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-47',
     name: 'Kebab Cafe',
     category: 'restaurant',
     description: 'Legendary tiny Egyptian restaurant with a no-menu tasting experience from chef Ali',
@@ -4686,7 +4686,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny48-3',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-47',
     name: 'Duzan',
     category: 'restaurant',
     description: 'Palestinian restaurant with hummus, grilled meats, and falafel on Steinway Street',
@@ -4699,7 +4699,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Bars ---
   {
     id: 'curated-ny48-4',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-47',
     name: 'The Bonnie',
     category: 'bar',
     description: 'Craft cocktails and seasonal drinks in a welcoming neighborhood setting',
@@ -4711,7 +4711,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny48-5',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-47',
     name: 'Albatross Bar',
     category: 'bar',
     description: 'Neighborhood cocktail bar with a dark, intimate vibe and creative house drinks',
@@ -4723,7 +4723,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny48-6',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-21',
     name: 'Diamond Dogs',
     category: 'bar',
     description: 'Rock-and-roll cocktail bar with a Bowie-inspired vibe and late-night energy',
@@ -4736,7 +4736,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny48-7',
-    neighborhoodId: 'ny-48',
+    neighborhoodId: 'ny-21',
     name: 'Ample Hills Creamery',
     category: 'cafe',
     description: 'Beloved Brooklyn-born ice cream shop with creative flavors and a cheerful vibe',
@@ -4753,7 +4753,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Restaurants ---
   {
     id: 'curated-ny49-2',
-    neighborhoodId: 'ny-49',
+    neighborhoodId: 'ny-50',
     name: 'Manducatis Rustica',
     category: 'restaurant',
     description: 'Rustic Italian trattoria with wood-fired pizza, pasta, and a charming garden',
@@ -4765,7 +4765,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny49-3',
-    neighborhoodId: 'ny-49',
+    neighborhoodId: 'ny-22',
     name: 'Shi',
     category: 'restaurant',
     description: 'Contemporary Asian restaurant with a skyline-view terrace and innovative dishes',
@@ -4778,7 +4778,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Bars ---
   {
     id: 'curated-ny49-4',
-    neighborhoodId: 'ny-49',
+    neighborhoodId: 'ny-50',
     name: 'LIC Bar',
     category: 'bar',
     description: 'Beloved neighborhood bar with live music, a backyard, and a true community spirit',
@@ -4815,7 +4815,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   },
   {
     id: 'curated-ny49-9',
-    neighborhoodId: 'ny-49',
+    neighborhoodId: 'ny-22',
     name: 'Blend on the Water',
     category: 'cafe',
     description: 'Waterfront cafe with coffee, smoothies, and views of the East River and Manhattan',
@@ -4870,7 +4870,7 @@ export const newYorkCuratedSpots: LocalSpot[] = [
   // --- Cafes ---
   {
     id: 'curated-ny50-9',
-    neighborhoodId: 'ny-50',
+    neighborhoodId: 'ny-49',
     name: 'Court Square Diner',
     category: 'cafe',
     description: 'Classic stainless-steel diner with bottomless coffee, egg sandwiches, and retro charm',
