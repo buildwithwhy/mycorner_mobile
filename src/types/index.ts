@@ -141,3 +141,15 @@ export interface Itinerary {
   createdAt: number;
   updatedAt: number;
 }
+
+// ============================================================================
+// COMMUNITY (events + business showcases)
+// ============================================================================
+
+export type {
+  EventCategory,
+  EventSchedule,
+  NeighborhoodEvent,
+  ShowcasePerk,
+  BusinessShowcase,
+} from './community';
