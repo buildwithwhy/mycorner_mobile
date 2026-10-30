@@ -62,6 +62,11 @@ everything else in code.
 
 ### Outreach prep (`outreach/YYYY-MM-DD/<slug>.json`)
 
+Written by `npm run outreach:prep` (`bun scripts/outreach-prep.ts`). For each
+target spot — the curated datasets plus approved scout proposals — the script
+enriches contact details via Place Details (phone, website) and drafts a pitch
+inviting the business to host a small event or offer a local-resident perk.
+
 ```json
 {
   "spotId": "perlys-cafe",
@@ -72,13 +77,44 @@ everything else in code.
   },
   "draftPitch": "Subject: Host a supper club in …",
   "enrichedAt": "2026-11-02T08:05:00Z",
-  "status": "draft"
+  "status": "draft",
+  "flag": "missing-contact"
 }
 ```
 
 Outreach is **prep only**: drafts live here, a human sends them by hand.
 Status lifecycle: `draft | ready | sent-manually`. There is deliberately no code
-path anywhere in this repo that sends anything.
+path anywhere in this repo that sends anything — the fixture test
+(`npm run test:outreach`) greps for email/sending dependencies to keep it that
+way, and `contact.emailFound` is always `null` (round one never searches for,
+guesses, or stores email addresses).
+
+`flag` marks why a contact block is incomplete — it exists so the record stays
+honest instead of guessing:
+
+- `no-place-id` — the source data has no Google placeId, so no enrichment was
+  attempted
+- `enrichment-failed` — the Place Details call failed or returned a non-OK
+  status (recorded verbatim in the run summary notes)
+- `missing-contact` — Places responded OK but listed no phone and no website
+
+Complete contact blocks carry no flag. The flags are set in code
+(`scripts/queue/outreach-core.ts`); nothing is inferred or fabricated.
+
+Usage:
+
+```bash
+GOOGLE_MAPS_API_KEY=... npm run outreach:prep -- --limit=50   # real run
+npm run outreach:prep -- --dry-run                            # print, write nothing
+npm run outreach:prep -- --fixtures --out=/tmp/queue          # offline, bundled responses
+npm run test:outreach                                          # fixture test + no-send grep
+```
+
+Real runs need a Places-enabled key (billing restored — see the audit doc).
+A run whose first lookup returns `REQUEST_DENIED`/`OVER_QUERY_LIMIT` aborts
+with nothing written, so a billing outage never fills the queue with flagged
+records. `--fixtures` refuses to write into the real `review-queue/` — fixture
+records describe businesses that do not exist.
 
 ### Freshness exceptions (`freshness/YYYY-MM-DD/<slug>.json`)
 

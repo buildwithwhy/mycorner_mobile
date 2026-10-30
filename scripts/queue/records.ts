@@ -38,6 +38,17 @@ export type FreshnessExceptionKind = (typeof FRESHNESS_EXCEPTION_KINDS)[number];
 
 export const FRESHNESS_STATUSES = ['open', 'resolved', 'dismissed'] as const;
 export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
+/**
+ * Why a record is missing contact details — honesty flags, never guesses.
+ * A record either carries what Places actually returned or it is flagged;
+ * nothing is ever inferred or fabricated.
+ */
+export const OUTREACH_FLAGS = [
+  'no-place-id',
+  'enrichment-failed',
+  'missing-contact',
+] as const;
+export type OutreachFlag = (typeof OUTREACH_FLAGS)[number];
 
 export interface ProposedSpot {
   name: string;
@@ -75,6 +86,9 @@ export interface OutreachRecord {
   draftPitch: string;
   enrichedAt: string;
   status: OutreachStatus;
+  /** Set when the record's contact block is incomplete and why (optional for
+   *  records written before flags existed). */
+  flag?: OutreachFlag;
 }
 
 export interface FreshnessSubject {
@@ -318,6 +332,15 @@ export function validateOutreachRecord(raw: unknown): ValidationResult {
     OUTREACH_STATUSES.includes(record.status as OutreachStatus),
     'status',
     `must be one of ${OUTREACH_STATUSES.join(' | ')}`,
+    errors,
+  );
+
+  checkField(
+    record.flag === undefined ||
+      record.flag === null ||
+      OUTREACH_FLAGS.includes(record.flag as OutreachFlag),
+    'flag',
+    `must be one of ${OUTREACH_FLAGS.join(' | ')} when present`,
     errors,
   );
 
