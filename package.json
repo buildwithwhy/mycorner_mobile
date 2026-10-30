@@ -16,6 +16,8 @@
     "boundaries:preview": "node scripts/preview-boundaries.js",
     "test": "node --test scripts/",
     "validate-data": "node scripts/validate-data.js",
+    "promote:spot": "bun scripts/promote-spot.ts",
+    "test:queue": "bun scripts/queue/promote-spot.fixture.ts",
     "build:dev:sim": "eas build --profile development --platform ios",
     "build:dev:device": "eas build --profile development:device --platform ios",
     "build:preview": "eas build --profile preview --platform all",
