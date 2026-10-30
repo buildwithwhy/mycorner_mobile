@@ -1,0 +1,64 @@
+# Freshness auditor — scheduled monthly dry run (spec: Agentic round one, Stream C).
+#
+# Dry-run by default: the scheduled run makes NO Places API calls. It audits
+# event staleness locally and opens a review PR only when the run produced
+# exception records (with no events bundled yet, the run is a no-op).
+#
+# Live spot re-verification is deliberately out of CI until Google Maps
+# billing is restored (owner action): run it manually with
+#   GOOGLE_MAPS_API_KEY=... bun scripts/freshness-auditor.ts --live
+# and let its PR be the review surface.
+
+name: freshness-auditor
+
+on:
+  schedule:
+    - cron: '0 6 1 * *' # 06:00 UTC on the 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Run freshness auditor (dry run — no network)
+        run: bun scripts/freshness-auditor.ts --queue-root=review-queue
+
+      - name: Upload run output
+        uses: actions/upload-artifact@v4
+        with:
+          name: freshness-run
+          path: review-queue/freshness/
+          retention-days: 30
+
+      - name: Open review PR when the run produced records
+        uses: peter-evans/create-pull-request@v7
+        with:
+          base: main
+          branch: queue/freshness-audit
+          branch-suffix: timestamp
+          title: 'queue(auditor): freshness exceptions — ${{ github.run_id }}'
+          body: |
+            Automated freshness-auditor dry run (monthly schedule).
+
+            One exception record per file under `review-queue/freshness/`. Review each
+            record and edit its `status` (`open | resolved | dismissed`); the run
+            summary in each dated directory lists what the run produced.
+
+            This run was dry-run (no Places API calls): spot verdicts come only from
+            live or fixture runs. See review-queue/README.md for the record schema.
+          commit-message: 'queue(auditor): freshness exceptions from scheduled dry run'
+          labels: |
+            agentic-backend
+            review-queue
+          # No records → no diff → the action no-ops and this PR step is skipped.
+          add-paths: review-queue/freshness/

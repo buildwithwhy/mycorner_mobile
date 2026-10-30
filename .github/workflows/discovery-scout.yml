@@ -1,0 +1,72 @@
+# Discovery scout — scheduled weekly dry run (spec: Agentic Round One, Stream C).
+#
+# Dry-run by default: the scheduled run makes NO Places API calls. It runs the
+# scout end-to-end against the deterministic fixture client (category gaps,
+# polygon filtering, dedupe, record writing) and opens a review PR with the
+# report — pipeline health you can read, never promotable data (records carry
+# placesStatus 'FIXTURE', which the promotion path refuses).
+#
+# Live spot discovery is deliberately out of CI until Google Maps billing is
+# restored (owner action, OQ1): run it manually with
+#   GOOGLE_MAPS_API_KEY=... bun scripts/run-scout.ts --city=london
+# and let its PR (review-queue/spot-proposals/) be the review surface.
+
+name: discovery-scout
+
+on:
+  schedule:
+    - cron: '0 6 * * 2' # 06:00 UTC every Tuesday (day-of-week 2)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Run discovery scout (dry run — no network)
+        run: bun scripts/run-scout.ts --dry-run
+
+      - name: Upload run output
+        uses: actions/upload-artifact@v4
+        with:
+          name: scout-dry-run
+          path: review-queue/spot-proposals-dry-run/
+          retention-days: 30
+
+      - name: Open review PR with the dry-run report
+        uses: peter-evans/create-pull-request@v7
+        with:
+          base: main
+          branch: queue/discovery-scout-dry-run
+          branch-suffix: timestamp
+          title: 'queue(scout): discovery dry-run report — ${{ github.run_id }}'
+          body: |
+            Automated discovery-scout dry run (weekly schedule).
+
+            Every record under `review-queue/spot-proposals-dry-run/` came from the
+            deterministic fixture Places client — the names are synthetic
+            ("Fixture Example …") and `evidence.placesStatus` is `FIXTURE`. **Nothing
+            in this PR is promotable**; the report exists to prove the scout's
+            polygon, category-gap, and dedupe logic against the current bundled data.
+
+            What to review: the per-run summary (`summary.json`) — neighborhood
+            outcomes, categories searched, and requests used — and whether the
+            proposal distribution looks sane. Real proposals (Places-backed, with
+            evidence) start once Google Maps billing is restored; see
+            review-queue/README.md for the record schema and promotion path.
+          commit-message: 'queue(scout): dry-run discovery report from scheduled run'
+          labels: |
+            agentic-backend
+            review-queue
+          # A run with zero proposals still writes summary.json, so the PR shows
+          # the report for the week rather than silently skipping.
+          add-paths: review-queue/spot-proposals-dry-run/

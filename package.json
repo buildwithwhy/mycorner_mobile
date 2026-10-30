@@ -12,12 +12,18 @@
     "web": "APP_ENV=development expo start --web",
     "clear": "APP_ENV=development expo start --clear",
     "boundaries": "node scripts/generate-boundaries.js",
+    "boundaries:check": "node scripts/check-boundaries.js --city=new-york",
     "boundaries:fetch-water": "node scripts/fetch-thames-water.js",
     "boundaries:preview": "node scripts/preview-boundaries.js",
     "test": "node --test scripts/",
     "validate-data": "node scripts/validate-data.js",
     "promote:spot": "bun scripts/promote-spot.ts",
     "test:queue": "bun scripts/queue/promote-spot.fixture.ts",
+    "outreach:prep": "bun scripts/outreach-prep.ts",
+    "test:outreach": "bun scripts/queue/outreach-prep.fixture.ts",
+    "scout": "bun scripts/run-scout.ts",
+    "scout:dry-run": "bun scripts/run-scout.ts --dry-run",
+    "test:scout": "bun scripts/scout/scout.fixture.ts",
     "build:dev:sim": "eas build --profile development --platform ios",
     "build:dev:device": "eas build --profile development:device --platform ios",
     "build:preview": "eas build --profile preview --platform all",
@@ -28,7 +34,8 @@
     "build:prod:android": "eas build --profile production --platform android",
     "submit:ios": "eas submit --platform ios",
     "submit:android": "eas submit --platform android",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:auditor": "bun scripts/queue/freshness.fixture.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
