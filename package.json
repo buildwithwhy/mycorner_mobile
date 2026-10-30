@@ -12,6 +12,7 @@
     "web": "APP_ENV=development expo start --web",
     "clear": "APP_ENV=development expo start --clear",
     "boundaries": "node scripts/generate-boundaries.js",
+    "boundaries:check": "node scripts/check-boundaries.js --city=new-york",
     "boundaries:fetch-water": "node scripts/fetch-thames-water.js",
     "boundaries:preview": "node scripts/preview-boundaries.js",
     "test": "node --test scripts/",
