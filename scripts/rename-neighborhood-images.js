@@ -106,9 +106,9 @@ ${requiresFor(newYork)}
 
 // Map neighborhood ID to image
 export const neighborhoodImages: Record<string, ImageSourcePropType> = {
-${mapEntriesFor(london, `London (IDs ${london[0]?.id} to ${london[london.length - 1]?.id})`)},
+${mapEntriesFor(london, `London (IDs ${london[0]?.id} to ${london[london.length - 1]?.id})`)}
 
-${mapEntriesFor(newYork, `New York (IDs ${newYork[0]?.id} to ${newYork[newYork.length - 1]?.id})`)},
+${mapEntriesFor(newYork, `New York (IDs ${newYork[0]?.id} to ${newYork[newYork.length - 1]?.id})`)}
 };
 
 export const getNeighborhoodImage = (id: string): ImageSourcePropType | undefined => {

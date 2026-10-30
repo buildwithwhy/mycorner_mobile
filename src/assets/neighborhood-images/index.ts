@@ -212,7 +212,7 @@ export const neighborhoodImages: Record<string, ImageSourcePropType> = {
   '76': borough,
   '77': whitechapel,
   '78': vauxhall,
-  '79': kingsCross,,
+  '79': kingsCross,
 
   // New York (IDs ny-1 to ny-50)
   'ny-1': upperWestSide,
@@ -264,7 +264,7 @@ export const neighborhoodImages: Record<string, ImageSourcePropType> = {
   'ny-47': ditmars,
   'ny-48': steinway,
   'ny-49': huntersPoint,
-  'ny-50': courtSquare,,
+  'ny-50': courtSquare,
 };
 
 export const getNeighborhoodImage = (id: string): ImageSourcePropType | undefined => {
