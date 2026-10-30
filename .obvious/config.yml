@@ -1,0 +1,7 @@
+# obvious repo policy — auto-detected from GitHub repo settings
+branches:
+  default: main
+merge:
+  # GitHub allows merge commits, squash, and rebase; merge commit is the default method
+  method: merge
+  requireHumanMerge: true
