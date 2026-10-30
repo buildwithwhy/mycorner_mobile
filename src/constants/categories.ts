@@ -1,5 +1,5 @@
 import type { Ionicons } from '@expo/vector-icons';
-import type { SpotCategory } from '../types';
+import type { SpotCategory, EventCategory } from '../types';
 
 export const CATEGORY_ICONS: Record<SpotCategory, keyof typeof Ionicons.glyphMap> = {
   cafe: 'cafe-outline',
@@ -11,4 +11,14 @@ export const CATEGORY_ICONS: Record<SpotCategory, keyof typeof Ionicons.glyphMap
   shop: 'bag-outline',
   landmark: 'flag-outline',
   other: 'pin-outline',
+};
+
+export const EVENT_CATEGORY_ICONS: Record<EventCategory, keyof typeof Ionicons.glyphMap> = {
+  market: 'cart-outline',
+  music: 'musical-notes-outline',
+  community: 'people-outline',
+  food: 'restaurant-outline',
+  art: 'color-palette-outline',
+  seasonal: 'sunny-outline',
+  other: 'calendar-outline',
 };
