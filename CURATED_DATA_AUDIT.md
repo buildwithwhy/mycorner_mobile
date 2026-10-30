@@ -1,5 +1,102 @@
 # Curated Spots Data Audit — FULL (London + New York)
 
+## Post-build status — 2026-10-30 (audit-doc refresh)
+
+This section supersedes the counts and status flags in the historical audit
+below. Every number here is re-derived from script output pasted verbatim; the
+historical sections are retained as record only. Branch `docs/audit-refresh`,
+commit context: `main` at `17d521a`.
+
+### validate-data (the oracle)
+
+```
+validate-data: 126 neighborhoods, 992 curated spots, 20 events, 0 showcases
+
+[ok  ] coordinates-present — every neighborhood has coordinates
+[ok  ] boundary-polygon — closed ring, >= 3 unique vertices
+[ok  ] curated-spot-coverage — at least one curated spot
+[ok  ] explore-summary-parents — every parent neighborhood has an explore summary
+[ok  ] hero-image — hero image reference for every neighborhood
+[ok  ] prompts-coverage — every neighborhood has an image prompt
+[ok  ] spot-ids-unique — curated spot ids are unique
+[ok  ] spot-neighborhood-resolves — every spot neighborhoodId resolves
+[WARN] spot-place-id — every spot carries a google placeId
+       ⚠ 992/992 spots have no google placeId (anti-fabrication rule; backfill in progress)
+[ok  ] spot-fabricated-name — no known-fabricated spot names
+[ok  ] event-ids-unique / event-neighborhood-resolves / event-verified-at — all pass
+[ok  ] showcase-ids-unique / showcase-neighborhood-resolves / showcase-verified-at — all pass
+[ok  ] showcase-place-id — every showcase carries a google placeId
+
+validate-data: PASSED
+```
+
+Full output (with per-check descriptions) reproducible via `npm run validate-data`
+at this commit. Current state by the numbers:
+
+| Dimension | Historical audit | Current (validated) |
+|---|---|---|
+| Neighborhoods | — | **126** (all with coordinates, closed-ring boundary, ≥ 1 spot, summary, hero image, prompt) |
+| Curated spots | "Verified 1117" | **992** (oracle total) |
+| Spot google placeIds | 0 | **0/992** — backfill in progress (see WARN above) |
+| Fabricated names | 2 flags | **0** — `spot-fabricated-name` passes; both resolved (see below) |
+| Hero images | original 70 only | **126/126** (127 bundled `.webp` files in `src/assets/neighborhood-images/`; 56 generated in PR #11) |
+| Explore summaries | 16 sub-neighborhoods | **every parent covered** (`explore-summary-parents` passes; 20 added in PR #5) |
+| Events / showcases | n/a | **20 events, 0 showcases** (showcases intentionally empty pending verified placeIds — PR #12) |
+
+### Fabricated spot names — resolved
+
+- `curated-10-12` "Story Coffee Wimbledon" — **removed** (see Addendum below).
+- `curated-11-5` "Hai Cenato / 19 Numara Bos Cirrik" — **renamed to "Cirrik 19
+  Numara Bos"** (see Addendum below).
+
+`validate-data` check `spot-fabricated-name`: **all pass — 0 known-fabricated
+names in `src/data/curatedSpots/`.**
+
+### Boundaries (incl. New York pipeline, PR #6)
+
+```
+npm run boundaries:check  (check-boundaries.js --city=new-york)
+
+New York: 385 spots, 50 polygons, threshold 80%
+  all 50 neighborhoods >= 80%
+  spots in no polygon (water-locked/edge): 3
+
+boundary check passed
+```
+
+The historical concern about 50 hand-drawn New York approximations is resolved:
+generated polygons all clear the ≥ 80% spots-inside acceptance threshold.
+
+### Verification status
+
+```
+npm run typecheck   → tsc --noEmit passes (no output)
+npm test            → # pass 40, # fail 0 (node --test scripts/)
+```
+
+### Places billing status — as observed at run time
+
+No `GOOGLE_MAPS_API_KEY` is configured in this environment at run time, and no
+live Places call was possible. The last observed key status remains
+`REQUEST_DENIED — billing not enabled` (see "⚠️ Google Maps billing is OFF"
+below); nothing in this refresh changes that. Consequences unchanged:
+
+- Real-run acceptance for the discovery scout, freshness auditor, and outreach
+  prep stays billing-gated; all three ship dry-run-first with fixtures.
+- Live detail resolution for events/showcases degrades the same way as curated
+  spots when Places is unavailable.
+- The `spot-place-id` backfill (992 spots) and any showcase seeding require
+  Places access to verify entries; showcases therefore remain at 0.
+
+### What still needs doing (post-build)
+
+1. **Restore Google Maps billing** (owner action) — unblocks the agent real
+   runs, the spot placeId backfill, and live detail resolution.
+2. **Spot placeId backfill** — 0/992 spots currently carry a placeId.
+3. **Showcase seeding** — 0 showcases; entries need verified placeIds first.
+
+---
+
 ## Addendum — 2026-10-30 fabrication-flag rerun
 
 The two fabrication flags from this audit were addressed on branch
