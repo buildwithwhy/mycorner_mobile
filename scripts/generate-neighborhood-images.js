@@ -85,12 +85,12 @@ async function generateImage(prompt) {
   }
 
   const requestBody = JSON.stringify({
-    model: 'dall-e-3',
+    model: 'gpt-image-1.5',
     prompt,
     n: 1,
     size: '1024x1024',
-    quality: 'standard',
-    response_format: 'b64_json',
+    quality: 'medium',
+    // gpt-image-1.5 always returns b64_json and rejects response_format.
   });
 
   return new Promise((resolve, reject) => {
@@ -113,8 +113,23 @@ async function generateImage(prompt) {
         }
         try {
           const json = JSON.parse(data);
-          const imageData = json.data[0].b64_json;
-          resolve(Buffer.from(imageData, 'base64'));
+          const item = json.data[0];
+          if (item.b64_json) {
+            resolve(Buffer.from(item.b64_json, 'base64'));
+          } else if (item.url) {
+            https.get(item.url, (imgRes) => {
+              if (imgRes.statusCode !== 200) {
+                reject(new Error(`Image download failed: HTTP ${imgRes.statusCode}`));
+                return;
+              }
+              const chunks = [];
+              imgRes.on('data', (c) => chunks.push(c));
+              imgRes.on('end', () => resolve(Buffer.concat(chunks)));
+              imgRes.on('error', reject);
+            });
+          } else {
+            reject(new Error(`Unexpected response shape: ${data.slice(0, 200)}`));
+          }
         } catch (e) {
           reject(new Error(`Failed to parse response: ${e.message}`));
         }
