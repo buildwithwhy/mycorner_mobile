@@ -1,5 +1,33 @@
 # London curated spots — Air Conditioning research
 
+## Post-build status — 2026-10-30 (audit-doc refresh)
+
+This research predates the finish-it build; the coverage tables below are
+retained as research record, not as current data state. Current verified state
+(from `npm run validate-data` on `main` at `17d521a`, full output in
+`CURATED_DATA_AUDIT.md` → "Post-build status"): **126 neighborhoods, 992
+curated spots, 0 known-fabricated names, 126/126 hero images, every parent
+neighborhood has an explore summary, 20 events / 0 showcases**; all validate-data
+checks pass except the in-progress spot placeId backfill (WARN).
+
+Notes on entries below, traced to the current state:
+
+- **"Hai Cenato at 19 Numara Bos Cirrik"** (in "Explicit NO air conditioning")
+  — this spot was **renamed to "Cirrik 19 Numara Bos"** in PR #2; the old name
+  no longer exists in `src/`.
+- The **"Likely permanently closed / rebranded"** and **wrong-address** flags
+  below fed the multi-agent audit in `CURATED_DATA_AUDIT.md` (historical
+  sections there); the data has since been cleaned down to the current 992
+  validated spots.
+- The **"Counter Cafe Hackney Wick duplicate"** flag — spot ids are now unique
+  (`spot-ids-unique` passes in validate-data).
+
+Places billing status at run time: unchanged — no `GOOGLE_MAPS_API_KEY`
+configured, last observed `REQUEST_DENIED`. Live re-verification of AC tags
+against Places remains billing-gated.
+
+---
+
 _Researched 545 indoor spots via Google reviews, venue/hire listings (HeadBox/Tagvenue/inapub/CAMRA), Tripadvisor, Reddit, blogs._
 
 ## Tagging applied (London only)
