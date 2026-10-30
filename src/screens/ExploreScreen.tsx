@@ -12,6 +12,11 @@ import { CategoryChips } from '../components/explore/CategoryChips';
 import { CuratedSection } from '../components/explore/CuratedSection';
 import { NearbySection } from '../components/explore/NearbySection';
 import { NeighborhoodExploreSummary } from '../components/explore/NeighborhoodExploreSummary';
+import { EventsSection } from '../components/explore/EventsSection';
+import { ShowcaseSection } from '../components/explore/ShowcaseSection';
+import { getEvents } from '../data/events';
+import { getShowcases } from '../data/showcases';
+import { useStatusComparison } from '../contexts/StatusComparisonContext';
 import { getExploreSummary } from '../data/exploreSummaries';
 import { ItineraryBar } from '../components/explore/ItineraryBar';
 import { ItineraryView } from '../components/explore/ItineraryView';
@@ -30,6 +35,8 @@ export default function ExploreScreen() {
   const [showItinerary, setShowItinerary] = useState(false);
   const { saveItinerary: persistItinerary } = useItineraries();
   const { showToast } = useToast();
+
+  const { status: neighborhoodStatuses } = useStatusComparison();
 
   const {
     curatedSpots,
@@ -54,6 +61,11 @@ export default function ExploreScreen() {
   const coords = getNeighborhoodCoordinates(neighborhood.id);
   const neighborhoodCoords = { lat: coords.latitude, lng: coords.longitude };
   const exploreSummary = getExploreSummary(neighborhood.id);
+  // Resident of the active neighborhood sees community sections inline;
+  // visitors get the collapsed teaser inside each section.
+  const isResident = neighborhoodStatuses[neighborhood.id] === 'living_here';
+  const events = getEvents(neighborhood.id);
+  const showcases = getShowcases(neighborhood.id);
 
   const handleToggleItinerary = useCallback((spot: LocalSpot) => {
     if (isInItinerary(spot.id)) {
@@ -159,6 +171,12 @@ export default function ExploreScreen() {
           isInItinerary={isInItinerary}
           onToggleItinerary={handleToggleItinerary}
         />
+
+        {/* Community: Local Events */}
+        <EventsSection events={events} isResident={isResident} />
+
+        {/* Community: Local Business Showcases */}
+        <ShowcaseSection showcases={showcases} isResident={isResident} />
 
         {/* Bottom spacing for itinerary bar */}
         <View style={{ height: stops.length > 0 ? 120 : SPACING.xxxl }} />
