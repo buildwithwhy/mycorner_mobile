@@ -2212,30 +2212,17 @@ export const londonCuratedSpots: LocalSpot[] = [
     editorial: 'The cinnamon buns and sourdough loaves fly off the shelves. Get there early.',
     tags: ['bakery', 'pastries', 'sourdough', 'coffee'],
   },
-  {
-    id: 'curated-10-12',
-    neighborhoodId: '2',
-    name: 'Story Coffee Wimbledon',
-    category: 'cafe',
-    description: 'Independent specialty coffee shop with a warm neighbourhood feel',
-    address: '115 St John\'s Hill, Battersea, London SW11 1SD',
-    location: { lat: 51.461038, lng: -0.174396 },
-    source: 'curated',
-    editorial: 'Proper specialty coffee and a friendly team. A welcome escape from the chain cafes on the Broadway.',
-    tags: ['specialty coffee', 'independent', 'neighbourhood', 'friendly'],
-  },
-
   // === DALSTON (id: 11) — additional spots ===
   {
     id: 'curated-11-5',
     neighborhoodId: '11',
-    name: 'Hai Cenato at 19 Numara Bos Cirrik',
+    name: 'Cirrik 19 Numara Bos',
     category: 'restaurant',
     description: 'Turkish ocakbasi grill with outstanding charcoal-cooked meats',
     address: '34 Stoke Newington Road, N16 7XJ',
     location: { lat: 51.551582, lng: -0.074741 },
     source: 'curated',
-    editorial: 'Another Dalston Turkish gem. The mixed grill and fresh bread from the oven are absolutely superb.',
+    editorial: 'A Dalston Turkish gem. The mixed grill and fresh bread from the oven are absolutely superb.',
     tags: ['Turkish', 'grill', 'charcoal', 'BYO'],
   },
   {

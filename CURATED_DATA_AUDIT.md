@@ -1,5 +1,27 @@
 # Curated Spots Data Audit — FULL (London + New York)
 
+## Addendum — 2026-10-30 fabrication-flag rerun
+
+The two fabrication flags from this audit were addressed on branch
+`fix/fabricated-spot-names` (static checks only — Google Places keys remain
+billing-disabled, so web-source verification was used in place of Place Details):
+
+- `curated-10-12` "Story Coffee Wimbledon" — **removed**. Story Coffee has no
+  Wimbledon branch (storycoffee.co.uk lists only St John's Hill, Devonshire
+  Square, and Wandsworth); the real Battersea cafe is already covered by the
+  `curated-2-11` entry.
+- `curated-11-5` "Hai Cenato at 19 Numara Bos Cirrik" — **renamed to
+  "Cirrik 19 Numara Bos"**. The ocakbasi at 34 Stoke Newington Road N16 7XJ is
+  a real, open restaurant (verified via TripAdvisor, Hardens, and That's Up
+  listings); the old name was a fabricated mashup with Jason Atherton's
+  "Hai Cenato" in Victoria. Address and location were already correct.
+
+Rerun of the fabrication check (name-vs-web-verification over all curated
+spots): **0 fabrication flags**. `grep` confirms zero occurrences of both old
+names in `src/`. `npm run typecheck` passes.
+
+---
+
 Verified **1117** curated spots via multi-agent web checks (existence / open / address).
 
 ## Overall
