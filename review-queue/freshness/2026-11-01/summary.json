@@ -1,0 +1,17 @@
+{
+  "kind": "freshness",
+  "runDate": "2026-11-01",
+  "startedAt": "2026-11-01T12:42:22.185Z",
+  "finishedAt": "2026-11-01T12:42:22.185Z",
+  "dryRun": true,
+  "recordsWritten": [],
+  "counts": {
+    "total": 1012,
+    "written": 0,
+    "errors": 0
+  },
+  "notes": [
+    "Spot re-verification skipped: dry run without --fixtures makes no network calls. Use --fixtures=<path> (canned responses) or --live (needs GOOGLE_MAPS_API_KEY + billing).",
+    "Spots: 0 checked, 0 skipped (no fixture entry / cap)."
+  ]
+}
