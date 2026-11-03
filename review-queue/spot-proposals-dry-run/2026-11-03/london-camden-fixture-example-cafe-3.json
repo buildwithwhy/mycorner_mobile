@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-85683fde8d-3",
+    "address": "Fixture Address 3, near 51.5365, -0.1390",
+    "lat": 51.53952,
+    "lng": -0.13599285714285714,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Camden (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "4",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

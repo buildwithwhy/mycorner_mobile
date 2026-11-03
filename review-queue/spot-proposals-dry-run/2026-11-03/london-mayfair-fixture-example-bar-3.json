@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 3",
+    "googlePlaceId": "ChIJfixture-cfbfedc59e-3",
+    "address": "Fixture Address 3, near 51.5052, -0.1568",
+    "lat": 51.508160909090904,
+    "lng": -0.15381363636363637,
+    "category": "bar",
+    "rationale": "bar is under-represented in Mayfair (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "65",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

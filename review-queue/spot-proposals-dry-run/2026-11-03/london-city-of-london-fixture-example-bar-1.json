@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 1",
+    "googlePlaceId": "ChIJfixture-0cc8ad347a-1",
+    "address": "Fixture Address 1, near 51.5152, -0.0910",
+    "lat": 51.515407999999994,
+    "lng": -0.09076799999999999,
+    "category": "bar",
+    "rationale": "bar is under-represented in City of London (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "67",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-9aeaf9900d-3",
+    "address": "Fixture Address 3, near 51.5547, -0.1393",
+    "lat": 51.557739999999995,
+    "lng": -0.1363485714285714,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Kentish Town (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "24",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 1",
+    "googlePlaceId": "ChIJfixture-9aeaf9900d-1",
+    "address": "Fixture Address 1, near 51.5547, -0.1393",
+    "lat": 51.554939999999995,
+    "lng": -0.1391485714285714,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Kentish Town (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "24",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

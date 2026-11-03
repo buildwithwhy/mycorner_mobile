@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 2",
+    "googlePlaceId": "ChIJfixture-dd5c72a740-2",
+    "address": "Fixture Address 2, near 51.5037, -0.0436",
+    "lat": 51.5035125,
+    "lng": -0.04383125,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Rotherhithe (0 here vs city median of 2); rated 4.2 from 90 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "43",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.2,
+    "ratingCount": 90
+  },
+  "status": "proposed"
+}

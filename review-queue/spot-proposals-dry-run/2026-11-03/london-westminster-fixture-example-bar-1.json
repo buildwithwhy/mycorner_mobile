@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 1",
+    "googlePlaceId": "ChIJfixture-10b3a941c9-1",
+    "address": "Fixture Address 1, near 51.4952, -0.1308",
+    "lat": 51.495352222222216,
+    "lng": -0.13056999999999994,
+    "category": "bar",
+    "rationale": "bar is under-represented in Westminster (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "66",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

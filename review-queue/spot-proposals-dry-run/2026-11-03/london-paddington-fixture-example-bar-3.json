@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 3",
+    "googlePlaceId": "ChIJfixture-fd36e6caa8-3",
+    "address": "Fixture Address 3, near 51.5085, -0.1712",
+    "lat": 51.511514999999996,
+    "lng": -0.1681516666666667,
+    "category": "bar",
+    "rationale": "bar is under-represented in Paddington (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "69",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

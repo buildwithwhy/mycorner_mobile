@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 1",
+    "googlePlaceId": "ChIJfixture-99fed4e564-1",
+    "address": "Fixture Address 1, near 40.7422, -73.9367",
+    "lat": 40.74241333333333,
+    "lng": -73.93653733333333,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Hunters Point (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-49",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

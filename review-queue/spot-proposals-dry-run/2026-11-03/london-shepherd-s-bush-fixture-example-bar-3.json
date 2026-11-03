@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 3",
+    "googlePlaceId": "ChIJfixture-c38640d472-3",
+    "address": "Fixture Address 3, near 51.5200, -0.2406",
+    "lat": 51.523005000000005,
+    "lng": -0.23758700000000002,
+    "category": "bar",
+    "rationale": "bar is under-represented in Shepherd's Bush (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "74",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

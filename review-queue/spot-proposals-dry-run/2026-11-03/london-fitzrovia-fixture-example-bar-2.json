@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 2",
+    "googlePlaceId": "ChIJfixture-317e080cfa-2",
+    "address": "Fixture Address 2, near 51.5227, -0.1367",
+    "lat": 51.522499999999994,
+    "lng": -0.13689833333333334,
+    "category": "bar",
+    "rationale": "bar is under-represented in Fitzrovia (0 here vs city median of 2); rated 4.2 from 90 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "62",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.2,
+    "ratingCount": 90
+  },
+  "status": "proposed"
+}

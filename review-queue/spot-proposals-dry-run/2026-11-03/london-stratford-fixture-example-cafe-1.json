@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 1",
+    "googlePlaceId": "ChIJfixture-b9e22929c9-1",
+    "address": "Fixture Address 1, near 51.5153, 0.0137",
+    "lat": 51.5154843902439,
+    "lng": 0.01391487804878049,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Stratford (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "14",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

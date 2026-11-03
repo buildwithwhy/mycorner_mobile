@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 1",
+    "googlePlaceId": "ChIJfixture-b5f3e6b54f-1",
+    "address": "Fixture Address 1, near 51.5028, -0.1126",
+    "lat": 51.50303625,
+    "lng": -0.11241999999999999,
+    "category": "bar",
+    "rationale": "bar is under-represented in South Bank (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "68",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

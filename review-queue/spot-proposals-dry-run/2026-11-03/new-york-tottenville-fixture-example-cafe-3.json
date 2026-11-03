@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-2d6d6e80d1-3",
+    "address": "Fixture Address 3, near 40.5297, -74.2336",
+    "lat": 40.532694086021515,
+    "lng": -74.23058763440864,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Tottenville (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-30",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

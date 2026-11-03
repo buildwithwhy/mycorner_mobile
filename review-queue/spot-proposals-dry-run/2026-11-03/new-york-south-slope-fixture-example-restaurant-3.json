@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 3",
+    "googlePlaceId": "ChIJfixture-109bc0b579-3",
+    "address": "Fixture Address 3, near 40.5855, -73.9546",
+    "lat": 40.58852,
+    "lng": -73.95162,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in South Slope (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-44",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

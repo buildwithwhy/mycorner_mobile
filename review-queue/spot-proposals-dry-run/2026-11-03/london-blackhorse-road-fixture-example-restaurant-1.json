@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 1",
+    "googlePlaceId": "ChIJfixture-154eb199b9-1",
+    "address": "Fixture Address 1, near 51.5883, -0.0570",
+    "lat": 51.58854444444444,
+    "lng": -0.056794444444444446,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Blackhorse Road (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "58",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

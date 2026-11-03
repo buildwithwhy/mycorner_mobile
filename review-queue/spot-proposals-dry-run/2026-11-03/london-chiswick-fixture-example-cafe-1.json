@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 1",
+    "googlePlaceId": "ChIJfixture-baa7c3d261-1",
+    "address": "Fixture Address 1, near 51.4836, -0.2733",
+    "lat": 51.48382590909091,
+    "lng": -0.27311272727272734,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Chiswick (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "32",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

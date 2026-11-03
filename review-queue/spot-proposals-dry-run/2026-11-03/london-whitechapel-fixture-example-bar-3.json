@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 3",
+    "googlePlaceId": "ChIJfixture-6e27872369-3",
+    "address": "Fixture Address 3, near 51.5120, -0.0753",
+    "lat": 51.5150175,
+    "lng": -0.07227750000000001,
+    "category": "bar",
+    "rationale": "bar is under-represented in Whitechapel (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "77",
+    "checkedAt": "2026-11-03T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}
