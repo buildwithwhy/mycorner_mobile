@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 3",
+    "googlePlaceId": "ChIJfixture-b005fda836-3",
+    "address": "Fixture Address 3, near 51.5472, -0.1023",
+    "lat": 51.550218,
+    "lng": -0.099268,
+    "category": "bar",
+    "rationale": "bar is under-represented in Islington (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "15",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

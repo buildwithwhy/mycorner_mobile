@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 1",
+    "googlePlaceId": "ChIJfixture-ca02725d45-1",
+    "address": "Fixture Address 1, near 40.7543, -73.9120",
+    "lat": 40.7544825,
+    "lng": -73.91182249999999,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Steinway (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-48",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

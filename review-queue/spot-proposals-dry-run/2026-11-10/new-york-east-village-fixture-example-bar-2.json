@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Bar 2",
+    "googlePlaceId": "ChIJfixture-a0332e2603-2",
+    "address": "Fixture Address 2, near 40.7309, -73.9747",
+    "lat": 40.73067571428572,
+    "lng": -73.97491142857145,
+    "category": "bar",
+    "rationale": "bar is under-represented in East Village (0 here vs city median of 2); rated 4.2 from 90 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-7",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.2,
+    "ratingCount": 90
+  },
+  "status": "proposed"
+}

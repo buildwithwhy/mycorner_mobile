@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-ebfdc2d323-3",
+    "address": "Fixture Address 3, near 51.5550, -0.0366",
+    "lat": 51.557986,
+    "lng": -0.033558,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Olympic Park (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "52",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

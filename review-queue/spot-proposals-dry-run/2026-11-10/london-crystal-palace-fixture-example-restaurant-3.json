@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 3",
+    "googlePlaceId": "ChIJfixture-5a801cb7e2-3",
+    "address": "Fixture Address 3, near 51.4072, -0.0592",
+    "lat": 51.41022,
+    "lng": -0.05620166666666666,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Crystal Palace (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "40",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

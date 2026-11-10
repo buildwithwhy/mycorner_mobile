@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-054ce64723-3",
+    "address": "Fixture Address 3, near 40.6614, -73.9598",
+    "lat": 40.664378,
+    "lng": -73.95679200000002,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Crown Heights (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-20",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

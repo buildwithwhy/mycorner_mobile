@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-c4061a0fd0-3",
+    "address": "Fixture Address 3, near 40.7784, -73.9436",
+    "lat": 40.781363,
+    "lng": -73.94056400000001,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Yorkville (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-33",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

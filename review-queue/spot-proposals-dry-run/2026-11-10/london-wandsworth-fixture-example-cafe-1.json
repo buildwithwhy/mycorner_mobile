@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 1",
+    "googlePlaceId": "ChIJfixture-7b31194fd1-1",
+    "address": "Fixture Address 1, near 51.4567, -0.1901",
+    "lat": 51.456945,
+    "lng": -0.18990499999999996,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Wandsworth (0 here vs city median of 2); rated 4.6 from 310 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "16",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.6,
+    "ratingCount": 310
+  },
+  "status": "proposed"
+}

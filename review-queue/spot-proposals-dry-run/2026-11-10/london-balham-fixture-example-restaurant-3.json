@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 3",
+    "googlePlaceId": "ChIJfixture-47d333a3fa-3",
+    "address": "Fixture Address 3, near 51.4403, -0.1433",
+    "lat": 51.443326666666664,
+    "lng": -0.14031333333333332,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Balham (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "25",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

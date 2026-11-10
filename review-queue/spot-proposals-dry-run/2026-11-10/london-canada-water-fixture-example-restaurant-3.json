@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 3",
+    "googlePlaceId": "ChIJfixture-5f1cb306c0-3",
+    "address": "Fixture Address 3, near 51.4965, -0.0393",
+    "lat": 51.499477692307686,
+    "lng": -0.03627538461538461,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Canada Water (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "41",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

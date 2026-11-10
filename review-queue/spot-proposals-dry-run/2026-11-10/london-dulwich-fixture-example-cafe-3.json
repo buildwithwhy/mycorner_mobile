@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Cafe 3",
+    "googlePlaceId": "ChIJfixture-2ba6b59da5-3",
+    "address": "Fixture Address 3, near 51.4413, -0.0860",
+    "lat": 51.444347500000006,
+    "lng": -0.08298,
+    "category": "cafe",
+    "rationale": "cafe is under-represented in Dulwich (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "13",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}

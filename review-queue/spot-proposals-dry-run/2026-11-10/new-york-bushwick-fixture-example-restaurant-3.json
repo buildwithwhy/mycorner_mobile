@@ -1,0 +1,19 @@
+{
+  "proposedSpot": {
+    "name": "Fixture Example Restaurant 3",
+    "googlePlaceId": "ChIJfixture-e4d2858cf5-3",
+    "address": "Fixture Address 3, near 40.7178, -73.9264",
+    "lat": 40.72078792452829,
+    "lng": -73.92339415094335,
+    "category": "restaurant",
+    "rationale": "restaurant is under-represented in Bushwick (0 here vs city median of 2); rated 4.9 from 1200 reviews; place sits inside the neighborhood boundary"
+  },
+  "evidence": {
+    "insideNeighborhood": "ny-16",
+    "checkedAt": "2026-11-10T00:00:00Z",
+    "placesStatus": "FIXTURE",
+    "rating": 4.9,
+    "ratingCount": 1200
+  },
+  "status": "proposed"
+}
